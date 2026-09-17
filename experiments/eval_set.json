@@ -1,0 +1,14 @@
+[
+  {
+    "question": "RAG最优集成策略是什么？",
+    "relevant_chunk_ids": ["sample-p2-c6"]
+  },
+  {
+    "question": "RAG相关的评估指标有哪些？",
+    "relevant_chunk_ids": ["sample-p2-c6"]
+  },
+  {
+    "question": "RAG输出质量会被哪些因素影响？",
+    "relevant_chunk_ids": ["sample-p2-c6"]
+  }
+]

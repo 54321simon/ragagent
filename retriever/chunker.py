@@ -27,3 +27,30 @@ def chunk_pages(pages: list[dict], size: int = 512, overlap: int = 50) -> list[d
                     "text": ch,
                 })
     return out
+
+def recursive_chunk(text: str, size: int = 512, overlap: int = 50) -> list[str]:
+    """递归字符切分。优先按段落/句子切，避免把句子切两半。"""
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=size,
+        chunk_overlap=overlap,
+        separators=["\n\n", "\n", "。", "！", "？", ". ", "! ", "? ", " ", ""],
+        length_function=len,
+    )
+    return splitter.split_text(text)
+
+
+def chunk_pages_recursive(pages: list[dict], size: int = 512, overlap: int = 50) -> list[dict]:
+    """用递归切分处理 pages。输出格式与 chunk_pages 一致。"""
+    out = []
+    for p in pages:
+        for i, ch in enumerate(recursive_chunk(p["text"], size, overlap)):
+            if ch.strip():
+                out.append({
+                    "chunk_id": f"{p['doc_id']}-p{p['page']}-r{i}",
+                    "doc_id": p["doc_id"],
+                    "doc_name": p["doc_name"],
+                    "page": p["page"],
+                    "text": ch,
+                })
+    return out
