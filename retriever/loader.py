@@ -1,29 +1,77 @@
-"""PDF 加载器。用 pymupdf（不是 fitz）。"""
+"""PDF 加载器。用 pymupdf。自动过滤页眉/页脚/版权声明。"""
 import pymupdf
 import os
+from collections import Counter
+
+
+COPYRIGHT_PATTERNS = [
+    "provided proper attribution",
+    "hereby grants permission",
+    "reproduce the tables",
+    "solely for use",
+    "journalistic or scholarly",
+    "all rights reserved",
+    "copyright",
+    "arxiv:",
+    "preprint",
+    "under review",
+    "licensed under",
+    "creative commons",
+]
+
+
+def _is_copyright_line(line: str) -> bool:
+    low = line.lower().strip()
+    return any(pat in low for pat in COPYRIGHT_PATTERNS)
 
 
 def load_pdf(path: str) -> list[dict]:
-    """返回 [{doc_id, doc_name, page, text}]，page 从 1 开始。"""
+    """返回 [{doc_id, doc_name, page, text}]。
+    自动过滤：页眉/页脚（3 页以上重复短行）+ 版权声明。"""
     doc = pymupdf.open(path)
     doc_name = os.path.basename(path)
     doc_id = doc_name.replace(".pdf", "")
-    pages = []
+
+    raw_pages = []
     for i, page in enumerate(doc):
-        text = page.get_text()
-        if text.strip():
+        raw_pages.append({"page": i + 1, "text": page.get_text()})
+    doc.close()
+
+    # 过滤 1：页眉/页脚
+    line_counter = Counter()
+    for p in raw_pages:
+        for l in p["text"].split("\n"):
+            l = l.strip()
+            if l and len(l) < 150:
+                line_counter[l] += 1
+    repeated = {line for line, cnt in line_counter.items() if cnt >= 3}
+
+    # 过滤 2：版权声明 + 重复行
+    pages = []
+    for p in raw_pages:
+        lines = p["text"].split("\n")
+        filtered = []
+        for l in lines:
+            s = l.strip()
+            if not s:
+                continue
+            if s in repeated:
+                continue
+            if _is_copyright_line(s):
+                continue
+            filtered.append(l)
+        text = "\n".join(filtered).strip()
+        if text:
             pages.append({
                 "doc_id": doc_id,
                 "doc_name": doc_name,
-                "page": i + 1,
+                "page": p["page"],
                 "text": text,
             })
-    doc.close()
     return pages
 
+
 def load_docx(path: str) -> list[dict]:
-    """解析 Word 文档。返回 [{doc_id, doc_name, page, text}]。
-    docx 没有页码概念，统一 page=1。"""
     import docx
     doc = docx.Document(path)
     doc_name = os.path.basename(path)
@@ -31,16 +79,10 @@ def load_docx(path: str) -> list[dict]:
     text = "\n".join(p.text for p in doc.paragraphs if p.text.strip())
     if not text:
         return []
-    return [{
-        "doc_id": doc_id,
-        "doc_name": doc_name,
-        "page": 1,
-        "text": text,
-    }]
+    return [{"doc_id": doc_id, "doc_name": doc_name, "page": 1, "text": text}]
 
 
 def load_txt(path: str) -> list[dict]:
-    """解析 TXT。page=1。"""
     doc_name = os.path.basename(path)
     doc_id = doc_name.rsplit(".", 1)[0]
     with open(path, "r", encoding="utf-8", errors="ignore") as f:
@@ -51,12 +93,10 @@ def load_txt(path: str) -> list[dict]:
 
 
 def load_md(path: str) -> list[dict]:
-    """解析 Markdown。page=1。"""
-    return load_txt(path)  # md 就是文本
+    return load_txt(path)
 
 
 def load_any(path: str) -> list[dict]:
-    """根据扩展名自动选择加载器。"""
     ext = os.path.splitext(path)[1].lower()
     if ext == ".pdf":
         return load_pdf(path)

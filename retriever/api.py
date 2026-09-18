@@ -7,7 +7,7 @@ from retriever.store import add_chunks, query_chunks, delete_doc, list_docs, get
 
 # ---------- 基础接口 ----------
 
-def ingest_pdf(path: str, chunk_size: int = 512, overlap: int = 50) -> int:
+def ingest_pdf(path: str, chunk_size: int = 512, overlap: int = 100) -> int:
     """入库一篇 PDF，返回 chunk 数。"""
     pages = load_pdf(path)
     chunks = chunk_pages(pages, chunk_size, overlap)
