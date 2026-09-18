@@ -1,14 +1,42 @@
 [
   {
-    "question": "RAG最优集成策略是什么？",
-    "relevant_chunk_ids": ["sample-p2-c6"]
+    "question": "这篇论文提出了什么模型？",
+    "relevant_chunk_ids": ["sample-p1-c0", "sample-p1-c1"]
   },
   {
-    "question": "RAG相关的评估指标有哪些？",
-    "relevant_chunk_ids": ["sample-p2-c6"]
+    "question": "这篇论文的标题是什么？",
+    "relevant_chunk_ids": ["sample-p1-c0"]
   },
   {
-    "question": "RAG输出质量会被哪些因素影响？",
-    "relevant_chunk_ids": ["sample-p2-c6"]
+    "question": "Transformer 的整体架构是什么？",
+    "relevant_chunk_ids": ["sample-p3-c0", "sample-p3-c1"]
+  },
+  {
+    "question": "Scaled Dot-Product Attention 是怎么计算的？",
+    "relevant_chunk_ids": ["sample-p4-c0", "sample-p4-c1"]
+  },
+  {
+    "question": "Multi-Head Attention 是什么？",
+    "relevant_chunk_ids": ["sample-p5-c0", "sample-p5-c1"]
+  },
+  {
+    "question": "Transformer 用了哪些注意力机制？",
+    "relevant_chunk_ids": ["sample-p5-c1", "sample-p5-c2"]
+  },
+  {
+    "question": "论文在什么数据集上训练？",
+    "relevant_chunk_ids": ["sample-p7-c2"]
+  },
+  {
+    "question": "论文在 WMT 2014 上的 BLEU 分数是多少？",
+    "relevant_chunk_ids": ["sample-p8-c0", "sample-p8-c2"]
+  },
+  {
+    "question": "论文做了哪些消融实验？",
+    "relevant_chunk_ids": ["sample-p9-c0", "sample-p9-c1"]
+  },
+  {
+    "question": "论文的结论是什么？",
+    "relevant_chunk_ids": ["sample-p10-c2"]
   }
 ]

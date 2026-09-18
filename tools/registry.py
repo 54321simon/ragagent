@@ -7,7 +7,7 @@ import inspect
 from datetime import datetime
 from typing import Any
 
-from retriever.api import retrieve_hybrid, get_docs
+from retriever.api import retrieve_hybrid_rerank, get_docs
 from rag.chain import rag_answer
 
 
@@ -35,7 +35,7 @@ def rag_search(query: str) -> str:
     elif any(w in query for w in ["结论", "conclusion", "总结", "未来"]):
         expanded = f"{query} conclusion future work"
 
-    chunks = retrieve_hybrid(expanded, topk=5)
+    chunks = retrieve_hybrid_rerank(expanded, topk=5)
 
     # 去重
     seen = set()
@@ -56,29 +56,57 @@ def rag_search(query: str) -> str:
 
 
 # ============ 2. 论文元信息提取 ============
+_PAPER_META_CACHE = {}
+
+
 def paper_meta(doc_id: str) -> str:
     """提取论文的标题、作者、年份、摘要、DOI。
     参数 doc_id: 文档ID，如 'sample'（不要带 .pdf 后缀）。
-    适用场景：需要论文的基本信息。"""
+    适用场景：只在用户明确问标题、作者、年份、DOI 时调用。"""
     doc_id = _normalize_doc_id(doc_id)
+    if doc_id in _PAPER_META_CACHE:
+        return _PAPER_META_CACHE[doc_id]
+
     docs = get_docs()
     if not any(d["doc_id"] == doc_id for d in docs):
         return f"未找到文档 {doc_id}，可用文档：{[d['doc_id'] for d in docs]}"
 
-    chunks = retrieve_hybrid(doc_id, topk=1)
-    first_text = chunks[0].text if chunks else ""
+    from retriever.store import get_collection
+    col = get_collection()
+    data = col.get(
+        where={"$and": [{"doc_id": doc_id}, {"page": 1}]},
+        include=["documents"],
+    )
 
-    lines = [l.strip() for l in first_text.split("\n") if l.strip()]
-    title = lines[0] if lines else "未知"
-    year_match = re.search(r"(19|20)\d{2}", first_text)
+    if not data["ids"]:
+        return f"文档 {doc_id} 没有第 1 页内容"
+
+    first_page_text = "\n".join(data["documents"])
+    lines = [l.strip() for l in first_page_text.split("\n") if l.strip()]
+
+    title = "未知"
+    for l in lines[:15]:
+        if 10 <= len(l) <= 150 and "@" not in l and "http" not in l and "arXiv" not in l:
+            title = l
+            break
+
+    year_match = re.search(r"(201[5-9]|202[0-9]|2030)", first_page_text)
     year = year_match.group() if year_match else "未知"
 
-    return (f"文档: {doc_id}\n"
-            f"标题（推测）: {title[:100]}\n"
-            f"年份（推测）: {year}\n"
-            f"作者: [需从 PDF 元数据提取]\n"
-            f"摘要: [需 PDF 摘要区块识别]\n"
-            f"DOI: [需 PDF 元数据提取]")
+    abstract = "未找到"
+    abs_match = re.search(r"Abstract\s*(.{50,300})", first_page_text, re.S | re.I)
+    if abs_match:
+        abstract = abs_match.group(1).strip().replace("\n", " ")[:300]
+
+    result = (f"**文档**: `{doc_id}`\n\n"
+              f"**标题（推测）**: {title}\n\n"
+              f"**年份（推测）**: {year}\n\n"
+              f"**作者**: 需从 PDF 元数据提取（当前未实现）\n\n"
+              f"**摘要（前 300 字）**: {abstract}\n\n"
+              f"**DOI**: 需从 PDF 元数据提取（当前未实现）")
+
+    _PAPER_META_CACHE[doc_id] = result
+    return result
 
 
 # ============ 3. 论文对比 ============
@@ -89,8 +117,8 @@ def paper_compare(doc_id_a: str, doc_id_b: str) -> str:
     doc_id_a = _normalize_doc_id(doc_id_a)
     doc_id_b = _normalize_doc_id(doc_id_b)
 
-    a_chunks = retrieve_hybrid(f"{doc_id_a} method dataset experiment", topk=3)
-    b_chunks = retrieve_hybrid(f"{doc_id_b} method dataset experiment", topk=3)
+    a_chunks = retrieve_hybrid_rerank(f"{doc_id_a} method dataset experiment", topk=3)
+    b_chunks = retrieve_hybrid_rerank(f"{doc_id_b} method dataset experiment", topk=3)
 
     a_text = "\n".join(c.text[:200] for c in a_chunks if c.doc_id == doc_id_a)
     b_text = "\n".join(c.text[:200] for c in b_chunks if c.doc_id == doc_id_b)
@@ -120,7 +148,6 @@ def summarize_paper(doc_id: str) -> str:
     if not any(d["doc_id"] == doc_id for d in docs):
         return f"未找到文档 {doc_id}，可用文档：{[d['doc_id'] for d in docs]}"
 
-    # 直接拉该文档的所有 chunks（避免被其他文档干扰）
     from retriever.store import get_collection
     col = get_collection()
     data = col.get(where={"doc_id": doc_id}, include=["documents", "metadatas"])

@@ -7,12 +7,11 @@ from retriever.store import add_chunks, query_chunks, delete_doc, list_docs, get
 
 # ---------- 基础接口 ----------
 
-def ingest_pdf(path: str, chunk_size: int = 512, overlap: int = 100) -> int:
+def ingest_pdf(path: str, chunk_size: int = 1024, overlap: int = 200) -> int:
     """入库一篇 PDF，返回 chunk 数。"""
     pages = load_pdf(path)
     chunks = chunk_pages(pages, chunk_size, overlap)
     add_chunks(chunks)
-    # 清 BM25 缓存，下次检索时重建
     global _BM25_CACHE
     _BM25_CACHE = None
     return len(chunks)
@@ -32,7 +31,6 @@ def get_docs() -> list[dict]:
 
 
 # ---------- 混合检索 ----------
-
 from retriever.retrievers.bm25 import BM25Retriever
 from retriever.retrievers.rrf import rrf_fusion
 
@@ -64,12 +62,9 @@ def _get_bm25() -> BM25Retriever:
 
 def retrieve_hybrid(query: str, topk: int = 5) -> List[RetrievedChunk]:
     """混合检索：向量 + BM25 + RRF 融合。"""
-    # 1. 向量检索（多召回一些，给 RRF 融合空间）
     vec_results = query_chunks(query, topk=topk * 2)
-    # 2. BM25 检索
     bm25 = _get_bm25()
     bm25_results = bm25.search(query, topk=topk * 2)
-    # 3. RRF 融合
     fused = rrf_fusion(vec_results, bm25_results, topk=topk)
     return [RetrievedChunk(
         chunk_id=x["chunk_id"],
@@ -79,3 +74,37 @@ def retrieve_hybrid(query: str, topk: int = 5) -> List[RetrievedChunk]:
         text=x["text"],
         score=x.get("rrf_score", x.get("score", 0.0)),
     ) for x in fused]
+
+
+# ---------- 混合检索 + rerank ----------
+from retriever.retrievers.reranker import rerank as _rerank
+
+
+def retrieve_hybrid_rerank(query: str, topk: int = 5) -> List[RetrievedChunk]:
+    """
+    三档检索最强版：向量 + BM25 → RRF → reranker。
+    """
+    # 1. 向量检索（多召回，给 RRF 和 reranker 空间）
+    vec_results = query_chunks(query, topk=topk * 3)
+
+    # 2. BM25 检索
+    bm25 = _get_bm25()
+    bm25_results = bm25.search(query, topk=topk * 3)
+
+    # 3. RRF 融合（多召回，给 reranker 精排）
+    fused = rrf_fusion(vec_results, bm25_results, topk=topk * 4)
+
+    if not fused:
+        return []
+
+    # 4. reranker 精排
+    reranked = _rerank(query, fused, topk=topk)
+
+    return [RetrievedChunk(
+        chunk_id=x["chunk_id"],
+        doc_id=x["doc_id"],
+        doc_name=x["doc_name"],
+        page=x["page"],
+        text=x["text"],
+        score=x.get("rerank_score", x.get("rrf_score", 0.0)),
+    ) for x in reranked]

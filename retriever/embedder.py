@@ -1,10 +1,11 @@
-"""Embedding 封装。用 bge-small-zh。"""
+"""Embedding 封装。用 paraphrase-multilingual-MiniLM-L12-v2（轻量多语言）。"""
 from sentence_transformers import SentenceTransformer
 
 _MODEL = None
+MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 
 
-def get_embedder(model_name: str = "BAAI/bge-small-zh-v1.5"):
+def get_embedder(model_name: str = MODEL_NAME):
     global _MODEL
     if _MODEL is None:
         _MODEL = SentenceTransformer(model_name)
@@ -16,8 +17,5 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
 
 
 def embed_query(query: str) -> list[float]:
-    # bge 系列建议 query 加指令前缀
-    return get_embedder().encode(
-        [f"为这个句子生成表示以用于检索：{query}"],
-        normalize_embeddings=True
-    )[0].tolist()
+    # 多语言模型不需要指令前缀
+    return get_embedder().encode([query], normalize_embeddings=True)[0].tolist()
