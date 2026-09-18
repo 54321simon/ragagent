@@ -1,6 +1,7 @@
-"""PDF 加载器。用 pymupdf。自动过滤页眉/页脚/版权声明。"""
+"""PDF 加载器。用 pymupdf。自动过滤页眉/页脚/版权声明/参考文献页。"""
 import pymupdf
 import os
+import re
 from collections import Counter
 
 
@@ -25,9 +26,23 @@ def _is_copyright_line(line: str) -> bool:
     return any(pat in low for pat in COPYRIGHT_PATTERNS)
 
 
+def _is_reference_page(text: str) -> bool:
+    """判断是否是参考文献页。
+    特征：> 30% 的行以 [数字] 开头，或包含 "References" 标题。"""
+    lines = [l.strip() for l in text.split("\n") if l.strip()]
+    if len(lines) < 5:
+        return False
+    ref_lines = sum(1 for l in lines if re.match(r"^\[\d+\]", l))
+    if ref_lines / len(lines) > 0.3:
+        return True
+    if re.search(r"^\s*References\s*$", text, re.M | re.I):
+        return True
+    return False
+
+
 def load_pdf(path: str) -> list[dict]:
     """返回 [{doc_id, doc_name, page, text}]。
-    自动过滤：页眉/页脚（3 页以上重复短行）+ 版权声明。"""
+    自动过滤：页眉/页脚 + 版权声明 + 参考文献页。"""
     doc = pymupdf.open(path)
     doc_name = os.path.basename(path)
     doc_id = doc_name.replace(".pdf", "")
@@ -46,9 +61,13 @@ def load_pdf(path: str) -> list[dict]:
                 line_counter[l] += 1
     repeated = {line for line, cnt in line_counter.items() if cnt >= 3}
 
-    # 过滤 2：版权声明 + 重复行
+    # 过滤 2：版权 + 参考文献页
     pages = []
     for p in raw_pages:
+        # 参考文献页整页跳过
+        if _is_reference_page(p["text"]):
+            continue
+
         lines = p["text"].split("\n")
         filtered = []
         for l in lines:
