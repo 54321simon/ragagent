@@ -1,62 +1,87 @@
 [
   {
     "question": "这篇论文提出了什么模型？",
-    "relevant_chunk_ids": ["sample-p1-c0", "sample-p2-c2"]
+    "relevant_pages": [1, 2]
   },
   {
     "question": "论文的标题是什么？",
-    "relevant_chunk_ids": ["sample-p1-c0"]
+    "relevant_pages": [1]
   },
   {
     "question": "Transformer 的整体架构是什么？",
-    "relevant_chunk_ids": ["sample-p3-c0", "sample-p3-c1"]
+    "relevant_pages": [3]
   },
   {
     "question": "Scaled Dot-Product Attention 是怎么计算的？",
-    "relevant_chunk_ids": ["sample-p4-c0", "sample-p4-c1"]
+    "relevant_pages": [4]
   },
   {
     "question": "Multi-Head Attention 是什么？",
-    "relevant_chunk_ids": ["sample-p4-c0", "sample-p5-c0"]
+    "relevant_pages": [4, 5]
   },
   {
     "question": "Transformer 用了哪些注意力机制？",
-    "relevant_chunk_ids": ["sample-p5-c1", "sample-p5-c2"]
+    "relevant_pages": [5]
   },
   {
     "question": "位置编码是怎么实现的？",
-    "relevant_chunk_ids": ["sample-p6-c1", "sample-p6-c2"]
+    "relevant_pages": [6]
   },
   {
     "question": "论文在什么数据集上训练？",
-    "relevant_chunk_ids": ["sample-p7-c2"]
+    "relevant_pages": [7]
   },
   {
     "question": "论文的训练设置是什么？",
-    "relevant_chunk_ids": ["sample-p7-c2", "sample-p7-c3"]
+    "relevant_pages": [7]
   },
   {
     "question": "论文在 WMT 2014 英德翻译上的 BLEU 分数是多少？",
-    "relevant_chunk_ids": ["sample-p8-c0", "sample-p8-c2", "sample-p8-c3"]
+    "relevant_pages": [8]
   },
   {
     "question": "论文在 WMT 2014 英法翻译上的 BLEU 分数是多少？",
-    "relevant_chunk_ids": ["sample-p8-c2"]
+    "relevant_pages": [8]
   },
   {
     "question": "论文通过哪些变体验证了架构设计？",
-    "relevant_chunk_ids": ["sample-p9-c0", "sample-p9-c1"]
+    "relevant_pages": [9]
   },
   {
     "question": "论文在 WSJ 数据集上的句法分析 F1 分数是多少？",
-    "relevant_chunk_ids": ["sample-p10-c0", "sample-p10-c1"]
+    "relevant_pages": [10]
   },
   {
     "question": "论文未来打算把 Transformer 应用到哪些任务？",
-    "relevant_chunk_ids": ["sample-p10-c2"]
+    "relevant_pages": [10]
   },
   {
     "question": "论文的核心贡献是什么？",
-    "relevant_chunk_ids": ["sample-p1-c0", "sample-p2-c2", "sample-p10-c2"]
+    "relevant_pages": [1, 2, 10]
+  },
+    {
+    "question": "这篇论文里 RAG 有哪些主流范式？",
+    "relevant_pages": [],
+    "answerable": false
+  },
+  {
+    "question": "BERT 的预训练任务是什么？",
+    "relevant_pages": [],
+    "answerable": false
+  },
+  {
+    "question": "GPT-3 有多少参数？",
+    "relevant_pages": [],
+    "answerable": false
+  },
+  {
+    "question": "这篇论文的作者在哪所大学？",
+    "relevant_pages": [],
+    "answerable": false
+  },
+  {
+    "question": "对比 Transformer 和 LSTM 的训练速度差异",
+    "relevant_pages": [],
+    "answerable": false
   }
 ]
