@@ -4,7 +4,7 @@ from typing import Iterator
 import ollama
 
 from common.schemas import RetrievedChunk
-from retriever.api import retrieve_hybrid
+from retriever.api import retrieve_best
 from rag.prompts import RAG_SYSTEM_PROMPT
 from rag.context import build_context
 from rag.citation import extract_citations, validate_citations
@@ -14,15 +14,25 @@ from rag.fallback import (
     handle_llm_error,
 )
 
-# 改成你本地Ollama真实模型名称
 DEFAULT_MODEL = "qwen2.5:7b-instruct-q4_K_M"
 LOW_RELEVANCE_THRESHOLD = 0.01
 MAX_TOKENS = 1024
 
 
+def _handle_refuse(query: str, chunks: list) -> dict:
+    """自检不通过时的拒答响应。"""
+    return {
+        "answer": "知识库中未找到能回答该问题的内容。请尝试换个问法，或上传相关论文。",
+        "citations": [],
+        "metrics": {"elapsed_ms": 0, "tokens": 0, "model": "self_check"},
+        "degraded": True,
+        "refused": True,
+    }
+
+
 def _prepare(query: str, topk: int = 5, use_hybrid: bool = True):
-    """统一预处理：检索 + 判断降级 + 拼接上下文。"""
-    chunks = retrieve_hybrid(query, topk=topk)
+    """统一预处理：检索 + 判断降级 + 自检 + 拼接上下文。"""
+    chunks = retrieve_best(query, topk=topk)
 
     if not chunks:
         return None, None, handle_no_results(query)
@@ -30,6 +40,11 @@ def _prepare(query: str, topk: int = 5, use_hybrid: bool = True):
     best = max(c.score for c in chunks)
     if best < LOW_RELEVANCE_THRESHOLD:
         return chunks, None, handle_low_relevance(query, chunks)
+
+    # LLM 自检：判断 chunk 能否回答 query
+    from rag.self_check import check_answerable
+    if not check_answerable(query, chunks):
+        return chunks, None, _handle_refuse(query, chunks)
 
     context = build_context(chunks)
     prompt = RAG_SYSTEM_PROMPT.format(context=context, question=query)
@@ -48,6 +63,7 @@ def rag_answer(
         "citations": List[RetrievedChunk],
         "metrics": {"elapsed_ms": int, "tokens": int, "model": str},
         "degraded": bool,
+        "refused": bool,   # 仅拒答时为 True
     }
     """
     chunks, prompt, degraded = _prepare(query, topk)
@@ -68,7 +84,6 @@ def rag_answer(
     answer = resp["message"]["content"]
     tokens = resp.get("eval_count", 0) + resp.get("prompt_eval_count", 0)
 
-    # 提取答案中实际引用的片段
     cited = extract_citations(answer, chunks)
 
     return {
@@ -76,7 +91,8 @@ def rag_answer(
         "citations": cited,
         "metrics": {"elapsed_ms": elapsed, "tokens": tokens, "model": model},
         "degraded": False,
-        "debug": validate_citations(answer, chunks),   # 校验信息，调试用
+        "refused": False,
+        "debug": validate_citations(answer, chunks),
     }
 
 
@@ -85,11 +101,7 @@ def rag_answer_stream(
     topk: int = 5,
     model: str = DEFAULT_MODEL,
 ) -> Iterator[str]:
-    """
-    流式 RAG 问答。逐 token 输出。
-    注意：流式模式下无法在 yield 时拿到完整 answer，
-          引用提取需在外部收集完所有 token 后调用 extract_citations。
-    """
+    """流式 RAG 问答。逐 token 输出。"""
     chunks, prompt, degraded = _prepare(query, topk)
     if degraded:
         yield degraded["answer"]
@@ -115,7 +127,6 @@ def rag_answer_with_citations(
 ) -> tuple:
     """
     流式 + 返回引用（用于前端：一边流式显示答案，一边准备引用列表）。
-    返回生成器 + 一个 future-like 的结果容器。
     """
     chunks, prompt, degraded = _prepare(query, topk)
     if degraded:
@@ -138,7 +149,6 @@ def rag_answer_with_citations(
         except Exception as e:
             yield handle_llm_error(query, str(e))["answer"]
 
-    # 返回生成器和"最终结果"的回调
     def finalize():
         answer = "".join(collected)
         return {
