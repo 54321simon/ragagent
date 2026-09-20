@@ -33,30 +33,16 @@ inject_css()
 # ============ 额外美化 CSS ============
 st.markdown("""
 <style>
-/* 整体字体 */
 html, body, [class*="css"] {
     font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
 }
-
-/* 主区域顶部间距 */
 .block-container {
     padding-top: 2rem;
     padding-bottom: 2rem;
     max-width: 1400px;
 }
+h1, h2, h3 { font-weight: 600; letter-spacing: -0.01em; }
 
-/* 标题 */
-h1, h2, h3 {
-    font-weight: 600;
-    letter-spacing: -0.01em;
-}
-
-/* 卡片式容器 */
-div[data-testid="stVerticalBlock"] > div[style*="flex-direction: column"] > div[data-testid="stVerticalBlock"] {
-    border-radius: 10px;
-}
-
-/* 聊天气泡 */
 div[data-testid="stChatMessage"] {
     background: #fafbfc;
     border: 1px solid #eaecef;
@@ -64,8 +50,6 @@ div[data-testid="stChatMessage"] {
     padding: 12px 16px;
     margin-bottom: 8px;
 }
-
-/* 引用标签 */
 .citation {
     display: inline-block;
     background: #eef4ff;
@@ -77,116 +61,43 @@ div[data-testid="stChatMessage"] {
     margin: 3px 6px 3px 0;
     font-weight: 500;
 }
-
-/* 指标卡片 */
 .metric-card {
     background: linear-gradient(135deg, #f8fafc 0%, #eef2f7 100%);
     border: 1px solid #e2e8f0;
     border-radius: 10px;
     padding: 16px 12px;
     text-align: center;
-    transition: transform 0.15s ease;
 }
-.metric-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-}
-.metric-value {
-    font-size: 1.6em;
-    font-weight: 700;
-    color: #1a56db;
-    line-height: 1.2;
-}
-.metric-label {
-    font-size: 0.8em;
-    color: #64748b;
-    margin-top: 4px;
-    font-weight: 500;
-}
+.metric-value { font-size: 1.6em; font-weight: 700; color: #1a56db; line-height: 1.2; }
+.metric-label { font-size: 0.8em; color: #64748b; margin-top: 4px; font-weight: 500; }
 
-/* 侧边栏按钮 */
 .stButton > button {
     border-radius: 8px;
     font-weight: 500;
     transition: all 0.15s ease;
 }
-.stButton > button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-}
+.stButton > button:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
 
-/* 多选框 */
-div[data-baseweb="select"] > div {
-    border-radius: 8px;
-}
-
-/* 上传区 */
 section[data-testid="stFileUploaderDropzone"] {
     border-radius: 10px;
     border: 2px dashed #cbd5e1;
     background: #fafbfc;
-    transition: all 0.2s ease;
 }
 section[data-testid="stFileUploaderDropzone"]:hover {
     border-color: #1a56db;
     background: #f0f6ff;
 }
 
-/* 文档列表项 */
 .doc-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 12px;
-    border-radius: 8px;
-    background: #fafbfc;
-    border: 1px solid #eaecef;
-    margin-bottom: 6px;
-    transition: background 0.15s ease;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; border-radius: 8px;
+    background: #fafbfc; border: 1px solid #eaecef; margin-bottom: 6px;
 }
-.doc-item:hover {
-    background: #f0f6ff;
-}
-.doc-name {
-    font-weight: 500;
-    font-size: 0.9em;
-}
-.doc-id {
-    font-size: 0.78em;
-    color: #64748b;
-    font-family: "SF Mono", Consolas, monospace;
-}
-
-/* 检索范围提示 */
 .scope-badge {
-    display: inline-block;
-    background: #eef4ff;
-    color: #1a56db;
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 0.85em;
-    font-weight: 500;
+    display: inline-block; background: #eef4ff; color: #1a56db;
+    border-radius: 6px; padding: 4px 12px; font-size: 0.85em; font-weight: 500;
 }
-
-/* 分隔线 */
-hr {
-    margin: 1rem 0;
-    border: none;
-    border-top: 1px solid #eaecef;
-}
-
-/* 输入框 */
-div[data-testid="stChatInput"] textarea {
-    border-radius: 10px;
-}
-
-/* expander */
-details {
-    border-radius: 8px;
-    border: 1px solid #eaecef;
-}
-
-/* 隐藏 Streamlit 默认菜单 */
+hr { margin: 1rem 0; border: none; border-top: 1px solid #eaecef; }
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 </style>
@@ -210,6 +121,8 @@ if "selected_docs" not in st.session_state:
     st.session_state.selected_docs = None
 if "ingested_keys" not in st.session_state:
     st.session_state.ingested_keys = set()
+if "health_checks" not in st.session_state:
+    st.session_state.health_checks = None
 
 
 # ============ 侧边栏 ============
@@ -234,6 +147,18 @@ with st.sidebar:
             st.toast("已清空上传缓存", icon="✅")
             time.sleep(0.8)
             st.rerun()
+
+    # 系统检查按钮
+    if st.button("🩺 系统检查", use_container_width=True):
+        with st.spinner("检查中..."):
+            from ui.health import run_all_checks
+            st.session_state.health_checks = run_all_checks()
+
+    if st.session_state.get("health_checks"):
+        st.markdown("**检查结果**")
+        for c in st.session_state.health_checks:
+            icon = "✅" if c["ok"] else "❌"
+            st.caption(f"{icon} **{c['name']}**：{c['message']}")
 
     st.divider()
     st.markdown("**📊 系统状态**")
@@ -355,12 +280,10 @@ with col_mid:
 
     st.write("")
 
-    # 历史消息
     for msg in st.session_state.messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    # 输入框
     if question := st.chat_input("输入你的问题..."):
         st.session_state.messages.append({"role": "user", "content": question})
         with st.chat_message("user"):
@@ -387,7 +310,6 @@ with col_mid:
 
             st.markdown(result["answer"])
 
-            # 引用提取
             citations = []
             for step in result.get("trace", []):
                 if step.action in ("rag_search", "paper_compare") and step.observation:
