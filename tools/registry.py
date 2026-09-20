@@ -7,7 +7,7 @@ import inspect
 from datetime import datetime
 from typing import Any
 
-from retriever.api import retrieve_hybrid_rerank, get_docs
+from retriever.api import retrieve_best, get_docs
 from rag.chain import rag_answer
 
 
@@ -15,19 +15,22 @@ from rag.chain import rag_answer
 
 def _normalize_doc_id(doc_id: str) -> str:
     """模型经常传 'sample.pdf'，但真实 doc_id 是 'sample'。统一处理。"""
-    for ext in [".pdf", ".docx", ".txt", ".md"]:
+    for ext in [".pdf", ".docx", ".txt", ".md", ".doc"]:
         if doc_id.endswith(ext):
             return doc_id[:-len(ext)]
     return doc_id
 
 
 # ============ 1. 知识库 RAG 检索 ============
-def rag_search(query: str) -> str:
+def rag_search(query: str, doc_ids: list = None) -> str:
     """在论文知识库中检索相关内容，返回带页码的片段。
     参数 query: 检索语句。问"方法"时请带上具体技术术语，如 'Transformer self-attention'。
-    适用场景：需要查找论文原文、事实性信息。"""
+    参数 doc_ids: 可选。限定在这些文档内检索，如 ['sample', 'sample2']。
+                  None 或空列表 = 全部文档。
+    适用场景：需要查找论文原文、事实性信息。当用户指定了一篇或多篇文档时，必须传 doc_ids。"""
     # 根据问题类型自动扩展 query
     expanded = query
+
     if any(w in query for w in ["方法", "method", "approach", "怎么做的", "如何实现"]):
         expanded = f"{query} Transformer architecture encoder decoder self-attention"
     elif any(w in query for w in ["结果", "result", "实验", "experiment", "性能"]):
@@ -35,7 +38,29 @@ def rag_search(query: str) -> str:
     elif any(w in query for w in ["结论", "conclusion", "总结", "未来"]):
         expanded = f"{query} conclusion future work"
 
-    chunks = retrieve_hybrid_rerank(expanded, topk=5)
+    if any(w in query for w in ["整体架构", "总体架构", "模型结构", "模型架构"]):
+        expanded = "Transformer model architecture encoder decoder Figure 1"
+
+    if any(w in query for w in ["注意力机制", "attention mechanism", "用了哪些注意力"]):
+        expanded = ("multi-head attention scaled dot-product attention "
+                    "encoder-decoder self-attention")
+
+    if any(w in query for w in ["未来", "future", "展望", "下一步"]):
+        expanded = "conclusion future work applications"
+
+    chunks = retrieve_best(expanded, topk=5)
+
+    # doc_ids 过滤：如果指定了文档列表，只保留这些文档的 chunk
+    if doc_ids:
+        doc_id_set = {_normalize_doc_id(d) for d in doc_ids}
+        filtered = [c for c in chunks if c.doc_id in doc_id_set]
+        if not filtered:
+            # 这些文档的 chunk 没进 top-5，扩大召回范围再过滤
+            all_chunks = retrieve_best(expanded, topk=50)
+            filtered = [c for c in all_chunks if c.doc_id in doc_id_set][:5]
+        if not filtered:
+            return f"未在文档 {list(doc_id_set)} 中找到与「{query}」相关的内容"
+        chunks = filtered
 
     # 去重
     seen = set()
@@ -109,23 +134,25 @@ def paper_meta(doc_id: str) -> str:
     return result
 
 
-# ============ 3. 论文对比 ============
-def paper_compare(doc_id_a: str, doc_id_b: str) -> str:
-    """对比两篇论文的方法、数据集、实验结果。
-    参数 doc_id_a: 第一篇文档ID；doc_id_b: 第二篇文档ID。
-    适用场景：用户问 '论文A和B有什么不同'。"""
-    doc_id_a = _normalize_doc_id(doc_id_a)
-    doc_id_b = _normalize_doc_id(doc_id_b)
+# ============ 3. 论文对比（支持多篇） ============
+def paper_compare(doc_ids: list) -> str:
+    """对比多篇论文的方法、数据集、实验结果。
+    参数 doc_ids: 文档ID列表，如 ['sample', 'sample2']，至少 2 篇。
+    适用场景：用户问 '论文A和B有什么不同'、'对比这几篇论文'。"""
+    if not doc_ids or len(doc_ids) < 2:
+        return "对比需要至少 2 篇文档，请指定 doc_ids（如 ['sample', 'sample2']）"
 
-    a_chunks = retrieve_hybrid_rerank(f"{doc_id_a} method dataset experiment", topk=3)
-    b_chunks = retrieve_hybrid_rerank(f"{doc_id_b} method dataset experiment", topk=3)
+    normalized = [_normalize_doc_id(d) for d in doc_ids]
 
-    a_text = "\n".join(c.text[:200] for c in a_chunks if c.doc_id == doc_id_a)
-    b_text = "\n".join(c.text[:200] for c in b_chunks if c.doc_id == doc_id_b)
+    results = []
+    for doc_id in normalized:
+        chunks = retrieve_best(f"{doc_id} method dataset experiment", topk=10)
+        doc_chunks = [c for c in chunks if c.doc_id == doc_id][:3]
+        text = "\n".join(c.text[:200] for c in doc_chunks)
+        results.append(f"【{doc_id}】\n{text or '未检索到内容'}")
 
-    return (f"【{doc_id_a}】\n{a_text or '未检索到内容'}\n\n"
-            f"【{doc_id_b}】\n{b_text or '未检索到内容'}\n\n"
-            f"提示：请基于以上片段，从方法、数据集、实验结果三个维度对比。")
+    return ("\n\n".join(results)
+            + "\n\n提示：请基于以上片段，从方法、数据集、实验结果三个维度对比。")
 
 
 # ============ 4. 关键词提取 ============
@@ -226,8 +253,7 @@ def get_all_tools() -> dict:
 
 
 def get_tool_descriptions() -> str:
-    """生成工具描述文本，给 Agent 的 System Prompt 用。
-    包含：工具名、功能描述、参数名及类型。"""
+    """生成工具描述文本，给 Agent 的 System Prompt 用。"""
     tools = get_all_tools()
     lines = []
     for name, fn in tools.items():
