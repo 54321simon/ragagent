@@ -26,17 +26,53 @@ def _is_copyright_line(line: str) -> bool:
     return any(pat in low for pat in COPYRIGHT_PATTERNS)
 
 
+BODY_KEYWORDS = [
+    "conclusion", "discussion", "future work", "acknowledg",
+    "introduction", "method", "approach", "experiment", "result",
+    "abstract", "background",
+]
+
+REF_KEYWORDS = [
+    "arxiv:", "corr,", "in proc.", "proceedings",
+    "et al.", "conference on", "journal of", "preprint",
+]
+
+
 def _is_reference_page(text: str) -> bool:
-    """判断是否是参考文献页。
-    特征：> 30% 的行以 [数字] 开头，或包含 "References" 标题。"""
+    """判断是否是纯参考文献页。
+    判据：1) [数字] 行占比 > 0.25；2) 参考文献特征词 >= 3 个；
+         3) 页首出现 References 标题。
+    含正文关键词的页（Conclusion 等）永远不判为参考文献页。
+    """
     lines = [l.strip() for l in text.split("\n") if l.strip()]
     if len(lines) < 5:
         return False
-    ref_lines = sum(1 for l in lines if re.match(r"^\[\d+\]", l))
-    if ref_lines / len(lines) > 0.3:
+
+    # 0. 正文关键词豁免：p10 含 "Table 4" + "Conclusion"，直接保留
+    low_text = text.lower()
+    # 只有明确含 Conclusion/Discussion/Future Work 才豁免
+    # 不含 method/approach/result 等泛词，避免参考文献误豁免
+    strong_body_kw = ["conclusion", "discussion", "future work",
+                      "acknowledg", "introduction"]
+    if any(kw in low_text for kw in strong_body_kw):
+        return False
+
+    # 1. 强特征：[数字] 行占比 > 0.25
+    ref_pattern = re.compile(r"^\[\d+(?:\s*[,-]\s*\d+)*\]")
+    ref_lines = sum(1 for l in lines if ref_pattern.match(l))
+    if ref_lines / len(lines) > 0.25:
         return True
-    if re.search(r"^\s*References\s*$", text, re.M | re.I):
+
+    # 2. 辅助特征：参考文献常见词 >= 3 个
+    kw_hits = sum(1 for kw in REF_KEYWORDS if kw in low_text)
+    if kw_hits >= 3:
         return True
+
+    # 3. References 标题只在页首 3 行内才算
+    head = "\n".join(lines[:3])
+    if re.search(r"^\s*References\s*$", head, re.M | re.I):
+        return True
+
     return False
 
 

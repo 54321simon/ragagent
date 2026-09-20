@@ -1,21 +1,39 @@
-"""Embedding 封装。用 paraphrase-multilingual-MiniLM-L12-v2（轻量多语言）。"""
-from sentence_transformers import SentenceTransformer
+"""Embedding 封装。用 Ollama 本地的 bge-m3:567m（1024 维）。"""
+import math
+import time
+import ollama
 
-_MODEL = None
-MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+MODEL_NAME = "bge-m3:567m"
+_BATCH_SIZE = 32
+_MAX_RETRY = 3
 
 
-def get_embedder(model_name: str = MODEL_NAME):
-    global _MODEL
-    if _MODEL is None:
-        _MODEL = SentenceTransformer(model_name)
-    return _MODEL
+def _l2_normalize(vec: list[float]) -> list[float]:
+    norm = math.sqrt(sum(x * x for x in vec)) or 1.0
+    return [x / norm for x in vec]
+
+
+def _embed_batch(texts: list[str]) -> list[list[float]]:
+    last_err = None
+    for attempt in range(_MAX_RETRY):
+        try:
+            resp = ollama.embed(model=MODEL_NAME, input=texts)
+            return resp["embeddings"]
+        except Exception as e:
+            last_err = e
+            time.sleep(0.5 * (2 ** attempt))
+    raise RuntimeError(f"Ollama embed 失败（重试 {_MAX_RETRY} 次）: {last_err}")
 
 
 def embed_texts(texts: list[str]) -> list[list[float]]:
-    return get_embedder().encode(texts, normalize_embeddings=True).tolist()
+    if isinstance(texts, str):
+        texts = [texts]
+    out: list[list[float]] = []
+    for i in range(0, len(texts), _BATCH_SIZE):
+        batch = texts[i:i + _BATCH_SIZE]
+        out.extend(_embed_batch(batch))
+    return [_l2_normalize(v) for v in out]
 
 
 def embed_query(query: str) -> list[float]:
-    # 多语言模型不需要指令前缀
-    return get_embedder().encode([query], normalize_embeddings=True)[0].tolist()
+    return _l2_normalize(_embed_batch([query])[0])

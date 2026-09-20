@@ -33,9 +33,9 @@ def add_chunks(chunks: list[dict]):
             "doc_id": c["doc_id"],
             "doc_name": c["doc_name"],
             "page": c["page"],
+            "section": c.get("section", ""),
         } for c in chunks],
     )
-
 
 def query_chunks(query: str, topk: int = 5) -> list[dict]:
     col = get_collection()
