@@ -1,11 +1,13 @@
 """章节感知切分。先按章节聚合，再章节内按 size/overlap 切。
 chunk 的 page 字段是「该 chunk 实际内容起始位置所在的页」。
+
+新增：语义切分（基于句子边界 / 段落边界）。
 """
 import re
 from typing import List
 
 
-# ---------- 基础切分（保留） ----------
+# ---------- 基础切分 ----------
 
 def fixed_chunk(text: str, size: int = 1024, overlap: int = 200) -> List[str]:
     if size <= overlap:
@@ -60,6 +62,133 @@ def chunk_pages_recursive(pages: list[dict], size: int = 1024, overlap: int = 20
     return out
 
 
+# 句子模式：内容 + 句末标点 + 后续空白
+# 或：末尾没标点的残余
+_SENT_PATTERN = re.compile(
+    r"[^。！？；;.!?]*[。！？；;.!?]+[\s]*|[^。！？；;.!?]+$"
+)
+
+
+def split_sentences(text: str) -> list[str]:
+    """
+    按句子边界切分，保留句末标点及其后的空白。
+    段落边界（连续空行）单独识别为 "\\n\\n"。
+    """
+    if not text:
+        return []
+
+    parts = re.split(r"(\n{2,})", text)
+    out = []
+    for part in parts:
+        if not part:
+            continue
+        if re.fullmatch(r"\n{2,}", part):
+            out.append("\n\n")
+            continue
+        for m in _SENT_PATTERN.finditer(part):
+            s = m.group()
+            if s:
+                out.append(s)
+    return out
+
+
+def semantic_chunk(text: str, size: int = 1024, overlap: int = 200) -> list[str]:
+    """
+    语义切分：按句子边界累积，接近 size 时切；段落边界优先切。
+    - 单句超过 size 时硬切，避免死循环。
+    - overlap 用最后几个完整句子回填，不切碎句子。
+    """
+    if size <= overlap:
+        raise ValueError("size 必须大于 overlap")
+    if not text:
+        return []
+
+    units = split_sentences(text)  # 句子 + "\n\n" 标记
+
+    chunks: list[str] = []
+    cur = ""             # 当前累积的文本
+    cur_len = 0
+
+    def _flush():
+        nonlocal cur, cur_len
+        if cur.strip():
+            chunks.append(cur)
+        cur = ""
+        cur_len = 0
+
+    for u in units:
+        if u == "\n\n":
+            # 段落边界：优先切
+            _flush()
+            continue
+
+        u_len = len(u)
+
+        # 单句超长：硬切
+        if u_len > size:
+            _flush()
+            start = 0
+            while start < u_len:
+                chunks.append(u[start:start + size])
+                start += size - overlap
+            continue
+
+        # 当前累积 + 这句 是否超过 size
+        if cur_len + u_len > size:
+            # 切掉当前，然后回填 overlap
+            tail = cur[-overlap:] if overlap > 0 else ""
+            _flush()
+            cur = tail
+            cur_len = len(cur)
+
+        cur += u
+        cur_len += u_len
+
+    _flush()
+    return chunks
+
+
+def chunk_pages_semantic(pages: list[dict], size: int = 1024, overlap: int = 200) -> list[dict]:
+    """
+    整篇语义切分：把所有页拼起来做语义切分，再用 page_offsets 回查每个 chunk 的页码。
+    chunk 的 page 是该 chunk 实际起始位置所在的页。
+    """
+    if not pages:
+        return []
+
+    doc_id = pages[0]["doc_id"]
+    doc_name = pages[0]["doc_name"]
+
+    # 拼接全文 + 记录每页在全文中的起始位置
+    full_text = ""
+    page_offsets: list[tuple[int, int]] = []
+    for p in pages:
+        page_offsets.append((len(full_text), p["page"]))
+        full_text += p["text"] + "\n\n"  # 页间加段落边界，触发优先切
+
+    raw_chunks = semantic_chunk(full_text, size, overlap)
+
+    out = []
+    cursor = 0
+    for i, ch in enumerate(raw_chunks):
+        if not ch.strip():
+            continue
+        # 找到这个 chunk 在全文中的起始位置
+        pos = full_text.find(ch[:64], cursor)  # 用前 64 字做锚点
+        if pos < 0:
+            pos = cursor
+        cursor = pos + len(ch)
+        page = _page_at_pos(page_offsets, pos)
+        out.append({
+            "chunk_id": f"{doc_id}-p{page}-sem{i}",
+            "doc_id": doc_id,
+            "doc_name": doc_name,
+            "page": page,
+            "text": ch,
+        })
+    return out
+
+
 # ---------- 章节感知切分 ----------
 
 SECTION_PATTERN = re.compile(
@@ -86,12 +215,6 @@ def _is_section_header(line: str) -> bool:
 
 
 def split_into_sections(pages: list[dict]):
-    """
-    把所有页文本拼成全文，按章节标题切。
-    返回：
-      sections: [{section_title, start_pos, start_page, text}]
-      page_offsets: [(char_pos, page_no), ...]
-    """
     full_text = ""
     page_offsets = []
     for p in pages:
@@ -139,7 +262,6 @@ def split_into_sections(pages: list[dict]):
 
 
 def _page_at_pos(page_offsets: list, pos: int) -> int:
-    """给定字符位置，返回所在页码。"""
     if not page_offsets:
         return 1
     page = page_offsets[0][1]
@@ -152,10 +274,6 @@ def _page_at_pos(page_offsets: list, pos: int) -> int:
 
 
 def chunk_doc_by_section(pages: list[dict], size: int = 1024, overlap: int = 200) -> list[dict]:
-    """
-    章节感知切分。
-    chunk 的 page 字段是「该 chunk 实际内容起始位置所在的页」（精确到 chunk）。
-    """
     if not pages:
         return []
 
@@ -176,7 +294,6 @@ def chunk_doc_by_section(pages: list[dict], size: int = 1024, overlap: int = 200
         for c_idx, ch in enumerate(fixed_chunk(text, size, overlap)):
             if not ch.strip():
                 continue
-            # chunk 在全文里的绝对起始位置
             chunk_start_in_full = sec_start + c_idx * step
             page = _page_at_pos(page_offsets, chunk_start_in_full)
 

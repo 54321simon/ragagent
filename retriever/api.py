@@ -2,28 +2,47 @@
 import os
 from typing import List
 from common.schemas import RetrievedChunk
-from retriever.chunker import chunk_pages
+from retriever.chunker import chunk_pages, chunk_pages_recursive, chunk_pages_semantic
 from retriever.store import add_chunks, query_chunks, delete_doc, list_docs, get_collection
+
+
+# ---------- 切分模式 ----------
+_CHUNK_MODE = os.getenv("CHUNK_MODE", "section").lower()
+
+
+def get_chunk_mode() -> str:
+    """返回当前切分模式，供 UI 显示。"""
+    return _CHUNK_MODE
+
 
 # ---------- 基础接口 ----------
 
 def ingest_pdf(path: str, chunk_size: int = 1024, overlap: int = 200,
                chunk_mode: str = None) -> int:
     """入库一篇文档（PDF / DOCX / TXT / MD），返回 chunk 数。
-    chunk_mode: 'page'（页内切分）/ 'section'（章节感知，默认）
+
+    chunk_mode:
+      - 'page'     : 页内固定大小切分
+      - 'section'  : 章节感知切分（默认）
+      - 'semantic' : 语义切分（句子边界 + 段落边界）
+      - 'recursive': 递归字符切分
     """
     from retriever.chunker import chunk_doc_by_section
     from retriever.loader import load_any
 
     if chunk_mode is None:
-        chunk_mode = os.getenv("CHUNK_MODE", "section").lower()
+        chunk_mode = os.getenv("CHUNK_MODE", _CHUNK_MODE).lower()
 
-    # load_any 自动识别 PDF / DOCX / TXT / MD
     pages = load_any(path)
 
     if chunk_mode == "page":
         chunks = chunk_pages(pages, chunk_size, overlap)
+    elif chunk_mode == "semantic":
+        chunks = chunk_pages_semantic(pages, chunk_size, overlap)
+    elif chunk_mode == "recursive":
+        chunks = chunk_pages_recursive(pages, chunk_size, overlap)
     else:
+        # 默认 section
         chunks = chunk_doc_by_section(pages, chunk_size, overlap)
 
     add_chunks(chunks)
@@ -53,7 +72,6 @@ _BM25_CACHE = None
 
 
 def _get_all_chunks() -> list[dict]:
-    """从 Chroma 拉全部 chunks（用于构建 BM25）。"""
     col = get_collection()
     data = col.get(include=["documents", "metadatas"])
     out = []
@@ -82,7 +100,6 @@ def retrieve_hybrid(query: str, topk: int = 5) -> List[RetrievedChunk]:
     bm25_results = bm25.search(query, topk=topk * 2)
     fused = rrf_fusion(vec_results, bm25_results, topk=topk)
 
-    # RRF 只用于内部排序；展示分用向量 cosine 分，保证跨档可比
     vec_score_map = {r["chunk_id"]: r["score"] for r in vec_results}
 
     return [RetrievedChunk(
@@ -100,10 +117,6 @@ from retriever.retrievers.reranker import rerank as _rerank
 
 
 def retrieve_hybrid_rerank(query: str, topk: int = 5) -> List[RetrievedChunk]:
-    """
-    三档检索最强版：向量 + BM25 → RRF → reranker。
-    展示分用 reranker 的 sigmoid 分（0~1），和 vector/hybrid 档可比。
-    """
     vec_results = query_chunks(query, topk=topk * 3)
     bm25 = _get_bm25()
     bm25_results = bm25.search(query, topk=topk * 3)
@@ -124,23 +137,15 @@ def retrieve_hybrid_rerank(query: str, topk: int = 5) -> List[RetrievedChunk]:
     ) for x in reranked]
 
 
-# ---------- 统一入口（按环境变量决定走哪档） ----------
-
-# vector（bge-m3 纯向量） / hybrid（+BM25+RRF，默认） / rerank（+bge-reranker）
+# ---------- 统一入口 ----------
 _RETRIEVAL_MODE = os.getenv("RETRIEVAL_MODE", "hybrid").lower()
 
 
 def get_retrieval_mode() -> str:
-    """返回当前检索模式，供 UI/日志显示。"""
     return _RETRIEVAL_MODE
 
 
 def retrieve_best(query: str, topk: int = 5) -> List[RetrievedChunk]:
-    """
-    统一检索入口。默认 hybrid（bge-m3 + BM25 + RRF）。
-    RETRIEVAL_MODE=vector  → 纯向量
-    RETRIEVAL_MODE=rerank  → 向量 + BM25 + RRF + reranker
-    """
     if _RETRIEVAL_MODE == "rerank":
         return retrieve_hybrid_rerank(query, topk)
     if _RETRIEVAL_MODE == "vector":
