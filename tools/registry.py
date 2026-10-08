@@ -21,13 +21,37 @@ def _normalize_doc_id(doc_id: str) -> str:
     return doc_id
 
 
+def _available_doc_ids() -> list[str]:
+    """返回当前知识库中所有 doc_id。"""
+    try:
+        return [d["doc_id"] for d in get_docs()]
+    except Exception:
+        return []
+
+
 # ============ 1. 知识库 RAG 检索 ============
 def rag_search(query: str, doc_ids: list = None) -> str:
     """在论文知识库中检索相关内容，返回带页码的片段。
     参数 query: 检索语句。问"方法"时请带上具体技术术语，如 'Transformer self-attention'。
-    参数 doc_ids: 可选。限定在这些文档内检索，如 ['sample', 'sample2']。
+    参数 doc_ids: 可选。限定在这些文档内检索，必须是 list_documents 返回的真实 doc_id。
                   None 或空列表 = 全部文档。
     适用场景：需要查找论文原文、事实性信息。当用户指定了一篇或多篇文档时，必须传 doc_ids。"""
+    # ===== doc_id 存在性检查（硬性兜底）=====
+    if doc_ids:
+        normalized = [_normalize_doc_id(d) for d in doc_ids]
+        available = _available_doc_ids()
+        available_set = set(available)
+        missing = [d for d in normalized if d not in available_set]
+        if missing:
+            return (
+                f"错误：doc_id {missing} 不存在于知识库中。\n"
+                f"知识库中实际的 doc_id 有：\n"
+                + "\n".join(f"  - {d}" for d in available)
+                + "\n\n请使用上述真实 doc_id 重新调用 rag_search。"
+                f"如果用户没有指定具体文档，请先调用 list_documents 查看。"
+            )
+        doc_ids = normalized   # 用规范化后的版本继续
+
     # 根据问题类型自动扩展 query
     expanded = query
 
@@ -52,7 +76,7 @@ def rag_search(query: str, doc_ids: list = None) -> str:
 
     # doc_ids 过滤：如果指定了文档列表，只保留这些文档的 chunk
     if doc_ids:
-        doc_id_set = {_normalize_doc_id(d) for d in doc_ids}
+        doc_id_set = set(doc_ids)
         filtered = [c for c in chunks if c.doc_id in doc_id_set]
         if not filtered:
             # 这些文档的 chunk 没进 top-5，扩大召回范围再过滤
@@ -86,7 +110,7 @@ _PAPER_META_CACHE = {}
 
 def paper_meta(doc_id: str) -> str:
     """提取论文的标题、作者、年份、摘要、DOI。
-    参数 doc_id: 文档ID，如 'sample'（不要带 .pdf 后缀）。
+    参数 doc_id: 文档ID，必须是 list_documents 返回的真实 doc_id（不要带 .pdf 后缀）。
     适用场景：只在用户明确问标题、作者、年份、DOI 时调用。"""
     doc_id = _normalize_doc_id(doc_id)
     if doc_id in _PAPER_META_CACHE:
@@ -98,15 +122,24 @@ def paper_meta(doc_id: str) -> str:
 
     from retriever.store import get_collection
     col = get_collection()
+    # 查前 3 页（论文的 Abstract 有时在第 2 页或第 3 页）
     data = col.get(
-        where={"$and": [{"doc_id": doc_id}, {"page": 1}]},
-        include=["documents"],
+        where={"$and": [
+            {"doc_id": doc_id},
+            {"page": {"$lte": 3}},
+        ]},
+        include=["documents", "metadatas"],
     )
 
     if not data["ids"]:
-        return f"文档 {doc_id} 没有第 1 页内容"
+        return f"文档 {doc_id} 没有前 3 页内容"
 
-    first_page_text = "\n".join(data["documents"])
+    # 按页码排序，确保第 1 页在最前
+    pairs = sorted(
+        zip(data["metadatas"], data["documents"]),
+        key=lambda x: x[0].get("page", 0),
+    )
+    first_page_text = "\n".join(doc for _, doc in pairs)
     lines = [l.strip() for l in first_page_text.split("\n") if l.strip()]
 
     title = "未知"
@@ -137,12 +170,26 @@ def paper_meta(doc_id: str) -> str:
 # ============ 3. 论文对比（支持多篇） ============
 def paper_compare(doc_ids: list) -> str:
     """对比多篇论文的方法、数据集、实验结果。
-    参数 doc_ids: 文档ID列表，如 ['sample', 'sample2']，至少 2 篇。
+    参数 doc_ids: 文档ID列表，如 ['论文A', '论文B']，至少 2 篇。
+                  必须是 list_documents 返回的真实 doc_id。
     适用场景：用户问 '论文A和B有什么不同'、'对比这几篇论文'。"""
     if not doc_ids or len(doc_ids) < 2:
-        return "对比需要至少 2 篇文档，请指定 doc_ids（如 ['sample', 'sample2']）"
+        return ("对比需要至少 2 篇文档。请先用 list_documents 查看知识库中的文档，"
+                "然后用真实 doc_id 调用（如 ['论文A', '论文B']）")
 
     normalized = [_normalize_doc_id(d) for d in doc_ids]
+
+    # doc_id 存在性检查
+    available = _available_doc_ids()
+    available_set = set(available)
+    missing = [d for d in normalized if d not in available_set]
+    if missing:
+        return (
+            f"错误：doc_id {missing} 不存在于知识库中。\n"
+            f"知识库中实际的 doc_id 有：\n"
+            + "\n".join(f"  - {d}" for d in available)
+            + "\n\n请使用上述真实 doc_id 重新调用 paper_compare。"
+        )
 
     results = []
     for doc_id in normalized:
@@ -168,7 +215,7 @@ def extract_keywords(text: str, topk: int = 5) -> str:
 # ============ 5. 摘要生成 ============
 def summarize_paper(doc_id: str) -> str:
     """针对特定论文生成结构化摘要：背景-方法-结果-结论。
-    参数 doc_id: 文档ID，如 'sample'（不要带 .pdf 后缀）。
+    参数 doc_id: 文档ID，必须是 list_documents 返回的真实 doc_id（不要带 .pdf 后缀）。
     适用场景：用户问 '这篇论文讲了什么'、'总结一下这篇论文'。"""
     doc_id = _normalize_doc_id(doc_id)
     docs = get_docs()
@@ -229,12 +276,15 @@ def calculator(expr: str) -> str:
 
 # ============ 8. 文档列表 ============
 def list_documents() -> str:
-    """列出知识库中所有已上传的文档。
-    适用场景：用户问 '有哪些论文'、'知识库里有什么'。"""
+    """列出知识库中所有已上传的文档，返回真实的 doc_id。
+    适用场景：用户问 '有哪些论文'、'知识库里有什么'，
+             或者用户提到'这两篇论文''这些论文'但未指明具体是哪几篇时，必须先调用此工具。"""
     docs = get_docs()
     if not docs:
         return "知识库为空，请先上传论文。"
-    return "已上传文档：\n" + "\n".join(f"- {d['doc_id']} ({d['doc_name']})" for d in docs)
+    return ("已上传文档（调用 rag_search / paper_compare / summarize_paper 时，"
+            "doc_id 必须严格用下面的值）：\n"
+            + "\n".join(f"- {d['doc_id']}" for d in docs))
 
 
 # ============ 工具注册表 ============

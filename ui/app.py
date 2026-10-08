@@ -17,7 +17,7 @@ from ui.components import (
     render_doc_list,
 )
 from retriever.api import ingest_pdf, get_docs, remove_doc, get_retrieval_mode
-from agent.react_loop import react_loop_stream
+from agent.react_loop import react_loop_stream, trim_history
 from tools.registry import get_all_tools
 
 
@@ -70,6 +70,23 @@ def _render_trace_html(events: list) -> str:
                 f'<b>🎯 动作</b>：<code>{ev["tool"]}</code><br>'
                 f'<span style="color:#475569;">输入：{args_str}</span></div>'
             )
+        elif kind == "actions":
+            items_html = "".join(
+                f'<div style="margin:4px 0;padding:6px 8px;'
+                f'background:#eef2ff;border-radius:4px;font-size:0.85em;">'
+                f'<b>🎯</b> <code>{it["tool"]}</code> '
+                f'<span style="color:#64748b;">'
+                f'{json.dumps(it.get("args", {}), ensure_ascii=False)}</span>'
+                f'</div>'
+                for it in ev.get("items", [])
+            )
+            parts.append(
+                f'<div style="margin:6px 0;padding:8px 10px;'
+                f'background:#eff6ff;border-left:3px solid #3b82f6;'
+                f'border-radius:4px;font-size:0.88em;">'
+                f'<b>⚡ 并行调用（{len(ev.get("items", []))} 个）</b>'
+                f'{items_html}</div>'
+            )
         elif kind == "observation":
             obs = (ev.get("content") or "")[:300]
             ms = ev.get("elapsed_ms", 0)
@@ -78,6 +95,19 @@ def _render_trace_html(events: list) -> str:
                 f'background:#f0fdf4;border-left:3px solid #22c55e;'
                 f'border-radius:4px;font-size:0.88em;">'
                 f'<b>👁 观察</b>（{ms:.0f}ms）<br>'
+                f'<span style="color:#475569;">{obs}</span></div>'
+            )
+        elif kind == "action_result":
+            obs = (ev.get("observation") or "")[:200]
+            ms = ev.get("elapsed_ms", 0)
+            ok = ev.get("ok", True)
+            color = "#22c55e" if ok else "#ef4444"
+            icon = "✓" if ok else "✗"
+            parts.append(
+                f'<div style="margin:4px 0;padding:6px 8px;'
+                f'background:#f8fafc;border-left:3px solid {color};'
+                f'border-radius:4px;font-size:0.85em;">'
+                f'<b>{icon} {ev["tool"]}</b> （{ms:.0f}ms）<br>'
                 f'<span style="color:#475569;">{obs}</span></div>'
             )
     return "".join(parts)
@@ -192,6 +222,7 @@ def _new_session(title: str = "新会话") -> dict:
         "created_at": time.time(),
         "messages": [],
         "history": [],
+        "history_summary": "",
         "trace": [],
         "metrics": {},
         "tool_stats": {},
@@ -539,6 +570,7 @@ with col_mid:
                 for event in react_loop_stream(
                     question,
                     history=cur["history"],
+                    history_summary=cur.get("history_summary", ""),
                     doc_ids=cur.get("selected_docs"),
                     session_id=st.session_state.current_session_id,
                 ):
@@ -566,6 +598,16 @@ with col_mid:
                                 unsafe_allow_html=True,
                             )
 
+                    elif etype == "actions":
+                        live_trace.append({
+                            "kind": "actions", "items": event["items"],
+                        })
+                        if trace_ph is not None:
+                            trace_ph.markdown(
+                                _render_trace_html(live_trace),
+                                unsafe_allow_html=True,
+                            )
+
                     elif etype == "observation":
                         live_trace.append({
                             "kind": "observation",
@@ -577,6 +619,24 @@ with col_mid:
                                 _render_trace_html(live_trace),
                                 unsafe_allow_html=True,
                             )
+
+                    elif etype == "action_result":
+                        live_trace.append({
+                            "kind": "action_result",
+                            "tool": event["tool"],
+                            "observation": event["observation"],
+                            "elapsed_ms": event.get("elapsed_ms", 0),
+                            "ok": event.get("ok", True),
+                        })
+                        if trace_ph is not None:
+                            trace_ph.markdown(
+                                _render_trace_html(live_trace),
+                                unsafe_allow_html=True,
+                            )
+
+                    elif etype == "observations":
+                        # 全部并行完成，无需额外操作（前面已逐个刷过）
+                        pass
 
                     elif etype == "final_chunk":
                         full_text += event["content"]
@@ -646,8 +706,16 @@ with col_mid:
         cur["history"].extend(
             done_payload.get("history_append", []) if done_payload else []
         )
-        if len(cur["history"]) > 20:
-            cur["history"] = cur["history"][-20:]
+        try:
+            new_hist, new_summary = trim_history(
+                cur["history"],
+                existing_summary=cur.get("history_summary", ""),
+            )
+            cur["history"] = new_hist
+            cur["history_summary"] = new_summary
+        except Exception:
+            if len(cur["history"]) > 20:
+                cur["history"] = cur["history"][-20:]
 
         if cur["title"] == question[:30] or cur["title"] == "新会话":
             cur["title"] = question[:30]
