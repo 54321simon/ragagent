@@ -6,7 +6,7 @@ from retriever.chunker import chunk_pages, chunk_pages_recursive, chunk_pages_se
 from retriever.store import add_chunks, query_chunks, delete_doc, list_docs, get_collection
 
 
-# ---------- 切分模式 ----------
+# ---------- 切分模式（默认 section，语义切分为可选） ----------
 _CHUNK_MODE = os.getenv("CHUNK_MODE", "section").lower()
 
 
@@ -22,8 +22,8 @@ def ingest_pdf(path: str, chunk_size: int = 1024, overlap: int = 200,
     """入库一篇文档（PDF / DOCX / TXT / MD），返回 chunk 数。
 
     chunk_mode:
-      - 'page'     : 页内固定大小切分
       - 'section'  : 章节感知切分（默认）
+      - 'page'     : 页内固定大小切分
       - 'semantic' : 语义切分（句子边界 + 段落边界）
       - 'recursive': 递归字符切分
     """
