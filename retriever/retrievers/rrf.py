@@ -1,4 +1,5 @@
 """RRF 倒数排名融合。手写实现，不调库。"""
+
 from typing import List
 
 
@@ -7,6 +8,8 @@ def rrf_fusion(
     results_b: List[dict],
     k: int = 60,
     topk: int = 5,
+    weight_a: float = 1.0,
+    weight_b: float = 1.0,
 ) -> List[dict]:
     """
     融合两路检索结果。
@@ -18,12 +21,12 @@ def rrf_fusion(
 
     for rank, item in enumerate(results_a):
         cid = item["chunk_id"]
-        scores[cid] = scores.get(cid, 0.0) + 1.0 / (k + rank + 1)
+        scores[cid] = scores.get(cid, 0.0) + weight_a / (k + rank + 1)
         meta[cid] = item
 
     for rank, item in enumerate(results_b):
         cid = item["chunk_id"]
-        scores[cid] = scores.get(cid, 0.0) + 1.0 / (k + rank + 1)
+        scores[cid] = scores.get(cid, 0.0) + weight_b / (k + rank + 1)
         meta[cid] = item
 
     sorted_ids = sorted(scores.keys(), key=lambda x: -scores[x])[:topk]

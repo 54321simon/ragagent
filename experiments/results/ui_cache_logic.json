@@ -1,0 +1,26 @@
+{
+  "first": {
+    "total_tokens": 0,
+    "iterations": 1,
+    "elapsed_ms": 92,
+    "cache_hit": false,
+    "cache_similarity": null,
+    "invalid_citations": 0,
+    "missing_citations": false,
+    "model": "qwen2.5:3b",
+    "token_source": "ollama_api",
+    "rag_evidence_hits": 0
+  },
+  "repeated": {
+    "total_tokens": 0,
+    "iterations": 0,
+    "elapsed_ms": 1,
+    "cache_hit": true,
+    "cache_similarity": 1.0,
+    "invalid_citations": 0,
+    "missing_citations": false,
+    "model": "qwen2.5:3b",
+    "token_source": "ollama_api",
+    "rag_evidence_hits": 0
+  }
+}

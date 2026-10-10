@@ -1,0 +1,767 @@
+[
+  {
+    "summary": {
+      "model": "bge-m3:567m",
+      "dimensions": 1024,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 122,
+      "elapsed_s": 0.10803990019485354,
+      "hit@5": 0.75,
+      "mrr@5": 0.65625,
+      "recall@5": 0.75
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            3
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            1
+          ],
+          [
+            "Transformer",
+            8
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            2
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            12
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            1
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.25,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            5
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            7
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "summary": {
+      "model": "m3e-base",
+      "dimensions": 768,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 122,
+      "elapsed_s": 58.12540279980749,
+      "hit@5": 0.5,
+      "mrr@5": 0.3333333333333333,
+      "recall@5": 0.5
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            5
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.3333333333333333,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            1
+          ],
+          [
+            "Transformer",
+            8
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            1
+          ],
+          [
+            "Transformer",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            11
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            5
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            12
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            5
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.3333333333333333,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            5
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "summary": {
+      "model": "bge-large-zh-v1.5",
+      "dimensions": 1024,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 122,
+      "elapsed_s": 166.3606762001291,
+      "hit@5": 0.75,
+      "mrr@5": 0.4479166666666667,
+      "recall@5": 0.75
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            10
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            8
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.5,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            10
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.25,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            3
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            6
+          ],
+          [
+            "MAE",
+            12
+          ],
+          [
+            "MAE",
+            7
+          ],
+          [
+            "MAE",
+            12
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.5,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            1
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.3333333333333333,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            6
+          ]
+        ]
+      }
+    ]
+  }
+]

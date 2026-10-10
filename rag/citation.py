@@ -1,4 +1,5 @@
 """引用处理。从答案中提取引用，校验是否来自检索片段。"""
+
 import re
 from typing import List
 from common.schemas import RetrievedChunk
@@ -7,7 +8,9 @@ from common.schemas import RetrievedChunk
 CITE_PATTERN = re.compile(r"【([^】]+?)-第(\d+)页】")
 
 
-def extract_citations(answer: str, chunks: List[RetrievedChunk]) -> List[RetrievedChunk]:
+def extract_citations(
+    answer: str, chunks: List[RetrievedChunk]
+) -> List[RetrievedChunk]:
     """
     从答案中提取引用，返回去重后的 RetrievedChunk 列表。
     只保留答案中实际出现的引用。
@@ -37,10 +40,14 @@ def validate_citations(answer: str, chunks: List[RetrievedChunk]) -> dict:
     cited = extract_citations(answer, chunks)
     cited_keys = {(c.doc_name, c.page) for c in cited}
     all_keys = {(c.doc_name, c.page) for c in chunks}
+    raw_keys = {(m.group(1), int(m.group(2))) for m in CITE_PATTERN.finditer(answer)}
 
     return {
-        "cited": cited,
-        "hallucinated": list(cited_keys - all_keys),   # 幻觉引用
-        "unused": list(all_keys - cited_keys),         # 未使用片段
+        "cited": [
+            {"doc_name": c.doc_name, "page": c.page, "chunk_id": c.chunk_id}
+            for c in cited
+        ],
+        "hallucinated": list(raw_keys - all_keys),
+        "unused": list(all_keys - cited_keys),  # 未使用片段
         "citation_count": len(cited_keys),
     }

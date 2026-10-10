@@ -1,0 +1,1278 @@
+{
+  "summary": {
+    "n": 24,
+    "success_rate": 1,
+    "tool_routing_accuracy": 0.9166666666666666,
+    "avg_iterations": 1.0416666666666667,
+    "avg_latency_ms": 39932.75,
+    "avg_tokens": 1203.0833333333333,
+    "invalid_citations": 0,
+    "definition": "Routing correct: at least one required tool invoked; completion success is transport/execution, not answer correctness.",
+    "manual_quality_review": "pending independent human scoring"
+  },
+  "rows": [
+    {
+      "id": "F01",
+      "type": "事实性",
+      "question": "Transformer 的 scaled dot-product attention 为什么除以 sqrt(d_k)？",
+      "reference_answer": "缩放点积避免高维点积过大导致 softmax 梯度变小。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "Transformer 的 scaled dot-product attention 除以 √d_k 的原因是确保计算出的权重值在数值上保持在合理范围内，避免在 softmax 函数应用前导致数值溢出或过小，影响最终的注意力机制效果。\n\n具体来说，文档中提到，如果 q 和 k 的各个分量是独立的随机变量，且均值为 0，方差为 1，那么它们的点积 q·k 的均值为 0，方差为 d_k。在实际应用中，为了使注意力机制的计算更加稳定和有效，引入了对点积结果进行缩放的操作，即除以 √d_k。这样做的目的是使得点积结果的方差保持在 1 的水平，从而在应用 softmax 函数时，得到的注意力权重值分布更加均匀，避免了数值过大或过小的情况，保证了 softmax 函数的有效性，同时也保持了计算的效率。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 857,
+        "iterations": 1,
+        "elapsed_ms": 17286,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "Transformer 的 scaled dot-product attention 为什么除以 sqrt(d_k)？",
+            "doc_ids": [
+              "Transformer"
+            ]
+          },
+          "observation": "【Transformer.pdf-第4页】 score=0.6458\n3.2.1\nScaled Dot-Product Attention\nWe call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of\nqueries and keys of dimension dk, and values of dimension dv. We compute the dot products of the\nquery with all keys, divide each by √dk, and apply a softmax function to obtain the weights on the\nvalues.\nIn practice, we compute the attention function on a set of queries simultaneously, packed together\ninto a matrix Q. The keys and values are also packed together into matrices K and V . We compute\nthe matrix of outputs as:\nAttention(Q, K, V ) = softmax(QKT\n√dk\n)V\n(1)\nThe two most commonly used attention functions\n\n【Transformer.pdf-第4页】 score=0.6074\n3.2.2\nMulti-Head Attention\nInstead of performing a single attention function with dmodel-dimensional keys, values and queries,\nwe found it beneficial to linearly project the queries, keys and values h times with different, learned\nlinear projections to dk, dk and dv dimensions, respectively. On each of these projected versions of\nqueries, keys and values we then perform the attention function in parallel, yielding dv-dimensional\n4To illustrate why the dot products get large, assume that the components of q and k are independent random\nvariables with mean 0 and variance 1. Then their dot product, q · k = Pdk\ni=1 qiki, has mean 0 and variance d\n\n【Transformer.pdf-第4页】 score=0.6075\nttention computes the compatibility function using a feed-forward network with\na single hidden layer. While the two are similar in theoretical complexity, dot-product attention is\nmuch faster and more space-efficient in practice, since it can be implemented using highly optimized\nmatrix multiplication code.\nWhile for small values of dk the two mechanisms perform similarly, additive attention outperforms\ndot product attention without scaling for larger values of dk [3]. We suspect that for large values of\ndk, the dot products grow large in magnitude, pushing the softmax function into regions where it has\nextremely small gradients 4. To counter\n\n【Transformer.pdf-第3页】 score=0.5705\n3\nScaled Dot-Product Attention\nMulti-Head Attention\nFigure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several\nattention layers running in parallel.\nof the values, where the weight assigned to each value is computed by a compatibility function of the\nquery with the corresponding key.\n\n\n【Transformer.pdf-第5页】 score=0.5543\n each position in the decoder to attend to\nall positions in the decoder up to and including that position. We need to prevent leftward\ninformation flow in the decoder to preserve the auto-regressive property. We implement this\ninside of scaled dot-product attention by masking out (setting to −∞) all values in the input\nof the softmax which correspond to illegal connections. See Figure 2.\n",
+          "elapsed_ms": 573.0928000994027
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "Transformer 的 scaled dot-product attention 除以 √d_k 的原因是确保计算出的权重值在数值上保持在合理范围内，避免在 softmax 函数应用前导致数值溢出或过小，影响最终的注意力机制效果。\n\n具体来说，文档中提到，如果 q 和 k 的各个分量是独立的随机变量，且均值为 0，方差为 1，那么它们的点积 q·k 的均值为 0，方差为 d_k。在实际应用中，为了使注意力机制的计算更加稳定和有效，引入了对点积结果进行缩放的操作，即除以 √d_k。这样做的目的是使得点积结果的方差保持在 1 的水平，从而在应用 softmax 函数时，得到的注意力权重值分布更加均匀，避免了数值过大或过小的情况，保证了 softmax 函数的有效性，同时也保持了计算的效率。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "F07",
+      "type": "事实性",
+      "question": "DeiT 的 distillation token 如何接收教师监督？",
+      "reference_answer": "蒸馏 token 通过注意力参与网络，并由教师预测监督。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "DeiT 的 distillation token 接收教师监督的方式是通过与教师模型的预测 yt 相关联。教师预测 yt 在这里扮演了与真实标签 y 相同的角色。此外，论文中提到，教师的硬标签可以通过使用平滑标签 [47] 转换为软标签。在这种情况下，真实标签被假定为具有 1−ε 的概率，而剩余的 ε 则被均匀分配到其他类别上。在所有使用真实标签的实验中，我们固定这个参数为 ε = 0.1。\n\n具体来说，distillation token 通过与 class token 和 patch tokens 通过自注意力层进行交互。distillation token 的目标目标由损失函数中的 distillation 部分给出。通过这种方式，distillation token 能够从教师模型的输出中学习，类似于传统的 distillation 方法，同时保持与卷积网络的互补性。\n\n论文还指出，distillation token 在初始训练阶段具有明显的优势，与卷积网络的匹配程度更高。尽管我们无法正式回答是否继承了现有的归纳偏差，但通过表 4 的分析，我们的 distillation 模型与卷积网络的关联性比与 transformer 更高。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 917,
+        "iterations": 1,
+        "elapsed_ms": 20597,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "DeiT 的 distillation token 如何接收教师监督？",
+            "doc_ids": [
+              "DeiT"
+            ]
+          },
+          "observation": "【DeiT.pdf-第6页】 score=0.6322\nhe teacher prediction yt plays the same role as the true label y.\nNote also that the hard labels can also be converted into soft labels with\nlabel smoothing [47], where the true label is considered to have a probability\nof 1 −ε, and the remaining ε is shared across the remaining classes. We ﬁx this\nparameter to ε = 0.1 in our all experiments that use true labels.\nself-attention\nFFN\nclass\ntoken\ndistillation\ntoken\npatch\ntokens\nFigure 2: Our distillation procedure: we simply include a new distillation token.\nIt interacts with the class and patch tokens through the self-attention layers.\nThis distillation token is employed in a similar fashion as\n\n【DeiT.pdf-第7页】 score=0.6184\nstillation\ntokens input to the transformers are learned by back-propagation.\nDistillation token.\nWe now focus on our proposal, which is illustrated in\nFigure 2. We add a new token, the distillation token, to the initial embeddings\n(patches and class token). Our distillation token is used similarly as the class\ntoken: it interacts with other embeddings through self-attention, and is output\nby the network after the last layer. Its target objective is given by the distillation\ncomponent of the loss. The distillation embedding allows our model to learn\nfrom the output of the teacher, as in a regular distillation, while remaining\ncomplementary to \n\n【DeiT.pdf-第10页】 score=0.6487\nconvnets. We give more details and an analysis in the next paragraph. The\ndistillation token has an undeniable advantage for the initial training.\nAgreement with the teacher & inductive bias?\nAs discussed above, the ar-\nchitecture of the teacher has an important impact. Does it inherit existing in-\nductive bias that would facilitate the training? While we believe it difﬁcult to\nformally answer this question, we analyze in Table 4 the decision agreement\nbetween the convnet teacher, our image transformer DeiT learned from labels\nonly, and our transformer DeiT⚗.\nOur distilled model is more correlated to the convnet than with a trans-\nformer lear\n\n【DeiT.pdf-第7页】 score=0.6126\ne\ntokens equal to 0.06. As the class and distillation embeddings are computed\nat each layer, they gradually become more similar through the network, all the\nway through the last layer at which their similarity is high (cos=0.93), but still\nlower than 1. This is expected since as they aim at producing targets that are\nsimilar but not identical.\n7\nWe veriﬁed that our distillation token adds something to the model, com-\npared to simply adding an additional class token associated with the same tar-\nget label: instead of a teacher pseudo-label, we experimented with a trans-\nformer with two class tokens. Even if we initialize them randomly and inde\n\n【DeiT.pdf-第9页】 score=0.5973\n9\nTable 3: Distillation experiments on Imagenet with DeiT, 300 epochs of pre-\ntraining. We report the results for our new distillation method in the last three\nrows. We separately report the performance when classifying with only one of\nthe class or distillation embeddings, and then with a classiﬁer taking both of\nthem as input. In the last row (class+distillation), the result correspond to the\nlate fusion of the class and distillation classiﬁers.\nSupervision\nImageNet top-1 (%)\nmethod ↓\nlabel\nteacher\nTi 224\nS 224\nB 224\nB↑384\nDeiT– no distillation\nDeiT– usual distillation\nsoft\n83.2\nDeiT– hard distillation\n74.3\n80.9\n84.0\nDeiT⚗: class embedding\n",
+          "elapsed_ms": 148.1216000393033
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "DeiT 的 distillation token 接收教师监督的方式是通过与教师模型的预测 yt 相关联。教师预测 yt 在这里扮演了与真实标签 y 相同的角色。此外，论文中提到，教师的硬标签可以通过使用平滑标签 [47] 转换为软标签。在这种情况下，真实标签被假定为具有 1−ε 的概率，而剩余的 ε 则被均匀分配到其他类别上。在所有使用真实标签的实验中，我们固定这个参数为 ε = 0.1。\n\n具体来说，distillation token 通过与 class token 和 patch tokens 通过自注意力层进行交互。distillation token 的目标目标由损失函数中的 distillation 部分给出。通过这种方式，distillation token 能够从教师模型的输出中学习，类似于传统的 distillation 方法，同时保持与卷积网络的互补性。\n\n论文还指出，distillation token 在初始训练阶段具有明显的优势，与卷积网络的匹配程度更高。尽管我们无法正式回答是否继承了现有的归纳偏差，但通过表 4 的分析，我们的 distillation ",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "F10",
+      "type": "事实性",
+      "question": "Swin shifted windows 如何实现跨窗口信息交互？",
+      "reference_answer": "相邻层交替使用常规窗口与移位窗口，使原本分离的窗口能够建立连接。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "Swin Transformer 实现跨窗口信息交互的关键在于其“Shifted windows”的机制。具体来说，Swin Transformer 使用了层次化的Transformer结构，其表示计算使用了Shifted窗口的方法。这种Shifted窗口的方法通过在连续的自注意力层之间移动窗口分区，使得新窗口的自注意力计算能够跨越先前窗口的边界，从而实现相邻窗口之间的信息连接。这种机制不仅提高了效率，还显著增强了建模能力。\n\n在Swin Transformer的架构中，如图2所示，第一层（左侧）采用常规的窗口划分方式，计算每个窗口内的自注意力。在第二层（右侧），窗口划分被移动，产生了新的窗口。新窗口的自注意力计算跨越了前一层窗口的边界，从而实现了相邻窗口之间的信息连接。\n\n这种Shifted窗口的方法相比滑动窗口方法具有更低的延迟，同时在实际硬件上的访问效率也更高。所有窗口内的查询片段共享相同的键集，这有助于硬件中的内存访问。相比之下，早期基于滑动窗口的自注意力方法由于不同阶段的键集不同，导致在通用硬件上的低延迟。\n\n总的来说，Swin Transformer通过其窗口在连续自注意力层之间的移动，实现了跨窗口的信息交互，提高了模型的效率和建模能力。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 934,
+        "iterations": 1,
+        "elapsed_ms": 21994,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "Swin shifted windows 如何实现跨窗口信息交互？",
+            "doc_ids": [
+              "Swin"
+            ]
+          },
+          "observation": "【Swin.pdf-第1页】 score=0.6717\nAbstract\nThis paper presents a new vision Transformer, called\nSwin Transformer, that capably serves as a general-purpose\nbackbone for computer vision.\nChallenges in adapting\nTransformer from language to vision arise from differences\nbetween the two domains, such as large variations in the\nscale of visual entities and the high resolution of pixels\nin images compared to words in text.\nTo address these\ndifferences, we propose a hierarchical Transformer whose\nrepresentation is computed with Shifted windows.\nThe\nshifted windowing scheme brings greater efﬁciency by lim-\niting self-attention computation to non-overlapping local\nwindows while also al\n\n【Swin.pdf-第2页】 score=0.6438\n sliding-window\nbased convolution layer on general hardware, thanks to its shared kernel\nFigure 2. An illustration of the shifted window approach for com-\nputing self-attention in the proposed Swin Transformer architec-\nture. In layer l (left), a regular window partitioning scheme is\nadopted, and self-attention is computed within each window. In\nthe next layer l + 1 (right), the window partitioning is shifted, re-\nsulting in new windows. The self-attention computation in the new\nwindows crosses the boundaries of the previous windows in layer\nl, providing connections among them.\nshifted window approach has much lower latency than the\nsliding w\n\n【Swin.pdf-第2页】 score=0.6666\nc complexity.\nA key design element of Swin Transformer is its shift\nof the window partition between consecutive self-attention\nlayers, as illustrated in Figure 2.\nThe shifted windows\nbridge the windows of the preceding layer, providing con-\nnections among them that signiﬁcantly enhance modeling\npower (see Table 4). This strategy is also efﬁcient in re-\ngards to real-world latency: all query patches within a win-\ndow share the same key set1, which facilitates memory ac-\ncess in hardware. In contrast, earlier sliding window based\nself-attention approaches [33, 50] suffer from low latency\non general hardware due to different key sets for differe\n\n【Swin.pdf-第8页】 score=0.6304\nr deeper stages. Overall, it brings a 13%, 18% and 18%\nspeed-up on Swin-T, Swin-S and Swin-B, respectively.\nThe self-attention modules built on the proposed\nshifted window approach are 40.8×/2.5×, 20.2×/2.5×,\n9.3×/2.1×, and 7.6×/1.8× more efﬁcient than those of slid-\ning windows in naive/kernel implementations on four net-\nwork stages, respectively. Overall, the Swin Transformer\narchitectures built on shifted windows are 4.1/1.5, 4.0/1.5,\n3.6/1.5 times faster than variants built on sliding windows\nfor Swin-T, Swin-S, and Swin-B, respectively. Table 6 com-\npares their accuracy on the three tasks, showing that they are\nsimilarly accurate in vis\n\n【Swin.pdf-第4页】 score=0.6392\n6\nPatch Partition\nFigure 3. (a) The architecture of a Swin Transformer (Swin-T); (b) two successive Swin Transformer Blocks (notation presented with\nEq. (3)). W-MSA and SW-MSA are multi-head self attention modules with regular and shifted windowing conﬁgurations, respectively.\nwith the same feature map resolutions as those of typical\nconvolutional networks, e.g., VGG [52] and ResNet [30].\nAs a result, the proposed architecture can conveniently re-\nplace the backbone networks in existing methods for vari-\nous vision tasks.\nSwin Transformer block\nSwin Transformer is built by\nreplacing the standard multi-head self attention (MSA)\nmodule in a Tra",
+          "elapsed_ms": 143.5580998659134
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "Swin Transformer 实现跨窗口信息交互的关键在于其“Shifted windows”的机制。具体来说，Swin Transformer 使用了层次化的Transformer结构，其表示计算使用了Shifted窗口的方法。这种Shifted窗口的方法通过在连续的自注意力层之间移动窗口分区，使得新窗口的自注意力计算能够跨越先前窗口的边界，从而实现相邻窗口之间的信息连接。这种机制不仅提高了效率，还显著增强了建模能力。\n\n在Swin Transformer的架构中，如图2所示，第一层（左侧）采用常规的窗口划分方式，计算每个窗口内的自注意力。在第二层（右侧），窗口划分被移动，产生了新的窗口。新窗口的自注意力计算跨越了前一层窗口的边界，从而实现了相邻窗口之间的信息连接。\n\n这种Shifted窗口的方法相比滑动窗口方法具有更低的延迟，同时在实际硬件上的访问效率也更高。所有窗口内的查询片段共享相同的键集，这有助于硬件中的内存访问。相比之下，早期基于滑动窗口的自注意力方法由于不同阶段的键集不同，导致在通用硬件上的低延迟。\n\n总的来说，Swin Transformer通过其窗口在连续自注意力",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "F22",
+      "type": "事实性",
+      "question": "MAE 的 asymmetric encoder-decoder 如何工作？",
+      "reference_answer": "编码器仅处理可见 patch，轻量解码器结合 latent 与 mask token 重建像素。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "MAE 的 asymmetric encoder-decoder 架构工作方式如下：\n\n首先，MAE 使用一个不对称的编码器-解码器架构。编码器仅处理输入图像中可见的随机补丁（不使用掩码标记），而解码器则轻量级地从潜在表示和掩码标记中重建原始图像。这种设计使得编码器仅处理可见部分，而解码器负责重建整个图像。\n\n其次，MAE 的解码器仅在预训练阶段用于执行图像重建任务。在预训练阶段，编码器用于生成图像表示以进行识别。因此，解码器的架构可以灵活设计，与编码器的设计无关。例如，我们的默认解码器的每token计算量不到编码器的一半。\n\n通过这种不对称的设计，所有token仅由轻量级解码器处理，这显著减少了预训练的时间。 \n\n最后，MAE 的重建目标是通过将输入重建为原始信号。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 867,
+        "iterations": 1,
+        "elapsed_ms": 18248,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "MAE 的 asymmetric encoder-decoder 如何工作？",
+            "doc_ids": [
+              "MAE"
+            ]
+          },
+          "observation": "【MAE.pdf-第1页】 score=0.6569\nAbstract\nThis paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core designs.\nFirst, we develop an asymmetric\nencoder-decoder architecture, with an encoder that oper-\nates only on the visible subset of patches (without mask to-\nkens), along with a lightweight decoder that reconstructs\nthe original image from the latent representation and mask\ntokens. Second, we ﬁnd that masking a high proportion\nof the input image, e.g., 75%, yields a nontrivial and\nmeaningful self-sup\n\n【MAE.pdf-第4页】 score=0.6469\nMAE decoder is only used during pre-training to\nperform the image reconstruction task (only the encoder\nis used to produce image representations for recognition).\nTherefore, the decoder architecture can be ﬂexibly designed\nin a manner that is independent of the encoder design. We\nexperiment with very small decoders, narrower and shal-\nlower than the encoder. For example, our default decoder\nhas <10% computation per token vs. the encoder. With this\nasymmetrical design, the full set of tokens are only pro-\ncessed by the lightweight decoder, which signiﬁcantly re-\nduces pre-training time.\nReconstruction target. Our MAE reconstructs the input\nby \n\n【MAE.pdf-第3页】 score=0.6400\n3. Approach\nOur masked autoencoder (MAE) is a simple autoencod-\ning approach that reconstructs the original signal given its\npartial observation.\nLike all autoencoders, our approach\nhas an encoder that maps the observed signal to a latent\nrepresentation, and a decoder that reconstructs the origi-\nnal signal from the latent representation. Unlike classical\nautoencoders, we adopt an asymmetric design that allows\nthe encoder to operate only on the partial, observed signal\n(without mask tokens) and a lightweight decoder that re-\nconstructs the full signal from the latent representation and\nmask tokens. Figure 1 illustrates the idea, introduced ne\n\n【MAE.pdf-第2页】 score=0.6183\nnput, plays a different role be-\ntween reconstructing text and images. In vision, the decoder\nreconstructs pixels, hence its output is of a lower semantic\nlevel than common recognition tasks. This is in contrast\nto language, where the decoder predicts missing words that\ncontain rich semantic information. While in BERT the de-\ncoder can be trivial (an MLP) [14], we found that for im-\nages, the decoder design plays a key role in determining the\nsemantic level of the learned latent representations.\nDriven by this analysis, we present a simple, effective,\nand scalable form of a masked autoencoder (MAE) for\nvisual representation learning. Our MAE \n\n【MAE.pdf-第5页】 score=0.6334\nMAE decoder is lightweight. It has\n8 blocks and a width of 512-d ( gray in Table 1). It only\nhas 9% FLOPs per token vs. ViT-L (24 blocks, 1024-d).\nAs such, while the decoder processes all tokens, it is still a\nsmall fraction of the overall compute.\nencoder\ndec. depth\nft acc\nhours\nspeedup\nViT-L, w/ [M]\n42.4\n15.4\n2.8×\n11.6\n3.7×\nViT-H, w/ [M]\n119.6†\n85.8\n34.5\n3.5×\n29.3\n4.1×\nTable 2.\nWall-clock time of our MAE training (800 epochs),\nbenchmarked in 128 TPU-v3 cores with TensorFlow. The speedup\nis relative to the entry whose encoder has mask tokens (gray). The\ndecoder width is 512, and the mask ratio is 75%. †: This entry is\nestimated by training t",
+          "elapsed_ms": 152.75909984484315
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "MAE 的 asymmetric encoder-decoder 架构工作方式如下：\n\n首先，MAE 使用一个不对称的编码器-解码器架构。编码器仅处理输入图像中可见的随机补丁（不使用掩码标记），而解码器则轻量级地从潜在表示和掩码标记中重建原始图像。这种设计使得编码器仅处理可见部分，而解码器负责重建整个图像。\n\n其次，MAE 的解码器仅在预训练阶段用于执行图像重建任务。在预训练阶段，编码器用于生成图像表示以进行识别。因此，解码器的架构可以灵活设计，与编码器的设计无关。例如，我们的默认解码器的每token计算量不到编码器的一半。\n\n通过这种不对称的设计，所有token仅由轻量级解码器处理，这显著减少了预训练的时间。 \n\n最后，MAE 的重建目标是通过将输入重建为原始信号。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "C01",
+      "type": "对比性",
+      "question": "ViT 与 DeiT 在训练数据需求和蒸馏机制上有什么区别？",
+      "reference_answer": "ViT 研究大规模预训练，DeiT 强调仅用 ImageNet 训练并用蒸馏 token 接收教师监督。",
+      "expected_tools": [
+        "paper_compare"
+      ],
+      "chosen_tools": [
+        "paper_compare"
+      ],
+      "routing_correct": true,
+      "answer": "ViT（Vision Transformer）和DeiT（Data-efficient Image Transformer）在训练数据需求和蒸馏机制上有一些区别。\n\n在训练数据需求方面，ViT模型在预训练时表现良好，尤其是在使用大型JFT-300M数据集进行预训练时。尽管ViT模型在预训练时需要的计算资源比先前的最先进的方法少，但其预训练效率可能受到架构选择以及其他参数（如训练计划、优化器、权重衰减等）的影响。论文中提到，作者在第4.3节中进行了不同架构的性能与计算资源的控制研究。\n\n相比之下，DeiT在数据需求方面可能更高效。DeiT是一个数据效率更高的图像变换器，它在预训练时使用了更少的数据，同时仍然能够达到相当好的性能。DeiT在论文中没有详细讨论其数据需求，但其数据效率的特性表明它可能在数据需求上比ViT更少。\n\n在蒸馏机制方面，ViT模型在论文中没有详细讨论其蒸馏机制。然而，ViT模型在论文中提到，它使用了一个额外的[class] token，这个token被用作图像表示，并通过一个小型多层感知器（MLP）进行变换，以生成类预测。这种设计是从文本Transformer模型中继承来的，并在整个主要论文中被使用。\n\nDeiT模型在论文中没有详细讨论其蒸馏机制。但根据论文的其他部分，DeiT可能使用了蒸馏机制来从一个较大的预训练模型中提取知识，以适应较小的数据集。这有助于在较少的数据下保持良好的性能。\n\n总结来说，ViT在训练数据需求方面可能需要更多的数据，而DeiT可能在数据需求上更高效。在蒸馏机制方面，ViT和DeiT的具体机制没有在论文中详细讨论，但可以推测它们可能使用了不同的方法来从较大的预训练模型中提取知识。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 1104,
+        "iterations": 1,
+        "elapsed_ms": 46147,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "paper_compare",
+          "action_input": {
+            "doc_ids": [
+              "ViT",
+              "DeiT"
+            ]
+          },
+          "observation": "论文 ViT\n【ViT.pdf-第6页】 88\nStructured (8 tasks)\nBiT-L (R152x4)\nVIVI-Ex-100% (R50x3)\nS4L (R50x1)\nFigure 2: Breakdown of VTAB performance in Natural, Specialized, and Structured task groups.\nmodel still took substantially less compute to pre-train than prior state of the art. However, we note\nthat pre-training efﬁciency may be affected not only by the architecture choice, but also other pa-\nrameters, such as training schedule, optimizer, weight decay, etc. We provide a controlled study of\nperformance vs. compute for different architectures in Section 4.4. Finally, the ViT-L/16 model\npre-trained on the public ImageNet-2\n\n【ViT.pdf-第6页】 4.3\nPRE-TRAINING DATA REQUIREMENTS\nThe Vision Transformer performs well when pre-trained on a large JFT-300M dataset. With fewer\ninductive biases for vision than ResNets, how crucial is the dataset size? We perform two series of\nexperiments.\nFirst, we pre-train ViT models on datasets of increasing size: ImageNet, ImageNet-21k, and JFT-\n300M. To boost the performance on the smaller datasets, we optimize three basic regularization\nparameters – weight decay, dropout, and label smoothing. Figure 3 shows the results after ﬁne-\ntuning to ImageNet (results on other datasets are shown in Table 5)2. Wh\n\n【ViT.pdf-第16页】  results in robust improvements.\nD.3\nHEAD TYPE AND CLASS TOKEN\nIn order to stay as close as possible to the original Transformer model, we made use of an additional\n[class] token, which is taken as image representation. The output of this token is then trans-\nformed into a class prediction via a small multi-layer perceptron (MLP) with tanh as non-linearity\nin the single hidden layer.\nThis design is inherited from the Transformer model for text, and we use it throughout the main\npaper. An initial attempt at using only image-patch embeddings, globally average-pooling (GAP)\nthem, followed by a li\n\n【ViT.pdf-第14页】 s shown\nbest few-shot performance. We also experimented with 15% corruption rate as used by Devlin et al.\n(2019) but results were also slightly worse on our few-shot metrics.\nLastly, we would like to remark that our instantiation of masked patch prediction doesn’t require\nsuch an enormous amount of pretraining nor a large dataset such as JFT in order to lead to sim-\nilar performance gains on ImageNet classiﬁcation. That is, we observed diminishing returns on\ndownstream performance after 100k pretraining steps, and see similar gains when pretraining on\nImageNet.\nC\nADDITIONAL RESULTS\nWe report d\n\n【ViT.pdf-第4页】 4.1\nSETUP\nDatasets. To explore model scalability, we use the ILSVRC-2012 ImageNet dataset with 1k classes\nand 1.3M images (we refer to it as ImageNet in what follows), its superset ImageNet-21k with\n21k classes and 14M images (Deng et al., 2009), and JFT (Sun et al., 2017) with 18k classes and\n303M high-resolution images. We de-duplicate the pre-training datasets w.r.t. the test sets of the\ndownstream tasks following Kolesnikov et al. (2020). We transfer the models trained on these\ndataset to several benchmark tasks: ImageNet on the original validation labels and the cleaned-up\nReaL labels (Be\n\n论文 DeiT\n【DeiT.pdf-第13页】 98.5\nFor this experiment, we tried we get as close as possible to the Imagenet\npre-training counterpart, meaning that (1) we consider longer training sched-\n13\nTable 6: Datasets used for our different tasks.\nDataset\nTrain size\nTest size\n#classes\nImageNet [42]\n1,281,167\n1000\niNaturalist 2018 [26]\n437,513\n24,426\n8,142\niNaturalist 2019 [27]\n265,240\n3,003\n1,010\nFlowers-102 [38]\n2,040\n6,149\n102\nStanford Cars [30]\n8,144\n8,041\n196\nCIFAR-100 [31]\n10,000\n100\nCIFAR-10 [31]\n10,000\n\n\n【DeiT.pdf-第9页】 9\nTable 3: Distillation experiments on Imagenet with DeiT, 300 epochs of pre-\ntraining. We report the results for our new distillation method in the last three\nrows. We separately report the performance when classifying with only one of\nthe class or distillation embeddings, and then with a classiﬁer taking both of\nthem as input. In the last row (class+distillation), the result correspond to the\nlate fusion of the class and distillation classiﬁers.\nSupervision\nImageNet top-1 (%)\nmethod ↓\nlabel\nteacher\nTi 224\nS 224\nB 224\nB↑384\nDeiT– no distillation\nDeiT– usual distillation\nsoft\n83.2\nDeiT– hard d\n\n【DeiT.pdf-第18页】 ing for convnets, not introducing any signiﬁcant architectural be-\nyond our novel distillation token. Therefore it is likely that research on data-\naugmentation more adapted or learned for transformers will bring further gains.\nTherefore, considering our results, where image transformers are on par\nwith convnets already, we believe that they will rapidly become a method of\nchoice considering their lower memory footprint for a given accuracy.\nWe provide an open-source implementation of our method. It is available\nat https://github.com/facebookresearch/deit.\nAcknowledgements\nMany thanks to Ross \n\n【DeiT.pdf-第8页】 nt\nmethod is the late fusion of these two separate heads, for which we add the\nsoftmax output by the two classiﬁers to make the prediction. We evaluate these\nthree options in Section 5.\nExperiments\nThis section presents a few analytical experiments and results. We ﬁrst discuss\nour distillation strategy. Then we comparatively analyze the efﬁciency and\naccuracy of convnets and vision transformers.\n\n\n【DeiT.pdf-第8页】 . We introduce two smaller models, namely DeiT-S\nand DeiT-Ti, for which we change the number of heads, keeping d ﬁxed. Table 1\nsummarizes the models that we consider in our paper.\n8\nTable 1: Variants of our DeiT architecture. The larger model, DeiT-B, has the\nsame architecture as the ViT-B [15]. The only parameters that vary across mod-\nels are the embedding dimension and the number of heads, and we keep the\ndimension per head constant (equal to 64). Smaller models have a lower pa-\nrameter count, and a faster throughput. The throughput is measured for im-\nages at resolution 224×224.\n\n请按方法、数据集、实验条件和结果对比，不能把不同训练设置的数字直接视为公平比较。",
+          "elapsed_ms": 294.5857001468539
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "ViT（Vision Transformer）和DeiT（Data-efficient Image Transformer）在训练数据需求和蒸馏机制上有一些区别。\n\n在训练数据需求方面，ViT模型在预训练时表现良好，尤其是在使用大型JFT-300M数据集进行预训练时。尽管ViT模型在预训练时需要的计算资源比先前的最先进的方法少，但其预训练效率可能受到架构选择以及其他参数（如训练计划、优化器、权重衰减等）的影响。论文中提到，作者在第4.3节中进行了不同架构的性能与计算资源的控制研究。\n\n相比之下，DeiT在数据需求方面可能更高效。DeiT是一个数据效率更高的图像变换器，它在预训练时使用了更少的数据，同时仍然能够达到相当好的性能。DeiT在论文中没有详细讨论其数据需求，但其数据效率的特性表明它可能在数据需求上比ViT更少。\n\n在蒸馏机制方面，ViT模型在论文中没有详细讨论其蒸馏机制。然而，ViT模型在论文中提到，它使用了一个额外的[class] token，这个token被用作图像表示，并通过一个小型多层感知器（MLP）进行变换，以生成类预测。这种设计是从文本Transformer模型中继",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "C03",
+      "type": "对比性",
+      "question": "BEiT 与 MAE 的 masked modeling 预测目标有什么区别？",
+      "reference_answer": "BEiT 预测离散视觉 token，MAE 重建像素。",
+      "expected_tools": [
+        "paper_compare"
+      ],
+      "chosen_tools": [
+        "paper_compare"
+      ],
+      "routing_correct": true,
+      "answer": "BEiT与MAE在masked modeling预测目标上的主要区别在于它们的预训练方式和目标应用。BEiT论文中提到的预训练方式包括使用ImageNet-1K进行公平比较，以及使用ImageNet-22K进行预训练以提升性能。BEiT的预训练目标是实现良好的图像分类和语义分割性能。\n\n而MAE（Masked Autoencoder with Vision Transformers）则主要关注的是通过掩码自动编码器来学习视觉Transformer模型。MAE的目标是通过在Transformer编码器中引入掩码，使得模型能够学习到原始图像中的信息，从而在预训练阶段就能获得较好的视觉特征表示。MAE的论文中提到，MAE通过在Transformer编码器中引入掩码，使得模型能够学习到原始图像中的信息，从而在预训练阶段就能获得较好的视觉特征表示。\n\n因此，BEiT的masked modeling预训练目标主要是为了提升图像分类和语义分割的性能，而MAE的目的是为了学习到更好的视觉特征表示。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 979,
+        "iterations": 1,
+        "elapsed_ms": 40499,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "paper_compare",
+          "action_input": {
+            "doc_ids": [
+              "BEiT",
+              "MAE"
+            ]
+          },
+          "observation": "论文 BEiT\n【BEiT.pdf-第14页】 Architecture\nViT (used in this paper)\n44.86\nViT+LayerScale\n83.00\n45.43\nViT+LayerScale+Relative Position Bias\n83.22\n45.70\nTable 5: Ablation studies of architecture variants on image classiﬁcation and semantic segmentation.\nFor ADE20K, we use UperNet [XLZ+18] as the task layer, and report mIoU scores of single-scale\ninference.\nB\nComparison with Large-Scale Supervised Pre-Training\nWe compare with state-of-the-art supervised pre-training at scale. In addition to using ImageNet-1K\nfor fair comparisons with previous work, we pretrain BEIT on ImageNet-22K to boost performance.\nWe employ the architect\n\n【BEiT.pdf-第16页】 56.7\nBEIT-L (ours)\n73.5\nTable 9: Linear probing accuracy on ImageNet. “∗” denotes that iGPT-XL uses concatenation of ﬁve\nlayers for linear probing, while others use the features of single layer.\nAs shown in Table 9, we evaluate linear probes on ImageNet-1K for self-supervised learning. Overall,\ndiscriminative methods perform better than generative pre-training on linear probing. Linear probes\nkeep the Transformer parameters ﬁxed and only update the linear layer. So the pre-training of global\naggregation of image-level features is beneﬁcial to linear probing in DINO and MoCo v3, although\nfull ﬁ\n\n【BEiT.pdf-第1页】 ned encoder. Experimental results on image classiﬁcation\nand semantic segmentation show that our model achieves competitive results with\nprevious pre-training methods.\n\n\n【BEiT.pdf-第7页】  method achieves better performance than supervised pre-\ntraining, although BEIT does not require manual annotations for pre-training. Moreover, we employ\n\n\n【BEiT.pdf-第14页】 88.6\nSelf-Supervised Pre-Training, and Intermediate Fine-Tuning on In-House-70M\n70M\n89.3\n89.5\nTable 6: Top-1 accuracy on ImageNet-1K ﬁne-tuning. We evaluate models at resolutions 3842 and\n5122.\n14\nTable 6 compares BEIT with previous state-of-the-art supervised pre-training [DBK+20, ZKHB21]\non ImageNet ﬁne-tuning. Rather than heavily relying on extremely large-size labeled data (such as\nGoogle’s in-house JFT-300M and JFT-3B), we demonstrate that BEIT pre-training can catch up with\nonly ImageNet-22k (14M). Speciﬁcally, BEIT-L ﬁne-tuned on ImageNet-22K achieves comparable\nperformance with ViT-L t\n\n论文 MAE\n【MAE.pdf-第8页】 ition into the visual analogue\nof words. Instead of attempting to remove objects, we re-\nmove random patches that most likely do not form a seman-\ntic segment. Likewise, our MAE reconstructs pixels, which\nare not semantic entities. Nevertheless, we observe (e.g.,\nFigure 4) that our MAE infers complex, holistic reconstruc-\ntions, suggesting it has learned numerous visual concepts,\ni.e., semantics. We hypothesize that this behavior occurs\nby way of a rich hidden representation inside the MAE. We\nhope this perspective will inspire future work.\nA. Implementation Details\nA.1. ImageNet Experiments\nV\n\n【MAE.pdf-第7页】 4.2. Comparisons with Previous Results\nComparisons with self-supervised methods. In Table 3\nwe compare the ﬁne-tuning results of self-supervised ViT\nmodels. For ViT-B, all methods perform closely. For ViT-L,\nthe gaps among methods are bigger, suggesting that a chal-\nlenge for bigger models is to reduce overﬁtting.\nOur MAE can scale up easily and has shown steady im-\nprovement from bigger models. We obtain 86.9% accuracy\nusing ViT-H (224 size). By ﬁne-tuning with a 448 size, we\nachieve 87.8% accuracy, using only IN1K data. The pre-\nvious best accuracy, among all methods using only IN1K\ndata, is\n\n【MAE.pdf-第8页】 5. Transfer Learning Experiments\nWe evaluate transfer learning in downstream tasks using\nthe pre-trained models in Table 3.\nObject detection and segmentation. We ﬁne-tune Mask\nR-CNN [24] end-to-end on COCO [37]. The ViT backbone\nis adapted for use with FPN [36] (see A.3). We apply this\napproach for all entries in Table 4. We report box AP for\nobject detection and mask AP for instance segmentation.\nCompared to supervised pre-training, our MAE performs\nbetter under all conﬁgurations (Table 4). With the smaller\nViT-B, our MAE is 2.4 points higher than supervised pre-\ntraining (50.3 vs. 47.9, APbo\n\n【MAE.pdf-第3页】 s with higher masking ratios. The predictions differ plausibly\nfrom the original images, showing that the method can generalize.\n\n\n【MAE.pdf-第1页】 1. Introduction\nDeep learning has witnessed an explosion of archi-\ntectures of continuously growing capability and capacity\n[33, 25, 57]. Aided by the rapid gains in hardware, mod-\nels today can easily overﬁt one million images [13] and\nbegin to demand hundreds of millions of—often publicly\ninaccessible—labeled images [16].\nThis appetite for data has been successfully addressed in\nnatural language processing (NLP) by self-supervised pre-\ntraining. The solutions, based on autoregressive language\nmodeling in GPT [47, 48, 4] and masked autoencoding in\nBERT [14], are conceptually simple: they remo\n请按方法、数据集、实验条件和结果对比，不能把不同训练设置的数字直接视为公平比较。",
+          "elapsed_ms": 263.8634000904858
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "BEiT与MAE在masked modeling预测目标上的主要区别在于它们的预训练方式和目标应用。BEiT论文中提到的预训练方式包括使用ImageNet-1K进行公平比较，以及使用ImageNet-22K进行预训练以提升性能。BEiT的预训练目标是实现良好的图像分类和语义分割性能。\n\n而MAE（Masked Autoencoder with Vision Transformers）则主要关注的是通过掩码自动编码器来学习视觉Transformer模型。MAE的目标是通过在Transformer编码器中引入掩码，使得模型能够学习到原始图像中的信息，从而在预训练阶段就能获得较好的视觉特征表示。MAE的论文中提到，MAE通过在Transformer编码器中引入掩码，使得模型能够学习到原始图像中的信息，从而在预训练阶段就能获得较好的视觉特征表示。\n\n因此，BEiT的masked modeling预训练目标主要是为了提升图像分类和语义分割的性能，而MAE的目的是为了学习到更好的视觉特征表示。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "C04",
+      "type": "对比性",
+      "question": "Swin 与 PVT 如何降低高分辨率 attention 的成本？",
+      "reference_answer": "Swin 限制局部窗口并移位交互，PVT 对键值进行空间缩减。",
+      "expected_tools": [
+        "paper_compare"
+      ],
+      "chosen_tools": [
+        "rag_search",
+        "rag_search"
+      ],
+      "routing_correct": false,
+      "answer": "Swin与PVT在降低高分辨率attention的成本方面，主要通过以下方式实现：\n\n1. **滑动窗口与滑动窗口方法**：Swin Transformer利用滑动窗口方法，通过在相邻层之间移动窗口划分，使得相邻窗口之间可以共享关键集（key set），从而减少内存访问的复杂性。这降低了硬件中的访问延迟。PVT（PVT是PVT模型的简称）没有明确提及这种方法，但其模型架构可能也采用了类似的方法来减少高分辨率attention的计算成本。\n\n2. **滑动窗口方法的低延迟问题**：Swin Transformer通过滑动窗口方法在硬件上的低延迟问题，指出早期基于滑动窗口的自注意力方法在一般硬件上由于不同关键集而导致低延迟。Swin Transformer通过滑动窗口方法解决了这个问题，使得所有查询样本（query patches）在窗口内共享相同的键集（key set），从而在硬件中提高了内存访问效率。\n\n3. **局部自注意力计算**：Swin Transformer通过在非重叠窗口内局部计算自注意力，使得计算复杂度线性依赖于图像大小。这使得Swin Transformer在保持模型复杂度的同时，能够高效地处理高分辨率数据。\n\n4. **层次特征映射**：Swin Transformer利用层次特征映射（hierarchical feature maps），这使得模型能够方便地利用诸如特征金字塔网络（FPN）或U-Net等高级技术进行密集预测。这表明Swin Transformer在保持模型复杂度的同时，能够高效地处理高分辨率数据。\n\n综上所述，Swin Transformer通过滑动窗口方法、局部自注意力计算以及层次特征映射等策略，有效地降低了高分辨率attention的计算成本。PVT模型虽然没有明确提及这些方法，但其模型架构可能也采用了类似的方法来实现这一目标。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 1664,
+        "iterations": 1,
+        "elapsed_ms": 79331,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 2
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "Swin 与 PVT 如何降低高分辨率 attention 的成本？",
+            "doc_ids": [
+              "Swin",
+              "PVT"
+            ]
+          },
+          "observation": "【Swin.pdf-第2页】 score=0.6125\n sliding-window\nbased convolution layer on general hardware, thanks to its shared kernel\nFigure 2. An illustration of the shifted window approach for com-\nputing self-attention in the proposed Swin Transformer architec-\nture. In layer l (left), a regular window partitioning scheme is\nadopted, and self-attention is computed within each window. In\nthe next layer l + 1 (right), the window partitioning is shifted, re-\nsulting in new windows. The self-attention computation in the new\nwindows crosses the boundaries of the previous windows in layer\nl, providing connections among them.\nshifted window approach has much lower latency than the\nsliding w\n\n【Swin.pdf-第2页】 score=0.6075\nesentation by starting from small-sized patches (outlined in\ngray) and gradually merging neighboring patches in deeper\nTransformer layers. With these hierarchical feature maps,\nthe Swin Transformer model can conveniently leverage ad-\nvanced techniques for dense prediction such as feature pyra-\nmid networks (FPN) [42] or U-Net [51]. The linear compu-\ntational complexity is achieved by computing self-attention\nlocally within non-overlapping windows that partition an\nimage (outlined in red). The number of patches in each\nwindow is ﬁxed, and thus the complexity becomes linear\nto image size. These merits make Swin Transformer suit-\nable as a gener\n\n【Swin.pdf-第2页】 score=0.5963\nc complexity.\nA key design element of Swin Transformer is its shift\nof the window partition between consecutive self-attention\nlayers, as illustrated in Figure 2.\nThe shifted windows\nbridge the windows of the preceding layer, providing con-\nnections among them that signiﬁcantly enhance modeling\npower (see Table 4). This strategy is also efﬁcient in re-\ngards to real-world latency: all query patches within a win-\ndow share the same key set1, which facilitates memory ac-\ncess in hardware. In contrast, earlier sliding window based\nself-attention approaches [33, 50] suffer from low latency\non general hardware due to different key sets for differe\n\n【Swin.pdf-第8页】 score=0.5923\nr deeper stages. Overall, it brings a 13%, 18% and 18%\nspeed-up on Swin-T, Swin-S and Swin-B, respectively.\nThe self-attention modules built on the proposed\nshifted window approach are 40.8×/2.5×, 20.2×/2.5×,\n9.3×/2.1×, and 7.6×/1.8× more efﬁcient than those of slid-\ning windows in naive/kernel implementations on four net-\nwork stages, respectively. Overall, the Swin Transformer\narchitectures built on shifted windows are 4.1/1.5, 4.0/1.5,\n3.6/1.5 times faster than variants built on sliding windows\nfor Swin-T, Swin-S, and Swin-B, respectively. Table 6 com-\npares their accuracy on the three tasks, showing that they are\nsimilarly accurate in vis\n\n【Swin.pdf-第8页】 score=0.5826\note that while the inclusion of\nabsolute position embedding improves image classiﬁcation\naccuracy (+0.4%), it harms object detection and semantic\nsegmentation (-0.2 box/mask AP on COCO and -0.6 mIoU\non ADE20K).\nWhile the recent ViT/DeiT models abandon translation\ninvariance in image classiﬁcation even though it has long\nbeen shown to be crucial for visual modeling, we ﬁnd that\ninductive bias that encourages certain translation invariance\nis still preferable for general-purpose visual modeling, par-\nticularly for the dense prediction tasks of object detection\nand semantic segmentation.\nDifferent self-attention methods\nThe real speed of dif-\nfe",
+          "elapsed_ms": 829.7473001293838
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "Swin 与 PVT 如何降低高分辨率 attention 的成本？",
+            "doc_ids": [
+              "Swin",
+              "PVT"
+            ]
+          },
+          "observation": "【Swin.pdf-第2页】 score=0.6125\n sliding-window\nbased convolution layer on general hardware, thanks to its shared kernel\nFigure 2. An illustration of the shifted window approach for com-\nputing self-attention in the proposed Swin Transformer architec-\nture. In layer l (left), a regular window partitioning scheme is\nadopted, and self-attention is computed within each window. In\nthe next layer l + 1 (right), the window partitioning is shifted, re-\nsulting in new windows. The self-attention computation in the new\nwindows crosses the boundaries of the previous windows in layer\nl, providing connections among them.\nshifted window approach has much lower latency than the\nsliding w\n\n【Swin.pdf-第2页】 score=0.6075\nesentation by starting from small-sized patches (outlined in\ngray) and gradually merging neighboring patches in deeper\nTransformer layers. With these hierarchical feature maps,\nthe Swin Transformer model can conveniently leverage ad-\nvanced techniques for dense prediction such as feature pyra-\nmid networks (FPN) [42] or U-Net [51]. The linear compu-\ntational complexity is achieved by computing self-attention\nlocally within non-overlapping windows that partition an\nimage (outlined in red). The number of patches in each\nwindow is ﬁxed, and thus the complexity becomes linear\nto image size. These merits make Swin Transformer suit-\nable as a gener\n\n【Swin.pdf-第2页】 score=0.5963\nc complexity.\nA key design element of Swin Transformer is its shift\nof the window partition between consecutive self-attention\nlayers, as illustrated in Figure 2.\nThe shifted windows\nbridge the windows of the preceding layer, providing con-\nnections among them that signiﬁcantly enhance modeling\npower (see Table 4). This strategy is also efﬁcient in re-\ngards to real-world latency: all query patches within a win-\ndow share the same key set1, which facilitates memory ac-\ncess in hardware. In contrast, earlier sliding window based\nself-attention approaches [33, 50] suffer from low latency\non general hardware due to different key sets for differe\n\n【Swin.pdf-第8页】 score=0.5923\nr deeper stages. Overall, it brings a 13%, 18% and 18%\nspeed-up on Swin-T, Swin-S and Swin-B, respectively.\nThe self-attention modules built on the proposed\nshifted window approach are 40.8×/2.5×, 20.2×/2.5×,\n9.3×/2.1×, and 7.6×/1.8× more efﬁcient than those of slid-\ning windows in naive/kernel implementations on four net-\nwork stages, respectively. Overall, the Swin Transformer\narchitectures built on shifted windows are 4.1/1.5, 4.0/1.5,\n3.6/1.5 times faster than variants built on sliding windows\nfor Swin-T, Swin-S, and Swin-B, respectively. Table 6 com-\npares their accuracy on the three tasks, showing that they are\nsimilarly accurate in vis\n\n【Swin.pdf-第8页】 score=0.5826\note that while the inclusion of\nabsolute position embedding improves image classiﬁcation\naccuracy (+0.4%), it harms object detection and semantic\nsegmentation (-0.2 box/mask AP on COCO and -0.6 mIoU\non ADE20K).\nWhile the recent ViT/DeiT models abandon translation\ninvariance in image classiﬁcation even though it has long\nbeen shown to be crucial for visual modeling, we ﬁnd that\ninductive bias that encourages certain translation invariance\nis still preferable for general-purpose visual modeling, par-\nticularly for the dense prediction tasks of object detection\nand semantic segmentation.\nDifferent self-attention methods\nThe real speed of dif-\nfe",
+          "elapsed_ms": 829.3991996906698
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "Swin与PVT在降低高分辨率attention的成本方面，主要通过以下方式实现：\n\n1. **滑动窗口与滑动窗口方法**：Swin Transformer利用滑动窗口方法，通过在相邻层之间移动窗口划分，使得相邻窗口之间可以共享关键集（key set），从而减少内存访问的复杂性。这降低了硬件中的访问延迟。PVT（PVT是PVT模型的简称）没有明确提及这种方法，但其模型架构可能也采用了类似的方法来减少高分辨率attention的计算成本。\n\n2. **滑动窗口方法的低延迟问题**：Swin Transformer通过滑动窗口方法在硬件上的低延迟问题，指出早期基于滑动窗口的自注意力方法在一般硬件上由于不同关键集而导致低延迟。Swin Transformer通过滑动窗口方法解决了这个问题，使得所有查询样本（query patches）在窗口内共享相同的键集（key set），从而在硬件中提高了内存访问效率。\n\n3. **局部自注意力计算**：Swin Transformer通过在非重叠窗口内局部计算自注意力，使得计算复杂度线性依赖于图像大小。这使得Swin Transformer在保持模型复",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "C09",
+      "type": "对比性",
+      "question": "CaiT 与原始 ViT 如何使用分类 token？",
+      "reference_answer": "ViT 将 class token 与 patch token 一起编码，CaiT 将 patch self-attention 与 class-attention 分阶段。",
+      "expected_tools": [
+        "paper_compare"
+      ],
+      "chosen_tools": [
+        "rag_search",
+        "rag_search"
+      ],
+      "routing_correct": false,
+      "answer": "CaiT 与原始 ViT 在使用分类 token 方面有所不同。CaiT 在原始 ViT 的 transformer 结构中插入了一个称为 class token 的 token。这个 class token 用于在类注意力阶段与 patch 之间进行交互，从而集中所有空间类别关系。原始 ViT 中并没有使用这样的 token，而是直接将类信息整合到自注意力机制中。CaiT 的设计旨在解决 ViT 在优化自注意力和分类器所需信息之间存在矛盾的目标时遇到的问题。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 1418,
+        "iterations": 1,
+        "elapsed_ms": 109938,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 2
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "CaiT 与原始 ViT 如何使用分类 token？",
+            "doc_ids": [
+              "CaiT",
+              "ViT"
+            ]
+          },
+          "observation": "【CaiT.pdf-第5页】 score=0.5789\nntroduce the CaiT architecture, depicted in Figure 2 (right).\nThis design aims at circumventing one of the problems of the ViT architec-\nture: the learned weights are asked to optimize two contradictory objectives:\n(1) guiding the self-attention between patches while (2) summarizing the infor-\nmation useful to the linear classiﬁer. Our proposal is to explicitly separate the\ntwo stages, in the spirit of an encoder-decoder architecture, see Section 6.\nLater class token.\nAs an intermediate step towards our proposal, we insert\nthe so-called class token, denoted by CLS, later in the transformer. This choice\neliminates the discrepancy on the ﬁrst l\n\n【CaiT.pdf-第30页】 score=0.5524\n main paper we report results with the\nhard distillation proposed by Touvron et al. [63], which in essence replaces the\nlabel by the average of the label and the prediction of the teacher output. This is\nthe choice we adopted in our main paper, since it provides better performance\nthan traditional distillation.\nThe DeiT authors also show the advantage of considering an additional\n“distillation token”. In their case, employed with the ViT/DeiT architecture,\nthis choice improves the performance compared to hard distillation. Notice-\nably it accelerates convergence.\nIn Table B.1 we report the results obtained when inserting a distillation to-\nke\n\n【CaiT.pdf-第18页】 score=0.4993\n5.1\nAttention map\nIn Figure 6 we show the attention maps associated with the individual 4 heads\nof a XXS CaiT model, and for the two layers of class-attention. In CaiT and\nin contrast to ViT, the class-attention stage is the only one where there is some\ninteraction between the class token and the patches, therefore it conveniently\nconcentrates all the spatial-class relationship. We make two observations:\n• The ﬁrst class-attention layer clearly focuses on the object of interest, cor-\nresponding to the main part of the image on which the classiﬁcation de-\ncision is performed (either correct or incorrect). In this layer, the different\nheads foc\n\n【ViT.pdf-第16页】 score=0.4934\ne on ImageNet\nfor different conﬁgurations. All conﬁgurations are based on a ViT model with 8 layers, D = 1024,\nDMLP = 2048 and a patch size of 32, the intersection of all lines. We can see that scaling the\ndepth results in the biggest improvements which are clearly visible up until 64 layers. However,\ndiminishing returns are already visible after 16 layers. Interestingly, scaling the width of the net-\nwork seems to result in the smallest changes. Decreasing the patch size and thus increasing the\neffective sequence length shows surprisingly robust improvements without introducing parameters.\nThese ﬁndings suggest that compute might be a better\n\n【ViT.pdf-第5页】 score=0.5257\nte the model size and\nthe input patch size: for instance, ViT-L/16 means the “Large” variant with 16×16 input patch size.\nNote that the Transformer’s sequence length is inversely proportional to the square of the patch size,\nthus models with smaller patch size are computationally more expensive.\nFor the baseline CNNs, we use ResNet (He et al., 2016), but replace the Batch Normalization lay-\ners (Ioffe & Szegedy, 2015) with Group Normalization (Wu & He, 2018), and used standardized\nconvolutions (Qiao et al., 2019). These modiﬁcations improve transfer (Kolesnikov et al., 2020),\nand we denote the modiﬁed model “ResNet (BiT)”. For the hybrids, we",
+          "elapsed_ms": 1953.7403997965157
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "CaiT 与原始 ViT 如何使用分类 token？",
+            "doc_ids": [
+              "CaiT",
+              "ViT"
+            ]
+          },
+          "observation": "【CaiT.pdf-第5页】 score=0.5789\nntroduce the CaiT architecture, depicted in Figure 2 (right).\nThis design aims at circumventing one of the problems of the ViT architec-\nture: the learned weights are asked to optimize two contradictory objectives:\n(1) guiding the self-attention between patches while (2) summarizing the infor-\nmation useful to the linear classiﬁer. Our proposal is to explicitly separate the\ntwo stages, in the spirit of an encoder-decoder architecture, see Section 6.\nLater class token.\nAs an intermediate step towards our proposal, we insert\nthe so-called class token, denoted by CLS, later in the transformer. This choice\neliminates the discrepancy on the ﬁrst l\n\n【CaiT.pdf-第30页】 score=0.5524\n main paper we report results with the\nhard distillation proposed by Touvron et al. [63], which in essence replaces the\nlabel by the average of the label and the prediction of the teacher output. This is\nthe choice we adopted in our main paper, since it provides better performance\nthan traditional distillation.\nThe DeiT authors also show the advantage of considering an additional\n“distillation token”. In their case, employed with the ViT/DeiT architecture,\nthis choice improves the performance compared to hard distillation. Notice-\nably it accelerates convergence.\nIn Table B.1 we report the results obtained when inserting a distillation to-\nke\n\n【CaiT.pdf-第18页】 score=0.4993\n5.1\nAttention map\nIn Figure 6 we show the attention maps associated with the individual 4 heads\nof a XXS CaiT model, and for the two layers of class-attention. In CaiT and\nin contrast to ViT, the class-attention stage is the only one where there is some\ninteraction between the class token and the patches, therefore it conveniently\nconcentrates all the spatial-class relationship. We make two observations:\n• The ﬁrst class-attention layer clearly focuses on the object of interest, cor-\nresponding to the main part of the image on which the classiﬁcation de-\ncision is performed (either correct or incorrect). In this layer, the different\nheads foc\n\n【ViT.pdf-第16页】 score=0.4934\ne on ImageNet\nfor different conﬁgurations. All conﬁgurations are based on a ViT model with 8 layers, D = 1024,\nDMLP = 2048 and a patch size of 32, the intersection of all lines. We can see that scaling the\ndepth results in the biggest improvements which are clearly visible up until 64 layers. However,\ndiminishing returns are already visible after 16 layers. Interestingly, scaling the width of the net-\nwork seems to result in the smallest changes. Decreasing the patch size and thus increasing the\neffective sequence length shows surprisingly robust improvements without introducing parameters.\nThese ﬁndings suggest that compute might be a better\n\n【ViT.pdf-第5页】 score=0.5257\nte the model size and\nthe input patch size: for instance, ViT-L/16 means the “Large” variant with 16×16 input patch size.\nNote that the Transformer’s sequence length is inversely proportional to the square of the patch size,\nthus models with smaller patch size are computationally more expensive.\nFor the baseline CNNs, we use ResNet (He et al., 2016), but replace the Batch Normalization lay-\ners (Ioffe & Szegedy, 2015) with Group Normalization (Wu & He, 2018), and used standardized\nconvolutions (Qiao et al., 2019). These modiﬁcations improve transfer (Kolesnikov et al., 2020),\nand we denote the modiﬁed model “ResNet (BiT)”. For the hybrids, we",
+          "elapsed_ms": 1951.5351997688413
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "CaiT 与原始 ViT 在使用分类 token 方面有所不同。CaiT 在原始 ViT 的 transformer 结构中插入了一个称为 class token 的 token。这个 class token 用于在类注意力阶段与 patch 之间进行交互，从而集中所有空间类别关系。原始 ViT 中并没有使用这样的 token，而是直接将类信息整合到自注意力机制中。CaiT 的设计旨在解决 ViT 在优化自注意力和分类器所需信息之间存在矛盾的目标时遇到的问题。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "S01",
+      "type": "归纳性",
+      "question": "归纳 ViT、Swin、PVT 的视觉特征尺度设计。",
+      "reference_answer": "ViT 为单尺度序列，Swin 通过 patch merging 构建分层表示，PVT 形成逐级缩减的特征金字塔。",
+      "expected_tools": [
+        "rag_search",
+        "paper_compare"
+      ],
+      "chosen_tools": [
+        "rag_search",
+        "rag_search",
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "ViT、Swin、PVT 这三种模型在视觉特征尺度设计上各有特点，下面是对它们视觉特征尺度设计的归纳：\n\n1. **ViT模型**：\n   - ViT模型的设计主要集中在模型的大小和计算复杂度上，其基础模型称为ViT-B，模型大小和计算复杂度与ViT-B/DeiT-B相似。\n   - ViT模型还引入了Swin-T、Swin-S和Swin-L，它们的模型大小和计算复杂度分别是基础模型的0.25倍、0.5倍和2倍。\n   - 模型的窗口大小默认设置为M=7，每个头部的查询维度d=32，每个MLP的扩张层α=4。\n\n2. **Swin模型**：\n   - Swin模型的设计主要集中在模型的大小和计算复杂度上，其基础模型称为Swin-B，模型大小和计算复杂度与ViT-B/DeiT-B相似。\n   - Swin模型还引入了Swin-T、Swin-S和Swin-L，它们的模型大小和计算复杂度分别是基础模型的0.25倍、0.5倍和2倍。\n   - 模型的窗口大小默认设置为M=7，每个头部的查询维度d=32，每个MLP的扩张层α=4。\n\n3. **PVT模型**：\n   - PVT模型的设计主要集中在输入尺度和模型大小上，其基础模型称为PVT-Small，其参数数量与ResNet18、50、101和152相似。\n   - PVT模型的设计遵循了ResNet[22]的两个规则：（1）随着模型大小的增加，其参数数量增加。\n   - PVT模型的输入尺度下，PVT-Small和ResNet50的GFLOPs相似。\n\n总结来看，ViT、Swin和PVT模型在视觉特征尺度设计上都考虑了模型大小和计算复杂度，以及输入尺度的影响。ViT和Swin模型主要通过调整模型大小和计算复杂度来适应不同的任务需求，而PVT模型则主要通过调整输入尺度来优化模型性能。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 3123,
+        "iterations": 1,
+        "elapsed_ms": 94154,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 3
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳 ViT、Swin、PVT 的视觉特征尺度设计。",
+            "doc_ids": [
+              "ViT",
+              "Swin",
+              "PVT"
+            ]
+          },
+          "observation": "【Swin.pdf-第5页】 score=0.5863\n3.3. Architecture Variants\nWe build our base model, called Swin-B, to have of\nmodel size and computation complexity similar to ViT-\nB/DeiT-B. We also introduce Swin-T, Swin-S and Swin-L,\nwhich are versions of about 0.25×, 0.5× and 2× the model\nsize and computational complexity, respectively. Note that\nthe complexity of Swin-T and Swin-S are similar to those\nof ResNet-50 (DeiT-S) and ResNet-101, respectively. The\nwindow size is set to M = 7 by default. The query dimen-\nsion of each head is d = 32, and the expansion layer of\neach MLP is α = 4, for all experiments. The architecture\nhyper-parameters of these model variants are:\n• Swin-T: C = 96, \n\n【PVT.pdf-第10页】 score=0.5621\n6. Conclusions and Future Work\nWe introduce PVT, a pure Transformer backbone for\ndense prediction tasks, such as object detection and seman-\n100\n150\n200\n250\n300\n160\n320\n480\n640\n960\n1120 1280\nInput Scale\nViT-Small/16\nViT-Small/32\nResNet50\nFigure 6: Models’ GFLOPs under different input scales.\nThe growth rate of GFLOPs:\nViT-Small/16 [13]>ViT-\nSmall/32 [13]>PVT-Small (ours)>ResNet50 [22]. When\nthe input scale is less than 640 × 640, the GFLOPs of PVT-\nSmall and ResNet50 [22] are similar.\ntic segmentation. We develop a progressive shrinking pyra-\nmid and a spatial-reduction attention layer to obtain high-\nresolution and multi-scale feature maps u\n\n【PVT.pdf-第5页】 score=0.5706\n4.1. Image-Level Prediction\nImage classiﬁcation is the most classical task of image-\nlevel prediction. To provide instances for discussion, we\ndesign a series of PVT models with different scales, namely\nPVT-Tiny, -Small, -Medium, and -Large, whose parameter\nnumbers are similar to ResNet18, 50, 101, and 152, respec-\nOutput Size\nLayer Name\nPVT-Tiny\nPVT-Small\nPVT-Medium\nPVT-Large\nStage 1\n4 × W\n4\nP1 = 4; C1 = 64\nStage 2\n8 × W\n8\nP2 = 2; C2 = 128\n× 8\nStage 3\n16 × W\n16\nP3 = 2; C3 = 320\n× 6\n× 18\n× 27\nStage 4\n32 × W\n32\nP4 = 2; C4 =512\nTable 1: Detailed settings of PVT series. The design follows the two rules of ResNet [22]: (1) with the growth of \n\n【Swin.pdf-第8页】 score=0.5639\note that while the inclusion of\nabsolute position embedding improves image classiﬁcation\naccuracy (+0.4%), it harms object detection and semantic\nsegmentation (-0.2 box/mask AP on COCO and -0.6 mIoU\non ADE20K).\nWhile the recent ViT/DeiT models abandon translation\ninvariance in image classiﬁcation even though it has long\nbeen shown to be crucial for visual modeling, we ﬁnd that\ninductive bias that encourages certain translation invariance\nis still preferable for general-purpose visual modeling, par-\nticularly for the dense prediction tasks of object detection\nand semantic segmentation.\nDifferent self-attention methods\nThe real speed of dif-\nfe\n\n【PVT.pdf-第1页】 score=0.5512\nAbstract\nAlthough convolutional neural networks (CNNs) have\nachieved great success in computer vision, this work inves-\ntigates a simpler, convolution-free backbone network use-\nful for many dense prediction tasks. Unlike the recently-\nproposed Vision Transformer (ViT) that was designed for\nimage classiﬁcation speciﬁcally, we introduce the Pyra-\nmid Vision Transformer (PVT), which overcomes the difﬁ-\nculties of porting Transformer to various dense prediction\ntasks. PVT has several merits compared to current state\nof the arts. (1) Different from ViT that typically yields low-\nresolution outputs and incurs high computational and mem-\nory costs,",
+          "elapsed_ms": 935.2254997938871
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳 ViT、Swin、PVT 的视觉特征尺度设计。",
+            "doc_ids": [
+              "ViT",
+              "Swin",
+              "PVT"
+            ]
+          },
+          "observation": "【Swin.pdf-第5页】 score=0.5863\n3.3. Architecture Variants\nWe build our base model, called Swin-B, to have of\nmodel size and computation complexity similar to ViT-\nB/DeiT-B. We also introduce Swin-T, Swin-S and Swin-L,\nwhich are versions of about 0.25×, 0.5× and 2× the model\nsize and computational complexity, respectively. Note that\nthe complexity of Swin-T and Swin-S are similar to those\nof ResNet-50 (DeiT-S) and ResNet-101, respectively. The\nwindow size is set to M = 7 by default. The query dimen-\nsion of each head is d = 32, and the expansion layer of\neach MLP is α = 4, for all experiments. The architecture\nhyper-parameters of these model variants are:\n• Swin-T: C = 96, \n\n【PVT.pdf-第10页】 score=0.5621\n6. Conclusions and Future Work\nWe introduce PVT, a pure Transformer backbone for\ndense prediction tasks, such as object detection and seman-\n100\n150\n200\n250\n300\n160\n320\n480\n640\n960\n1120 1280\nInput Scale\nViT-Small/16\nViT-Small/32\nResNet50\nFigure 6: Models’ GFLOPs under different input scales.\nThe growth rate of GFLOPs:\nViT-Small/16 [13]>ViT-\nSmall/32 [13]>PVT-Small (ours)>ResNet50 [22]. When\nthe input scale is less than 640 × 640, the GFLOPs of PVT-\nSmall and ResNet50 [22] are similar.\ntic segmentation. We develop a progressive shrinking pyra-\nmid and a spatial-reduction attention layer to obtain high-\nresolution and multi-scale feature maps u\n\n【PVT.pdf-第5页】 score=0.5706\n4.1. Image-Level Prediction\nImage classiﬁcation is the most classical task of image-\nlevel prediction. To provide instances for discussion, we\ndesign a series of PVT models with different scales, namely\nPVT-Tiny, -Small, -Medium, and -Large, whose parameter\nnumbers are similar to ResNet18, 50, 101, and 152, respec-\nOutput Size\nLayer Name\nPVT-Tiny\nPVT-Small\nPVT-Medium\nPVT-Large\nStage 1\n4 × W\n4\nP1 = 4; C1 = 64\nStage 2\n8 × W\n8\nP2 = 2; C2 = 128\n× 8\nStage 3\n16 × W\n16\nP3 = 2; C3 = 320\n× 6\n× 18\n× 27\nStage 4\n32 × W\n32\nP4 = 2; C4 =512\nTable 1: Detailed settings of PVT series. The design follows the two rules of ResNet [22]: (1) with the growth of \n\n【Swin.pdf-第8页】 score=0.5639\note that while the inclusion of\nabsolute position embedding improves image classiﬁcation\naccuracy (+0.4%), it harms object detection and semantic\nsegmentation (-0.2 box/mask AP on COCO and -0.6 mIoU\non ADE20K).\nWhile the recent ViT/DeiT models abandon translation\ninvariance in image classiﬁcation even though it has long\nbeen shown to be crucial for visual modeling, we ﬁnd that\ninductive bias that encourages certain translation invariance\nis still preferable for general-purpose visual modeling, par-\nticularly for the dense prediction tasks of object detection\nand semantic segmentation.\nDifferent self-attention methods\nThe real speed of dif-\nfe\n\n【PVT.pdf-第1页】 score=0.5512\nAbstract\nAlthough convolutional neural networks (CNNs) have\nachieved great success in computer vision, this work inves-\ntigates a simpler, convolution-free backbone network use-\nful for many dense prediction tasks. Unlike the recently-\nproposed Vision Transformer (ViT) that was designed for\nimage classiﬁcation speciﬁcally, we introduce the Pyra-\nmid Vision Transformer (PVT), which overcomes the difﬁ-\nculties of porting Transformer to various dense prediction\ntasks. PVT has several merits compared to current state\nof the arts. (1) Different from ViT that typically yields low-\nresolution outputs and incurs high computational and mem-\nory costs,",
+          "elapsed_ms": 936.1248998902738
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳 ViT、Swin、PVT 的视觉特征尺度设计。",
+            "doc_ids": [
+              "ViT",
+              "Swin",
+              "PVT"
+            ]
+          },
+          "observation": "【Swin.pdf-第5页】 score=0.5863\n3.3. Architecture Variants\nWe build our base model, called Swin-B, to have of\nmodel size and computation complexity similar to ViT-\nB/DeiT-B. We also introduce Swin-T, Swin-S and Swin-L,\nwhich are versions of about 0.25×, 0.5× and 2× the model\nsize and computational complexity, respectively. Note that\nthe complexity of Swin-T and Swin-S are similar to those\nof ResNet-50 (DeiT-S) and ResNet-101, respectively. The\nwindow size is set to M = 7 by default. The query dimen-\nsion of each head is d = 32, and the expansion layer of\neach MLP is α = 4, for all experiments. The architecture\nhyper-parameters of these model variants are:\n• Swin-T: C = 96, \n\n【PVT.pdf-第10页】 score=0.5621\n6. Conclusions and Future Work\nWe introduce PVT, a pure Transformer backbone for\ndense prediction tasks, such as object detection and seman-\n100\n150\n200\n250\n300\n160\n320\n480\n640\n960\n1120 1280\nInput Scale\nViT-Small/16\nViT-Small/32\nResNet50\nFigure 6: Models’ GFLOPs under different input scales.\nThe growth rate of GFLOPs:\nViT-Small/16 [13]>ViT-\nSmall/32 [13]>PVT-Small (ours)>ResNet50 [22]. When\nthe input scale is less than 640 × 640, the GFLOPs of PVT-\nSmall and ResNet50 [22] are similar.\ntic segmentation. We develop a progressive shrinking pyra-\nmid and a spatial-reduction attention layer to obtain high-\nresolution and multi-scale feature maps u\n\n【PVT.pdf-第5页】 score=0.5706\n4.1. Image-Level Prediction\nImage classiﬁcation is the most classical task of image-\nlevel prediction. To provide instances for discussion, we\ndesign a series of PVT models with different scales, namely\nPVT-Tiny, -Small, -Medium, and -Large, whose parameter\nnumbers are similar to ResNet18, 50, 101, and 152, respec-\nOutput Size\nLayer Name\nPVT-Tiny\nPVT-Small\nPVT-Medium\nPVT-Large\nStage 1\n4 × W\n4\nP1 = 4; C1 = 64\nStage 2\n8 × W\n8\nP2 = 2; C2 = 128\n× 8\nStage 3\n16 × W\n16\nP3 = 2; C3 = 320\n× 6\n× 18\n× 27\nStage 4\n32 × W\n32\nP4 = 2; C4 =512\nTable 1: Detailed settings of PVT series. The design follows the two rules of ResNet [22]: (1) with the growth of \n\n【Swin.pdf-第8页】 score=0.5639\note that while the inclusion of\nabsolute position embedding improves image classiﬁcation\naccuracy (+0.4%), it harms object detection and semantic\nsegmentation (-0.2 box/mask AP on COCO and -0.6 mIoU\non ADE20K).\nWhile the recent ViT/DeiT models abandon translation\ninvariance in image classiﬁcation even though it has long\nbeen shown to be crucial for visual modeling, we ﬁnd that\ninductive bias that encourages certain translation invariance\nis still preferable for general-purpose visual modeling, par-\nticularly for the dense prediction tasks of object detection\nand semantic segmentation.\nDifferent self-attention methods\nThe real speed of dif-\nfe\n\n【PVT.pdf-第1页】 score=0.5512\nAbstract\nAlthough convolutional neural networks (CNNs) have\nachieved great success in computer vision, this work inves-\ntigates a simpler, convolution-free backbone network use-\nful for many dense prediction tasks. Unlike the recently-\nproposed Vision Transformer (ViT) that was designed for\nimage classiﬁcation speciﬁcally, we introduce the Pyra-\nmid Vision Transformer (PVT), which overcomes the difﬁ-\nculties of porting Transformer to various dense prediction\ntasks. PVT has several merits compared to current state\nof the arts. (1) Different from ViT that typically yields low-\nresolution outputs and incurs high computational and mem-\nory costs,",
+          "elapsed_ms": 932.1389999240637
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "ViT、Swin、PVT 这三种模型在视觉特征尺度设计上各有特点，下面是对它们视觉特征尺度设计的归纳：\n\n1. **ViT模型**：\n   - ViT模型的设计主要集中在模型的大小和计算复杂度上，其基础模型称为ViT-B，模型大小和计算复杂度与ViT-B/DeiT-B相似。\n   - ViT模型还引入了Swin-T、Swin-S和Swin-L，它们的模型大小和计算复杂度分别是基础模型的0.25倍、0.5倍和2倍。\n   - 模型的窗口大小默认设置为M=7，每个头部的查询维度d=32，每个MLP的扩张层α=4。\n\n2. **Swin模型**：\n   - Swin模型的设计主要集中在模型的大小和计算复杂度上，其基础模型称为Swin-B，模型大小和计算复杂度与ViT-B/DeiT-B相似。\n   - Swin模型还引入了Swin-T、Swin-S和Swin-L，它们的模型大小和计算复杂度分别是基础模型的0.25倍、0.5倍和2倍。\n   - 模型的窗口大小默认设置为M=7，每个头部的查询维度d=32，每个MLP的扩张层α=4。\n\n3. **PVT模型**：\n   - PVT模型的设计主要集中",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "S02",
+      "type": "归纳性",
+      "question": "归纳 BEiT、MAE、CLIP 三种预训练监督信号。",
+      "reference_answer": "离散视觉 token 预测、像素重建、图像文本配对对比学习。",
+      "expected_tools": [
+        "rag_search",
+        "paper_compare"
+      ],
+      "chosen_tools": [
+        "rag_search",
+        "rag_search",
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "BEiT、MAE、CLIP 这三种预训练监督信号在图像识别任务中的表现各有特点。\n\nBEiT 使用了基于 Transformer 的架构，其监督信号主要依赖于对齐图像和文本对的嵌入。BEiT 的预训练过程包括对齐图像和文本对的嵌入，通过对比损失来优化模型。BEiT 的主要优势在于其在图像识别任务上的高准确率，但其训练过程相对复杂且耗时较长。\n\nMAE（Masked Autoencoder）使用了掩码自动编码器的架构，其监督信号是通过掩码图像来重构原始图像。MAE 的训练过程包括对原始图像进行部分掩码，然后通过重构掩码后的图像来优化模型。MAE 的优势在于其简单且高效的训练过程，能够在保持高准确率的同时，显著减少训练时间。MAE 的训练过程不依赖于相对位置偏置，这使得其在公平比较时更具优势。\n\nCLIP 使用了对比学习的架构，其监督信号是通过对比图像和文本对的嵌入来优化模型。CLIP 的主要优势在于其在图像和文本对齐任务上的高准确率，但其训练过程相对复杂且耗时较长。CLIP 的训练过程包括对比损失，通过对比图像和文本对的嵌入来优化模型。\n\n总的来说，BEiT 和 MAE 在图像识别任务上的表现优于 CLIP，而 MAE 在保持高准确率的同时，具有更简单和更快的训练过程。CLIP 的训练过程相对复杂且耗时较长。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 2947,
+        "iterations": 1,
+        "elapsed_ms": 113246,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 3
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳 BEiT、MAE、CLIP 三种预训练监督信号。",
+            "doc_ids": [
+              "BEiT",
+              "MAE",
+              "CLIP"
+            ]
+          },
+          "observation": "【MAE.pdf-第6页】 score=0.5748\n6\nViT-H448\nscratch, our impl. -\n82.3\n82.6\n83.1\nDINO [5]\n82.8\nMoCo v3 [9]\n84.1\nBEiT [2]\n85.2\n87.8\nTable 3.\nComparisons with previous results on ImageNet-\n1K. The pre-training data is the ImageNet-1K training set (ex-\ncept the tokenizer in BEiT was pre-trained on 250M DALLE data\n[50]). All self-supervised methods are evaluated by end-to-end\nﬁne-tuning. The ViT models are B/16, L/16, H/14 [16]. The best\nfor each column is underlined. All results are on an image size of\n224, except for ViT-H with an extra result on 448. Here our MAE\nreconstructs normalized pixels and is pre-trained for 1600 epochs.\n0\n600\n76\n78\n82\n86\n88\nViT-B/16\nViT-L/16\nViT-H/14\n\n\n【MAE.pdf-第7页】 score=0.5614\nt\nadvanced networks will perform better.\nComparing with BEiT [2], our MAE is more accurate\nwhile being simpler and faster. Our method reconstructs\npixels, in contrast to BEiT that predicts tokens: BEiT re-\nported a 1.8% degradation [2] when reconstructing pixels\nwith ViT-B.2 We do not need dVAE pre-training. More-\nover, our MAE is considerably faster (3.5× per epoch) than\nBEiT, for the reason as studied in Table 1c.\n2We observed the degradation also in BEiT with ViT-L: it produces\n85.2% (tokens) and 83.5% (pixels), reproduced from the ofﬁcial code.\n0 1 2 \n6 \n18\n24\n81.0\n83.1\n84.6\n77.6\n79.9\n80.8\n81.6\n81.9\n83.8\n\n\n【MAE.pdf-第7页】 score=0.5726\n84.1\nMAE baseline\n# blocks ﬁne-tuned\nFigure 9. Partial ﬁne-tuning results of ViT-L w.r.t. the number\nof ﬁne-tuned Transformer blocks under the default settings from\nTable 1. Tuning 0 blocks is linear probing; 24 is full ﬁne-tuning.\nOur MAE representations are less linearly separable, but are con-\nsistently better than MoCo v3 if one or more blocks are tuned.\nThe MAE models in Table 3 are pre-trained for 1600\nepochs for better accuracy (Figure 7). Even so, our total\npre-training time is less than the other methods when trained\non the same hardware. For example, training ViT-L on 128\nTPU-v3 cores, our MAE’s training time is 31 hours for 1600\nep\n\n【MAE.pdf-第12页】 score=0.5607\ne of [2] uses relative po-\nsition bias [49]. Our MAE pre-training does not use it. For\nfair comparison, we turn on relative position bias only dur-\ning transfer learning, initialized as zero. We note that our\nBEiT reproduction uses relative position bias in both pre-\ntraining and ﬁne-tuning, following their code.\nA.5. Additional Classiﬁcation Tasks\nWe follow the setting in Table 9 for iNaturalist and\nPlaces ﬁne-tuning (Table 6).\nWe adjust the lr and ﬁne-\ntuning epochs for each individual dataset.\nmodel\nparams\nacc\niGPT [6]\niGPT-L\n1362 M\n69.0\niGPT [6]\niGPT-XL\n6801 M\n72.0\nBEiT [2]\n304 M\n52.1†\n86 M\n68.0\n304 M\n75.8\n632 M\n76.6\nTable 12. Linear prob\n\n【BEiT.pdf-第1页】 score=0.5930\nis to overcome the above issues\nfor pre-training of vision Transformers.\nIn this work, we introduce a self-supervised vision representation model BEIT, which stands for\nBidirectional Encoder representation from Image Transformers. Inspired by BERT, we propose a\npre-training task, namely, masked image modeling (MIM). As shown in Figure 1, MIM uses two\n∗Contribution during internship at Microsoft. Correspondence to: Li Dong<lidong1@microsoft.com>, Furu\nWei<fuwei@microsoft.com>\n123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n",
+          "elapsed_ms": 1228.5672998987138
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳 BEiT、MAE、CLIP 三种预训练监督信号。",
+            "doc_ids": [
+              "BEiT",
+              "MAE",
+              "CLIP"
+            ]
+          },
+          "observation": "【MAE.pdf-第6页】 score=0.5748\n6\nViT-H448\nscratch, our impl. -\n82.3\n82.6\n83.1\nDINO [5]\n82.8\nMoCo v3 [9]\n84.1\nBEiT [2]\n85.2\n87.8\nTable 3.\nComparisons with previous results on ImageNet-\n1K. The pre-training data is the ImageNet-1K training set (ex-\ncept the tokenizer in BEiT was pre-trained on 250M DALLE data\n[50]). All self-supervised methods are evaluated by end-to-end\nﬁne-tuning. The ViT models are B/16, L/16, H/14 [16]. The best\nfor each column is underlined. All results are on an image size of\n224, except for ViT-H with an extra result on 448. Here our MAE\nreconstructs normalized pixels and is pre-trained for 1600 epochs.\n0\n600\n76\n78\n82\n86\n88\nViT-B/16\nViT-L/16\nViT-H/14\n\n\n【MAE.pdf-第7页】 score=0.5614\nt\nadvanced networks will perform better.\nComparing with BEiT [2], our MAE is more accurate\nwhile being simpler and faster. Our method reconstructs\npixels, in contrast to BEiT that predicts tokens: BEiT re-\nported a 1.8% degradation [2] when reconstructing pixels\nwith ViT-B.2 We do not need dVAE pre-training. More-\nover, our MAE is considerably faster (3.5× per epoch) than\nBEiT, for the reason as studied in Table 1c.\n2We observed the degradation also in BEiT with ViT-L: it produces\n85.2% (tokens) and 83.5% (pixels), reproduced from the ofﬁcial code.\n0 1 2 \n6 \n18\n24\n81.0\n83.1\n84.6\n77.6\n79.9\n80.8\n81.6\n81.9\n83.8\n\n\n【MAE.pdf-第7页】 score=0.5726\n84.1\nMAE baseline\n# blocks ﬁne-tuned\nFigure 9. Partial ﬁne-tuning results of ViT-L w.r.t. the number\nof ﬁne-tuned Transformer blocks under the default settings from\nTable 1. Tuning 0 blocks is linear probing; 24 is full ﬁne-tuning.\nOur MAE representations are less linearly separable, but are con-\nsistently better than MoCo v3 if one or more blocks are tuned.\nThe MAE models in Table 3 are pre-trained for 1600\nepochs for better accuracy (Figure 7). Even so, our total\npre-training time is less than the other methods when trained\non the same hardware. For example, training ViT-L on 128\nTPU-v3 cores, our MAE’s training time is 31 hours for 1600\nep\n\n【MAE.pdf-第12页】 score=0.5607\ne of [2] uses relative po-\nsition bias [49]. Our MAE pre-training does not use it. For\nfair comparison, we turn on relative position bias only dur-\ning transfer learning, initialized as zero. We note that our\nBEiT reproduction uses relative position bias in both pre-\ntraining and ﬁne-tuning, following their code.\nA.5. Additional Classiﬁcation Tasks\nWe follow the setting in Table 9 for iNaturalist and\nPlaces ﬁne-tuning (Table 6).\nWe adjust the lr and ﬁne-\ntuning epochs for each individual dataset.\nmodel\nparams\nacc\niGPT [6]\niGPT-L\n1362 M\n69.0\niGPT [6]\niGPT-XL\n6801 M\n72.0\nBEiT [2]\n304 M\n52.1†\n86 M\n68.0\n304 M\n75.8\n632 M\n76.6\nTable 12. Linear prob\n\n【BEiT.pdf-第1页】 score=0.5930\nis to overcome the above issues\nfor pre-training of vision Transformers.\nIn this work, we introduce a self-supervised vision representation model BEIT, which stands for\nBidirectional Encoder representation from Image Transformers. Inspired by BERT, we propose a\npre-training task, namely, masked image modeling (MIM). As shown in Figure 1, MIM uses two\n∗Contribution during internship at Microsoft. Correspondence to: Li Dong<lidong1@microsoft.com>, Furu\nWei<fuwei@microsoft.com>\n123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n",
+          "elapsed_ms": 1229.5000003650784
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳 BEiT、MAE、CLIP 三种预训练监督信号。",
+            "doc_ids": [
+              "BEiT",
+              "MAE",
+              "CLIP"
+            ]
+          },
+          "observation": "【MAE.pdf-第6页】 score=0.5748\n6\nViT-H448\nscratch, our impl. -\n82.3\n82.6\n83.1\nDINO [5]\n82.8\nMoCo v3 [9]\n84.1\nBEiT [2]\n85.2\n87.8\nTable 3.\nComparisons with previous results on ImageNet-\n1K. The pre-training data is the ImageNet-1K training set (ex-\ncept the tokenizer in BEiT was pre-trained on 250M DALLE data\n[50]). All self-supervised methods are evaluated by end-to-end\nﬁne-tuning. The ViT models are B/16, L/16, H/14 [16]. The best\nfor each column is underlined. All results are on an image size of\n224, except for ViT-H with an extra result on 448. Here our MAE\nreconstructs normalized pixels and is pre-trained for 1600 epochs.\n0\n600\n76\n78\n82\n86\n88\nViT-B/16\nViT-L/16\nViT-H/14\n\n\n【MAE.pdf-第7页】 score=0.5614\nt\nadvanced networks will perform better.\nComparing with BEiT [2], our MAE is more accurate\nwhile being simpler and faster. Our method reconstructs\npixels, in contrast to BEiT that predicts tokens: BEiT re-\nported a 1.8% degradation [2] when reconstructing pixels\nwith ViT-B.2 We do not need dVAE pre-training. More-\nover, our MAE is considerably faster (3.5× per epoch) than\nBEiT, for the reason as studied in Table 1c.\n2We observed the degradation also in BEiT with ViT-L: it produces\n85.2% (tokens) and 83.5% (pixels), reproduced from the ofﬁcial code.\n0 1 2 \n6 \n18\n24\n81.0\n83.1\n84.6\n77.6\n79.9\n80.8\n81.6\n81.9\n83.8\n\n\n【MAE.pdf-第7页】 score=0.5726\n84.1\nMAE baseline\n# blocks ﬁne-tuned\nFigure 9. Partial ﬁne-tuning results of ViT-L w.r.t. the number\nof ﬁne-tuned Transformer blocks under the default settings from\nTable 1. Tuning 0 blocks is linear probing; 24 is full ﬁne-tuning.\nOur MAE representations are less linearly separable, but are con-\nsistently better than MoCo v3 if one or more blocks are tuned.\nThe MAE models in Table 3 are pre-trained for 1600\nepochs for better accuracy (Figure 7). Even so, our total\npre-training time is less than the other methods when trained\non the same hardware. For example, training ViT-L on 128\nTPU-v3 cores, our MAE’s training time is 31 hours for 1600\nep\n\n【MAE.pdf-第12页】 score=0.5607\ne of [2] uses relative po-\nsition bias [49]. Our MAE pre-training does not use it. For\nfair comparison, we turn on relative position bias only dur-\ning transfer learning, initialized as zero. We note that our\nBEiT reproduction uses relative position bias in both pre-\ntraining and ﬁne-tuning, following their code.\nA.5. Additional Classiﬁcation Tasks\nWe follow the setting in Table 9 for iNaturalist and\nPlaces ﬁne-tuning (Table 6).\nWe adjust the lr and ﬁne-\ntuning epochs for each individual dataset.\nmodel\nparams\nacc\niGPT [6]\niGPT-L\n1362 M\n69.0\niGPT [6]\niGPT-XL\n6801 M\n72.0\nBEiT [2]\n304 M\n52.1†\n86 M\n68.0\n304 M\n75.8\n632 M\n76.6\nTable 12. Linear prob\n\n【BEiT.pdf-第1页】 score=0.5930\nis to overcome the above issues\nfor pre-training of vision Transformers.\nIn this work, we introduce a self-supervised vision representation model BEIT, which stands for\nBidirectional Encoder representation from Image Transformers. Inspired by BERT, we propose a\npre-training task, namely, masked image modeling (MIM). As shown in Figure 1, MIM uses two\n∗Contribution during internship at Microsoft. Correspondence to: Li Dong<lidong1@microsoft.com>, Furu\nWei<fuwei@microsoft.com>\n123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n",
+          "elapsed_ms": 1228.4944001585245
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "BEiT、MAE、CLIP 这三种预训练监督信号在图像识别任务中的表现各有特点。\n\nBEiT 使用了基于 Transformer 的架构，其监督信号主要依赖于对齐图像和文本对的嵌入。BEiT 的预训练过程包括对齐图像和文本对的嵌入，通过对比损失来优化模型。BEiT 的主要优势在于其在图像识别任务上的高准确率，但其训练过程相对复杂且耗时较长。\n\nMAE（Masked Autoencoder）使用了掩码自动编码器的架构，其监督信号是通过掩码图像来重构原始图像。MAE 的训练过程包括对原始图像进行部分掩码，然后通过重构掩码后的图像来优化模型。MAE 的优势在于其简单且高效的训练过程，能够在保持高准确率的同时，显著减少训练时间。MAE 的训练过程不依赖于相对位置偏置，这使得其在公平比较时更具优势。\n\nCLIP 使用了对比学习的架构，其监督信号是通过对比图像和文本对的嵌入来优化模型。CLIP 的主要优势在于其在图像和文本对齐任务上的高准确率，但其训练过程相对复杂且耗时较长。CLIP 的训练过程包括对比损失，通过对比图像和文本对的嵌入来优化模型。\n\n总的来说，BEiT 和 MAE 在图像识别任务上",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "S04",
+      "type": "归纳性",
+      "question": "归纳融合 CNN 与 Transformer 的两种机制。",
+      "reference_answer": "CvT 引入卷积嵌入与投影，MobileViT 结合局部卷积处理与全局 Transformer 信息处理。",
+      "expected_tools": [
+        "rag_search",
+        "paper_compare"
+      ],
+      "chosen_tools": [
+        "rag_search",
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "归纳融合 CNN 与 Transformer 的两种机制，可以从它们各自的核心机制入手。\n\nCNN（卷积神经网络）的核心机制包括局部感受野、权重共享和空间下采样。这些机制使得CNN在处理图像等具有局部结构的数据时表现出色。CNN的局部感受野意味着每个卷积核只关注输入数据的局部区域，这有助于捕捉图像中的局部特征。权重共享意味着卷积核在不同位置上共享相同的权重，这减少了参数的数量，提高了模型的效率。空间下采样则是通过减少输入数据的分辨率来减少计算量，同时保持重要的局部信息。\n\nTransformer的核心机制则包括动态注意力机制、全局上下文融合以及更好的泛化能力。动态注意力机制允许模型在处理输入数据时，根据上下文的重要性动态调整注意力的分配，这对于理解输入数据中的复杂关系非常有效。全局上下文融合机制使得模型能够捕捉到输入数据中的全局信息，这对于理解输入数据中的整体模式至关重要。更好的泛化能力则意味着Transformer在处理新数据时表现良好，这得益于其在训练过程中学习到的抽象特征。\n\n结合CNN和Transformer的优点，【CvT】（Convolutional Vision Transformer）通过引入CNN的局部感受野、权重共享和空间下采样机制，同时保持Transformer的动态注意力、全局上下文融合和更好的泛化能力，从而实现了性能的提升。这种融合不仅保留了CNN在处理局部结构数据时的优势，还利用了Transformer在处理全局信息和复杂关系时的优势。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 1562,
+        "iterations": 1,
+        "elapsed_ms": 107015,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 2
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳融合 CNN 与 Transformer 的两种机制。",
+            "doc_ids": [
+              "CvT",
+              "MobileViT"
+            ]
+          },
+          "observation": "【CvT.pdf-第1页】 score=0.6068\ndard Trans-\nformer layers to model global relations for classiﬁcation.\nDespite the success of vision Transformers at large scale,\nthe performance is still below similarly sized convolutional\nneural network (CNN) counterparts (e.g., ResNets [15])\nwhen trained on smaller amounts of data. One possible rea-\nson may be that ViT lacks certain desirable properties in-\nherently built into the CNN architecture that make CNNs\nuniquely suited to solve vision tasks.\nFor example, im-\nages have a strong 2D local structure: spatially neighbor-\ning pixels are usually highly correlated. The CNN archi-\nNeeds Position Encoding (PE)\nToken Embedding\nProjection fo\n\n【CvT.pdf-第2页】 score=0.6054\nosed Convolutional vision Trans-\nformer (CvT) employs all the beneﬁts of CNNs: local re-\nceptive ﬁelds, shared weights, and spatial subsampling,\nwhile keeping all the advantages of Transformers: dynamic\nattention, global context fusion, and better generalization.\nOur results demonstrate that this approach attains state-of-\nart performance when CvT is pre-trained with ImageNet-\n1k, while being lightweight and efﬁcient: CvT improves the\nperformance compared to CNN-based models (e.g. ResNet)\nand prior Transformer-based models (e.g. ViT, DeiT) while\nutilizing fewer FLOPS and parameters. In addition, CvT\nachieves state-of-the-art performance when \n\n【CvT.pdf-第3页】 score=0.6565\nfrom convolutions\nespecially in normalization details, and the concatenation\nof multiple tokens greatly increases complexity in compu-\ntation and memory. PVT [34] incorporates a multi-stage\ndesign (without convolutions) for Transformer similar to\nmulti-scales in CNNs, favoring dense prediction tasks.\nIn contrast to these concurrent works, this work aims\nto achieve the best of both worlds by introducing convolu-\ntions, with image domain speciﬁc inductive biases, into the\nTransformer architecture. Table 1 shows the key differences\nin terms of necessity of positional encodings, type of token\nembedding, type of projection, and Transformer structu\n\n【CvT.pdf-第2页】 score=0.6417\nuence length while si-\nmultaneously increasing the dimension of token features\nacross stages, achieving spatial downsampling while con-\ncurrently increasing the number of feature maps, as is per-\nformed in CNNs [20]. Second, the linear projection prior\nto every self-attention block in the Transformer module is\nreplaced with our proposed convolutional projection, which\nemploys a s × s depth-wise separable convolution [5] oper-\nation on an 2D-reshaped token map. This allows the model\nto further capture local spatial context and reduce seman-\ntic ambiguity in the attention mechanism. It also permits\nmanagement of computational complexity, as the\n\n【CvT.pdf-第3页】 score=0.6178\nerforms\nan opposite research direction: introducing convolutions to\nTransformers.\nIntroducing Convolutions to Transformers.\nIn NLP\nand speech recognition, convolutions have been used to\nmodify the Transformer block, either by replacing multi-\nhead attentions with convolution layers [38], or adding\nadditional convolution layers in parallel\n[39] or sequen-\ntially [13], to capture local relationships. Other prior work\n[37] proposes to propagate attention maps to succeeding\nlayers via a residual connection, which is ﬁrst transformed\nby convolutions. Different from these works, we propose\nto introduce convolutions to two primary parts of the vi-\ns",
+          "elapsed_ms": 1037.5610999763012
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳融合 CNN 与 Transformer 的两种机制。",
+            "doc_ids": [
+              "CvT",
+              "MobileViT"
+            ]
+          },
+          "observation": "【CvT.pdf-第1页】 score=0.6068\ndard Trans-\nformer layers to model global relations for classiﬁcation.\nDespite the success of vision Transformers at large scale,\nthe performance is still below similarly sized convolutional\nneural network (CNN) counterparts (e.g., ResNets [15])\nwhen trained on smaller amounts of data. One possible rea-\nson may be that ViT lacks certain desirable properties in-\nherently built into the CNN architecture that make CNNs\nuniquely suited to solve vision tasks.\nFor example, im-\nages have a strong 2D local structure: spatially neighbor-\ning pixels are usually highly correlated. The CNN archi-\nNeeds Position Encoding (PE)\nToken Embedding\nProjection fo\n\n【CvT.pdf-第2页】 score=0.6054\nosed Convolutional vision Trans-\nformer (CvT) employs all the beneﬁts of CNNs: local re-\nceptive ﬁelds, shared weights, and spatial subsampling,\nwhile keeping all the advantages of Transformers: dynamic\nattention, global context fusion, and better generalization.\nOur results demonstrate that this approach attains state-of-\nart performance when CvT is pre-trained with ImageNet-\n1k, while being lightweight and efﬁcient: CvT improves the\nperformance compared to CNN-based models (e.g. ResNet)\nand prior Transformer-based models (e.g. ViT, DeiT) while\nutilizing fewer FLOPS and parameters. In addition, CvT\nachieves state-of-the-art performance when \n\n【CvT.pdf-第3页】 score=0.6565\nfrom convolutions\nespecially in normalization details, and the concatenation\nof multiple tokens greatly increases complexity in compu-\ntation and memory. PVT [34] incorporates a multi-stage\ndesign (without convolutions) for Transformer similar to\nmulti-scales in CNNs, favoring dense prediction tasks.\nIn contrast to these concurrent works, this work aims\nto achieve the best of both worlds by introducing convolu-\ntions, with image domain speciﬁc inductive biases, into the\nTransformer architecture. Table 1 shows the key differences\nin terms of necessity of positional encodings, type of token\nembedding, type of projection, and Transformer structu\n\n【CvT.pdf-第2页】 score=0.6417\nuence length while si-\nmultaneously increasing the dimension of token features\nacross stages, achieving spatial downsampling while con-\ncurrently increasing the number of feature maps, as is per-\nformed in CNNs [20]. Second, the linear projection prior\nto every self-attention block in the Transformer module is\nreplaced with our proposed convolutional projection, which\nemploys a s × s depth-wise separable convolution [5] oper-\nation on an 2D-reshaped token map. This allows the model\nto further capture local spatial context and reduce seman-\ntic ambiguity in the attention mechanism. It also permits\nmanagement of computational complexity, as the\n\n【CvT.pdf-第3页】 score=0.6178\nerforms\nan opposite research direction: introducing convolutions to\nTransformers.\nIntroducing Convolutions to Transformers.\nIn NLP\nand speech recognition, convolutions have been used to\nmodify the Transformer block, either by replacing multi-\nhead attentions with convolution layers [38], or adding\nadditional convolution layers in parallel\n[39] or sequen-\ntially [13], to capture local relationships. Other prior work\n[37] proposes to propagate attention maps to succeeding\nlayers via a residual connection, which is ﬁrst transformed\nby convolutions. Different from these works, we propose\nto introduce convolutions to two primary parts of the vi-\ns",
+          "elapsed_ms": 1238.9345997944474
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "归纳融合 CNN 与 Transformer 的两种机制，可以从它们各自的核心机制入手。\n\nCNN（卷积神经网络）的核心机制包括局部感受野、权重共享和空间下采样。这些机制使得CNN在处理图像等具有局部结构的数据时表现出色。CNN的局部感受野意味着每个卷积核只关注输入数据的局部区域，这有助于捕捉图像中的局部特征。权重共享意味着卷积核在不同位置上共享相同的权重，这减少了参数的数量，提高了模型的效率。空间下采样则是通过减少输入数据的分辨率来减少计算量，同时保持重要的局部信息。\n\nTransformer的核心机制则包括动态注意力机制、全局上下文融合以及更好的泛化能力。动态注意力机制允许模型在处理输入数据时，根据上下文的重要性动态调整注意力的分配，这对于理解输入数据中的复杂关系非常有效。全局上下文融合机制使得模型能够捕捉到输入数据中的全局信息，这对于理解输入数据中的整体模式至关重要。更好的泛化能力则意味着Transformer在处理新数据时表现良好，这得益于其在训练过程中学习到的抽象特征。\n\n结合CNN和Transformer的优点，【CvT】（Convolutional Vision Tran",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "S05",
+      "type": "归纳性",
+      "question": "归纳这些论文在目标检测系统中的用途。",
+      "reference_answer": "DETR 为检测框架，Swin 与 PVT 为可适配检测任务的多尺度骨干。",
+      "expected_tools": [
+        "rag_search",
+        "paper_compare"
+      ],
+      "chosen_tools": [
+        "rag_search",
+        "rag_search",
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "根据文档中的信息，这些论文在目标检测系统中的用途主要体现在以下几个方面：\n\n1. **注意力机制**：论文【DETR.pdf-第18页】提到，【Attention augmented convolutional networks】通过增强卷积网络中的注意力机制，提高了目标检测的准确性。【PVT.pdf-第11页】提到，【End-to-end object detection with transformers】使用变压器模型进行端到端的目标检测，也涉及注意力机制的应用。\n\n2. **Cascade R-CNN**：论文【Cascade r-cnn: Delving into high quality object detection】介绍了Cascade R-CNN，这是一种用于高精度目标检测的方法。\n\n3. **Transformer模型**：论文【goruyko. End-to-end object detection with transformers】提出使用Transformer模型进行目标检测，这表明Transformer模型在目标检测中的应用。\n\n4. **Ssd模型**：论文【Ssd: Single shot multibox detector】介绍了单框多目标检测器（Single Shot Multibox Detector, SSD），这是一种在目标检测领域广泛应用的模型。\n\n5. **非局部网络**：论文【Gcnet: Non-local networks meet squeeze-excitation】介绍了一种结合非局部网络和挤压激励网络的目标检测方法。\n\n这些论文主要讨论了目标检测系统中的不同方法和技术，包括注意力机制、Transformer模型、Cascade R-CNN、SSD模型以及非局部网络等。这些方法和技术在提高目标检测的准确性和效率方面发挥了重要作用。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 3051,
+        "iterations": 1,
+        "elapsed_ms": 94053,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 3
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳这些论文在目标检测系统中的用途。",
+            "doc_ids": [
+              "DETR",
+              "Swin",
+              "PVT"
+            ]
+          },
+          "observation": "【PVT.pdf-第11页】 score=0.5468\nReferences\n[1] Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E Hin-\n2016. 5\n[2] Irwan Bello. Lambdanetworks: Modeling long-range inter-\nactions without attention. In Proc. Int. Conf. Learn. Repre-\nsentations, 2021. 3\n[3] Irwan Bello, Barret Zoph, Ashish Vaswani, Jonathon Shlens,\nand Quoc V Le.\nAttention augmented convolutional net-\nworks. In Proc. IEEE Int. Conf. Comp. Vis., 2019. 3\n[4] Zhaowei Cai and Nuno Vasconcelos. Cascade r-cnn: Delv-\ning into high quality object detection. In Proc. IEEE Conf.\nComp. Vis. Patt. Recogn., 2018. 3\n[5] Yue Cao, Jiarui Xu, Stephen Lin, Fangyun Wei, and Han\nHu. Gcnet: Non-local networks meet squeeze-excitation \n\n【PVT.pdf-第5页】 score=0.5467\nng these models in spe-\nciﬁc downstream tasks will be introduced in Section 4.\n\n\n【DETR.pdf-第18页】 score=0.5452\nct detection. In: CVPR (2017)\n23. Lin, T.Y., Goyal, P., Girshick, R.B., He, K., Doll´ar, P.: Focal loss for dense object\ndetection. In: ICCV (2017)\n24. Lin, T.Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Doll´ar, P.,\nZitnick, C.L.: Microsoft COCO: Common objects in context. In: ECCV (2014)\n25. Liu, W., Anguelov, D., Erhan, D., Szegedy, C., Reed, S.E., Fu, C.Y., Berg, A.C.:\nSsd: Single shot multibox detector. In: ECCV (2016)\n26. Loshchilov, I., Hutter, F.: Decoupled weight decay regularization. In: ICLR (2017)\n27. L¨uscher, C., Beck, E., Irie, K., Kitza, M., Michel, W., Zeyer, A., Schl¨uter, R., Ney,\nH.: Rwth asr systems for\n\n【PVT.pdf-第11页】 score=0.5258\ngoruyko. End-to-\nend object detection with transformers. In Proc. Eur. Conf.\nComp. Vis., 2020. 1, 2, 3, 8\n[7] Kai Chen, Jiaqi Wang, Jiangmiao Pang, Yuhang Cao, Yu\nXiong, Xiaoxiao Li, Shuyang Sun, Wansen Feng, Ziwei Liu,\nJiarui Xu, et al. Mmdetection: Open mmlab detection tool-\n7\n[8] Liang-Chieh Chen, George Papandreou, Iasonas Kokkinos,\nKevin Murphy, and Alan L Yuille. Deeplab: Semantic image\nsegmentation with deep convolutional nets, atrous convolu-\ntion, and fully connected crfs. IEEE Trans. Pattern Anal.\nMach. Intell., 2017. 3, 7\n[9] Liang-Chieh Chen, Yukun Zhu, George Papandreou, Florian\nSchroff, and Hartwig Adam. Encoder-decoder with atr\n\n【DETR.pdf-第17页】 score=0.5192\nReferences\n1. Al-Rfou, R., Choe, D., Constant, N., Guo, M., Jones, L.: Character-level language\nmodeling with deeper self-attention. In: AAAI Conference on Artiﬁcial Intelligence\n2. Bahdanau, D., Cho, K., Bengio, Y.: Neural machine translation by jointly learning\nto align and translate. In: ICLR (2015)\n3. Bello, I., Zoph, B., Vaswani, A., Shlens, J., Le, Q.V.: Attention augmented convo-\nlutional networks. In: ICCV (2019)\n4. Bodla, N., Singh, B., Chellappa, R., Davis, L.S.: Soft-NMS\nimproving object\ndetection with one line of code. In: ICCV (2017)\n5. Cai, Z., Vasconcelos, N.: Cascade R-CNN: High quality object detection and in-\nstance segmenta",
+          "elapsed_ms": 780.1471999846399
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳这些论文在目标检测系统中的用途。",
+            "doc_ids": [
+              "DETR",
+              "Swin",
+              "PVT"
+            ]
+          },
+          "observation": "【PVT.pdf-第11页】 score=0.5468\nReferences\n[1] Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E Hin-\n2016. 5\n[2] Irwan Bello. Lambdanetworks: Modeling long-range inter-\nactions without attention. In Proc. Int. Conf. Learn. Repre-\nsentations, 2021. 3\n[3] Irwan Bello, Barret Zoph, Ashish Vaswani, Jonathon Shlens,\nand Quoc V Le.\nAttention augmented convolutional net-\nworks. In Proc. IEEE Int. Conf. Comp. Vis., 2019. 3\n[4] Zhaowei Cai and Nuno Vasconcelos. Cascade r-cnn: Delv-\ning into high quality object detection. In Proc. IEEE Conf.\nComp. Vis. Patt. Recogn., 2018. 3\n[5] Yue Cao, Jiarui Xu, Stephen Lin, Fangyun Wei, and Han\nHu. Gcnet: Non-local networks meet squeeze-excitation \n\n【PVT.pdf-第5页】 score=0.5467\nng these models in spe-\nciﬁc downstream tasks will be introduced in Section 4.\n\n\n【DETR.pdf-第18页】 score=0.5452\nct detection. In: CVPR (2017)\n23. Lin, T.Y., Goyal, P., Girshick, R.B., He, K., Doll´ar, P.: Focal loss for dense object\ndetection. In: ICCV (2017)\n24. Lin, T.Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Doll´ar, P.,\nZitnick, C.L.: Microsoft COCO: Common objects in context. In: ECCV (2014)\n25. Liu, W., Anguelov, D., Erhan, D., Szegedy, C., Reed, S.E., Fu, C.Y., Berg, A.C.:\nSsd: Single shot multibox detector. In: ECCV (2016)\n26. Loshchilov, I., Hutter, F.: Decoupled weight decay regularization. In: ICLR (2017)\n27. L¨uscher, C., Beck, E., Irie, K., Kitza, M., Michel, W., Zeyer, A., Schl¨uter, R., Ney,\nH.: Rwth asr systems for\n\n【PVT.pdf-第11页】 score=0.5258\ngoruyko. End-to-\nend object detection with transformers. In Proc. Eur. Conf.\nComp. Vis., 2020. 1, 2, 3, 8\n[7] Kai Chen, Jiaqi Wang, Jiangmiao Pang, Yuhang Cao, Yu\nXiong, Xiaoxiao Li, Shuyang Sun, Wansen Feng, Ziwei Liu,\nJiarui Xu, et al. Mmdetection: Open mmlab detection tool-\n7\n[8] Liang-Chieh Chen, George Papandreou, Iasonas Kokkinos,\nKevin Murphy, and Alan L Yuille. Deeplab: Semantic image\nsegmentation with deep convolutional nets, atrous convolu-\ntion, and fully connected crfs. IEEE Trans. Pattern Anal.\nMach. Intell., 2017. 3, 7\n[9] Liang-Chieh Chen, Yukun Zhu, George Papandreou, Florian\nSchroff, and Hartwig Adam. Encoder-decoder with atr\n\n【DETR.pdf-第17页】 score=0.5192\nReferences\n1. Al-Rfou, R., Choe, D., Constant, N., Guo, M., Jones, L.: Character-level language\nmodeling with deeper self-attention. In: AAAI Conference on Artiﬁcial Intelligence\n2. Bahdanau, D., Cho, K., Bengio, Y.: Neural machine translation by jointly learning\nto align and translate. In: ICLR (2015)\n3. Bello, I., Zoph, B., Vaswani, A., Shlens, J., Le, Q.V.: Attention augmented convo-\nlutional networks. In: ICCV (2019)\n4. Bodla, N., Singh, B., Chellappa, R., Davis, L.S.: Soft-NMS\nimproving object\ndetection with one line of code. In: ICCV (2017)\n5. Cai, Z., Vasconcelos, N.: Cascade R-CNN: High quality object detection and in-\nstance segmenta",
+          "elapsed_ms": 778.6166998557746
+        },
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "归纳这些论文在目标检测系统中的用途。",
+            "doc_ids": [
+              "DETR",
+              "Swin",
+              "PVT"
+            ]
+          },
+          "observation": "【PVT.pdf-第11页】 score=0.5468\nReferences\n[1] Jimmy Lei Ba, Jamie Ryan Kiros, and Geoffrey E Hin-\n2016. 5\n[2] Irwan Bello. Lambdanetworks: Modeling long-range inter-\nactions without attention. In Proc. Int. Conf. Learn. Repre-\nsentations, 2021. 3\n[3] Irwan Bello, Barret Zoph, Ashish Vaswani, Jonathon Shlens,\nand Quoc V Le.\nAttention augmented convolutional net-\nworks. In Proc. IEEE Int. Conf. Comp. Vis., 2019. 3\n[4] Zhaowei Cai and Nuno Vasconcelos. Cascade r-cnn: Delv-\ning into high quality object detection. In Proc. IEEE Conf.\nComp. Vis. Patt. Recogn., 2018. 3\n[5] Yue Cao, Jiarui Xu, Stephen Lin, Fangyun Wei, and Han\nHu. Gcnet: Non-local networks meet squeeze-excitation \n\n【PVT.pdf-第5页】 score=0.5467\nng these models in spe-\nciﬁc downstream tasks will be introduced in Section 4.\n\n\n【DETR.pdf-第18页】 score=0.5452\nct detection. In: CVPR (2017)\n23. Lin, T.Y., Goyal, P., Girshick, R.B., He, K., Doll´ar, P.: Focal loss for dense object\ndetection. In: ICCV (2017)\n24. Lin, T.Y., Maire, M., Belongie, S., Hays, J., Perona, P., Ramanan, D., Doll´ar, P.,\nZitnick, C.L.: Microsoft COCO: Common objects in context. In: ECCV (2014)\n25. Liu, W., Anguelov, D., Erhan, D., Szegedy, C., Reed, S.E., Fu, C.Y., Berg, A.C.:\nSsd: Single shot multibox detector. In: ECCV (2016)\n26. Loshchilov, I., Hutter, F.: Decoupled weight decay regularization. In: ICLR (2017)\n27. L¨uscher, C., Beck, E., Irie, K., Kitza, M., Michel, W., Zeyer, A., Schl¨uter, R., Ney,\nH.: Rwth asr systems for\n\n【PVT.pdf-第11页】 score=0.5258\ngoruyko. End-to-\nend object detection with transformers. In Proc. Eur. Conf.\nComp. Vis., 2020. 1, 2, 3, 8\n[7] Kai Chen, Jiaqi Wang, Jiangmiao Pang, Yuhang Cao, Yu\nXiong, Xiaoxiao Li, Shuyang Sun, Wansen Feng, Ziwei Liu,\nJiarui Xu, et al. Mmdetection: Open mmlab detection tool-\n7\n[8] Liang-Chieh Chen, George Papandreou, Iasonas Kokkinos,\nKevin Murphy, and Alan L Yuille. Deeplab: Semantic image\nsegmentation with deep convolutional nets, atrous convolu-\ntion, and fully connected crfs. IEEE Trans. Pattern Anal.\nMach. Intell., 2017. 3, 7\n[9] Liang-Chieh Chen, Yukun Zhu, George Papandreou, Florian\nSchroff, and Hartwig Adam. Encoder-decoder with atr\n\n【DETR.pdf-第17页】 score=0.5192\nReferences\n1. Al-Rfou, R., Choe, D., Constant, N., Guo, M., Jones, L.: Character-level language\nmodeling with deeper self-attention. In: AAAI Conference on Artiﬁcial Intelligence\n2. Bahdanau, D., Cho, K., Bengio, Y.: Neural machine translation by jointly learning\nto align and translate. In: ICLR (2015)\n3. Bello, I., Zoph, B., Vaswani, A., Shlens, J., Le, Q.V.: Attention augmented convo-\nlutional networks. In: ICCV (2019)\n4. Bodla, N., Singh, B., Chellappa, R., Davis, L.S.: Soft-NMS\nimproving object\ndetection with one line of code. In: ICCV (2017)\n5. Cai, Z., Vasconcelos, N.: Cascade R-CNN: High quality object detection and in-\nstance segmenta",
+          "elapsed_ms": 777.0179999060929
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "根据文档中的信息，这些论文在目标检测系统中的用途主要体现在以下几个方面：\n\n1. **注意力机制**：论文【DETR.pdf-第18页】提到，【Attention augmented convolutional networks】通过增强卷积网络中的注意力机制，提高了目标检测的准确性。【PVT.pdf-第11页】提到，【End-to-end object detection with transformers】使用变压器模型进行端到端的目标检测，也涉及注意力机制的应用。\n\n2. **Cascade R-CNN**：论文【Cascade r-cnn: Delving into high quality object detection】介绍了Cascade R-CNN，这是一种用于高精度目标检测的方法。\n\n3. **Transformer模型**：论文【goruyko. End-to-end object detection with transformers】提出使用Transformer模型进行目标检测，这表明Transformer模型在目标检测中的应用。\n\n4. **Ssd模型**",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "R01",
+      "type": "推理性",
+      "question": "为什么 MAE 只让 encoder 看 visible patches？",
+      "reference_answer": "减少编码器计算开销，把重建任务交给轻量解码器。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "MAE 只让 encoder 看 visible patches 的原因是，encoder 只处理输入数据中的一部分，即 visible patches。这部分数据代表了原始数据中的可见部分，而 mask patches 则是被遮掩的部分，encoder 不参与处理这些被遮掩的数据。这样做可以让模型在训练过程中仅处理一部分数据，从而减少计算和内存的需求。encoder 处理的这部分数据是通过随机采样策略从整个数据集中抽取的，这个策略确保了每个 patch 都被抽样一次，且不会重复抽样。这样做的结果是，encoder 只需要处理一部分数据，而 decoder 则负责处理剩余的部分，包括那些被遮掩的 patches。通过这种方式，MAE 能够有效地训练出一个大型的 encoder，同时保持较低的计算和内存需求。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 849,
+        "iterations": 1,
+        "elapsed_ms": 29711,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "为什么 MAE 只让 encoder 看 visible patches？",
+            "doc_ids": [
+              "MAE"
+            ]
+          },
+          "observation": "【MAE.pdf-第3页】 score=0.6275\nrocesses the resulting set\nvia a series of Transformer blocks. However, our encoder\nonly operates on a small subset (e.g., 25%) of the full set.\nMasked patches are removed; no mask tokens are used.\nThis allows us to train very large encoders with only a frac-\ntion of compute and memory. The full set is handled by a\nlightweight decoder, described next.\nMAE decoder. The input to the MAE decoder is the full\nset of tokens consisting of (i) encoded visible patches, and\n(ii) mask tokens. See Figure 1. Each mask token [14] is a\nshared, learned vector that indicates the presence of a miss-\n3\ning patch to be predicted. We add positional embeddings to\n\n\n【MAE.pdf-第2页】 score=0.6070\nnput, plays a different role be-\ntween reconstructing text and images. In vision, the decoder\nreconstructs pixels, hence its output is of a lower semantic\nlevel than common recognition tasks. This is in contrast\nto language, where the decoder predicts missing words that\ncontain rich semantic information. While in BERT the de-\ncoder can be trivial (an MLP) [14], we found that for im-\nages, the decoder design plays a key role in determining the\nsemantic level of the learned latent representations.\nDriven by this analysis, we present a simple, effective,\nand scalable form of a masked autoencoder (MAE) for\nvisual representation learning. Our MAE \n\n【MAE.pdf-第4页】 score=0.6282\nMAE decoder is only used during pre-training to\nperform the image reconstruction task (only the encoder\nis used to produce image representations for recognition).\nTherefore, the decoder architecture can be ﬂexibly designed\nin a manner that is independent of the encoder design. We\nexperiment with very small decoders, narrower and shal-\nlower than the encoder. For example, our default decoder\nhas <10% computation per token vs. the encoder. With this\nasymmetrical design, the full set of tokens are only pro-\ncessed by the lightweight decoder, which signiﬁcantly re-\nduces pre-training time.\nReconstruction target. Our MAE reconstructs the input\nby \n\n【MAE.pdf-第3页】 score=0.6011\n\nsampling strategy is straightforward: we sample random\npatches without replacement, following a uniform distribu-\ntion. We simply refer to this as “random sampling”.\nRandom sampling with a high masking ratio (i.e., the ra-\ntio of removed patches) largely eliminates redundancy, thus\ncreating a task that cannot be easily solved by extrapolation\nfrom visible neighboring patches (see Figures 2 – 4). The\nuniform distribution prevents a potential center bias (i.e.,\nmore masked patches near the image center). Finally, the\nhighly sparse input creates an opportunity for designing an\nefﬁcient encoder, introduced next.\nMAE encoder. Our encoder is a ViT\n\n【MAE.pdf-第1页】 score=0.6066\nAbstract\nThis paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core designs.\nFirst, we develop an asymmetric\nencoder-decoder architecture, with an encoder that oper-\nates only on the visible subset of patches (without mask to-\nkens), along with a lightweight decoder that reconstructs\nthe original image from the latent representation and mask\ntokens. Second, we ﬁnd that masking a high proportion\nof the input image, e.g., 75%, yields a nontrivial and\nmeaningful self-sup",
+          "elapsed_ms": 46.17440002039075
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "MAE 只让 encoder 看 visible patches 的原因是，encoder 只处理输入数据中的一部分，即 visible patches。这部分数据代表了原始数据中的可见部分，而 mask patches 则是被遮掩的部分，encoder 不参与处理这些被遮掩的数据。这样做可以让模型在训练过程中仅处理一部分数据，从而减少计算和内存的需求。encoder 处理的这部分数据是通过随机采样策略从整个数据集中抽取的，这个策略确保了每个 patch 都被抽样一次，且不会重复抽样。这样做的结果是，encoder 只需要处理一部分数据，而 decoder 则负责处理剩余的部分，包括那些被遮掩的 patches。通过这种方式，MAE 能够有效地训练出一个大型的 encoder，同时保持较低的计算和内存需求。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "R02",
+      "type": "推理性",
+      "question": "为什么 Swin 需要 shifted windows 而不能只用固定独立窗口？",
+      "reference_answer": "固定窗口限制跨窗口通信，移位设计在相邻层建立跨窗口连接。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "Swin Transformer需要使用shifted windows而不是固定独立窗口，主要是因为shifted windows能够更好地捕捉局部特征，同时保持较低的计算复杂度和延迟。具体来说，shifted windows通过在相邻的自注意力层之间移动窗口划分，使得相邻窗口之间可以共享关键集（key set），从而在硬件中提高内存访问效率。这有助于减少延迟，特别是在通用硬件上，因为不同层之间共享关键集可以避免频繁的内存访问。\n\n相比之下，固定独立窗口在相邻层之间不共享关键集，导致每个窗口都需要独立地进行内存访问，这在通用硬件上会导致较高的延迟。此外，shifted windows的设计还能够显著提升自注意力模块的效率，相比固定窗口方法，其效率提升高达40.8倍、20.2倍、9.3倍和7.6倍，分别在四个网络阶段上。\n\n通过这些特性，shifted windows不仅能够保持模型的准确性，还能显著提高模型的速度。例如，基于shifted windows的Swin Transformer架构在Swin-T、Swin-S和Swin-B上分别比基于滑动窗口的变体快4.1倍、4.0倍和3.6倍。因此，Swin Transformer选择使用shifted windows而不是固定独立窗口，以实现更好的性能和效率。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 1034,
+        "iterations": 1,
+        "elapsed_ms": 27079,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "为什么 Swin 需要 shifted windows 而不能只用固定独立窗口？",
+            "doc_ids": [
+              "Swin"
+            ]
+          },
+          "observation": "【Swin.pdf-第8页】 score=0.6461\nr deeper stages. Overall, it brings a 13%, 18% and 18%\nspeed-up on Swin-T, Swin-S and Swin-B, respectively.\nThe self-attention modules built on the proposed\nshifted window approach are 40.8×/2.5×, 20.2×/2.5×,\n9.3×/2.1×, and 7.6×/1.8× more efﬁcient than those of slid-\ning windows in naive/kernel implementations on four net-\nwork stages, respectively. Overall, the Swin Transformer\narchitectures built on shifted windows are 4.1/1.5, 4.0/1.5,\n3.6/1.5 times faster than variants built on sliding windows\nfor Swin-T, Swin-S, and Swin-B, respectively. Table 6 com-\npares their accuracy on the three tasks, showing that they are\nsimilarly accurate in vis\n\n【Swin.pdf-第2页】 score=0.6696\nc complexity.\nA key design element of Swin Transformer is its shift\nof the window partition between consecutive self-attention\nlayers, as illustrated in Figure 2.\nThe shifted windows\nbridge the windows of the preceding layer, providing con-\nnections among them that signiﬁcantly enhance modeling\npower (see Table 4). This strategy is also efﬁcient in re-\ngards to real-world latency: all query patches within a win-\ndow share the same key set1, which facilitates memory ac-\ncess in hardware. In contrast, earlier sliding window based\nself-attention approaches [33, 50] suffer from low latency\non general hardware due to different key sets for differe\n\n【Swin.pdf-第2页】 score=0.6421\n sliding-window\nbased convolution layer on general hardware, thanks to its shared kernel\nFigure 2. An illustration of the shifted window approach for com-\nputing self-attention in the proposed Swin Transformer architec-\nture. In layer l (left), a regular window partitioning scheme is\nadopted, and self-attention is computed within each window. In\nthe next layer l + 1 (right), the window partitioning is shifted, re-\nsulting in new windows. The self-attention computation in the new\nwindows crosses the boundaries of the previous windows in layer\nl, providing connections among them.\nshifted window approach has much lower latency than the\nsliding w\n\n【Swin.pdf-第4页】 score=0.6438\n6\nPatch Partition\nFigure 3. (a) The architecture of a Swin Transformer (Swin-T); (b) two successive Swin Transformer Blocks (notation presented with\nEq. (3)). W-MSA and SW-MSA are multi-head self attention modules with regular and shifted windowing conﬁgurations, respectively.\nwith the same feature map resolutions as those of typical\nconvolutional networks, e.g., VGG [52] and ResNet [30].\nAs a result, the proposed architecture can conveniently re-\nplace the backbone networks in existing methods for vari-\nous vision tasks.\nSwin Transformer block\nSwin Transformer is built by\nreplacing the standard multi-head self attention (MSA)\nmodule in a Tra\n\n【Swin.pdf-第1页】 score=0.6330\nAbstract\nThis paper presents a new vision Transformer, called\nSwin Transformer, that capably serves as a general-purpose\nbackbone for computer vision.\nChallenges in adapting\nTransformer from language to vision arise from differences\nbetween the two domains, such as large variations in the\nscale of visual entities and the high resolution of pixels\nin images compared to words in text.\nTo address these\ndifferences, we propose a hierarchical Transformer whose\nrepresentation is computed with Shifted windows.\nThe\nshifted windowing scheme brings greater efﬁciency by lim-\niting self-attention computation to non-overlapping local\nwindows while also al",
+          "elapsed_ms": 55.18680019304156
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "Swin Transformer需要使用shifted windows而不是固定独立窗口，主要是因为shifted windows能够更好地捕捉局部特征，同时保持较低的计算复杂度和延迟。具体来说，shifted windows通过在相邻的自注意力层之间移动窗口划分，使得相邻窗口之间可以共享关键集（key set），从而在硬件中提高内存访问效率。这有助于减少延迟，特别是在通用硬件上，因为不同层之间共享关键集可以避免频繁的内存访问。\n\n相比之下，固定独立窗口在相邻层之间不共享关键集，导致每个窗口都需要独立地进行内存访问，这在通用硬件上会导致较高的延迟。此外，shifted windows的设计还能够显著提升自注意力模块的效率，相比固定窗口方法，其效率提升高达40.8倍、20.2倍、9.3倍和7.6倍，分别在四个网络阶段上。\n\n通过这些特性，shifted windows不仅能够保持模型的准确性，还能显著提高模型的速度。例如，基于shifted windows的Swin Transformer架构在Swin-T、Swin-S和Swin-B上分别比基于滑动窗口的变体快4.1倍、4.0倍和3.6",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "R04",
+      "type": "推理性",
+      "question": "为什么 attention 点积需要缩放以避免 small gradients？",
+      "reference_answer": "维度增加时点积幅值增大，softmax 饱和后梯度变小。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "在注意力机制中，点积计算的兼容性函数使用一个具有单个隐藏层的前馈网络。虽然理论上它们的复杂性相似，但在实践中，点积注意力比点乘注意力更快且更节省空间，因为它可以利用高度优化的矩阵乘法代码。当dk（query、key和value的维度）较小的时候，两种机制的表现相似。然而，当dk较大时，点积可能会导致较大的数值，这会将softmax函数推入其梯度非常小的区域。这会导致梯度过小，从而使得训练变得困难，因为梯度过小可能导致模型难以学习远距离位置之间的依赖关系。\n\n为了解决这个问题，引入了缩放操作。缩放操作通过将点积结果除以√dk来调整点积的大小，从而避免了上述问题。具体来说，对于Scaled Dot-Product Attention，我们首先计算query与所有key的点积，然后将每个点积结果除以√dk，最后应用softmax函数来获得值上的权重。通过这种方式，即使在dk较大的情况下，softmax函数的输出也会保持在合理范围内，从而避免了梯度过小的问题。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 874,
+        "iterations": 1,
+        "elapsed_ms": 22729,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "为什么 attention 点积需要缩放以避免 small gradients？",
+            "doc_ids": [
+              "Transformer"
+            ]
+          },
+          "observation": "【Transformer.pdf-第4页】 score=0.6448\nttention computes the compatibility function using a feed-forward network with\na single hidden layer. While the two are similar in theoretical complexity, dot-product attention is\nmuch faster and more space-efficient in practice, since it can be implemented using highly optimized\nmatrix multiplication code.\nWhile for small values of dk the two mechanisms perform similarly, additive attention outperforms\ndot product attention without scaling for larger values of dk [3]. We suspect that for large values of\ndk, the dot products grow large in magnitude, pushing the softmax function into regions where it has\nextremely small gradients 4. To counter\n\n【Transformer.pdf-第4页】 score=0.5762\n3.2.1\nScaled Dot-Product Attention\nWe call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of\nqueries and keys of dimension dk, and values of dimension dv. We compute the dot products of the\nquery with all keys, divide each by √dk, and apply a softmax function to obtain the weights on the\nvalues.\nIn practice, we compute the attention function on a set of queries simultaneously, packed together\ninto a matrix Q. The keys and values are also packed together into matrices K and V . We compute\nthe matrix of outputs as:\nAttention(Q, K, V ) = softmax(QKT\n√dk\n)V\n(1)\nThe two most commonly used attention functions\n\n【Transformer.pdf-第2页】 score=0.6148\nBackground\nThe goal of reducing sequential computation also forms the foundation of the Extended Neural GPU\n[16], ByteNet [18] and ConvS2S [9], all of which use convolutional neural networks as basic building\nblock, computing hidden representations in parallel for all input and output positions. In these models,\nthe number of operations required to relate signals from two arbitrary input or output positions grows\nin the distance between positions, linearly for ConvS2S and logarithmically for ByteNet. This makes\nit more difficult to learn dependencies between distant positions [12]. In the Transformer this is\nreduced to a constant number of op\n\n【Transformer.pdf-第5页】 score=0.5360\ntend to information from different representation\nsubspaces at different positions. With a single attention head, averaging inhibits this.\nMultiHead(Q, K, V ) = Concat(head1, ..., headh)W O\nwhere headi = Attention(QW Q\ni , KW K\ni , V W V\ni )\nWhere the projections are parameter matrices W Q\n∈Rdmodel×dk, W K\n∈Rdmodel×dk, W V\n∈Rdmodel×dv\nand W O ∈Rhdv×dmodel.\nIn this work we employ h = 8 parallel attention layers, or heads. For each of these we use\ndk = dv = dmodel/h = 64. Due to the reduced dimension of each head, the total computational cost\nis similar to that of single-head attention with full dimensionality.\n\n\n【Transformer.pdf-第2页】 score=0.5291\nsection 3.2.\nSelf-attention, sometimes called intra-attention is an attention mechanism relating different positions\nof a single sequence in order to compute a representation of the sequence. Self-attention has been\nused successfully in a variety of tasks including reading comprehension, abstractive summarization,\ntextual entailment and learning task-independent sentence representations [4, 27, 28, 22].\nEnd-to-end memory networks are based on a recurrent attention mechanism instead of sequence-\naligned recurrence and have been shown to perform well on simple-language question answering and\nlanguage modeling tasks [34].\nTo the best of our know",
+          "elapsed_ms": 57.871800381690264
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "在注意力机制中，点积计算的兼容性函数使用一个具有单个隐藏层的前馈网络。虽然理论上它们的复杂性相似，但在实践中，点积注意力比点乘注意力更快且更节省空间，因为它可以利用高度优化的矩阵乘法代码。当dk（query、key和value的维度）较小的时候，两种机制的表现相似。然而，当dk较大时，点积可能会导致较大的数值，这会将softmax函数推入其梯度非常小的区域。这会导致梯度过小，从而使得训练变得困难，因为梯度过小可能导致模型难以学习远距离位置之间的依赖关系。\n\n为了解决这个问题，引入了缩放操作。缩放操作通过将点积结果除以√dk来调整点积的大小，从而避免了上述问题。具体来说，对于Scaled Dot-Product Attention，我们首先计算query与所有key的点积，然后将每个点积结果除以√dk，最后应用softmax函数来获得值上的权重。通过这种方式，即使在dk较大的情况下，softmax函数的输出也会保持在合理范围内，从而避免了梯度过小的问题。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "R06",
+      "type": "推理性",
+      "question": "为什么 CaiT 需要 LayerScale 处理深层网络优化？",
+      "reference_answer": "控制残差分支初始贡献，有助于稳定更深网络的优化。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "CaiT 需要 LayerScale 处理深层网络优化的原因在于，LayerScale 提供了比仅通过一个可学习标量调整整个层更丰富的优化空间。具体来说，LayerScale 提供了每通道的自由度，这是与现有方法相比的一个决定性的优势。通过实验验证，LayerScale 在优化深层网络方面表现出了显著的优势。LayerScale 的引入允许在每一层中进行参数化，这使得处理过程更快，同时在内存和计算方面也更经济。与传统的“自注意力”层相比，CaiT 的自注意力层在计算和内存使用上更高效。因此，LayerScale 为优化深层网络提供了更灵活和有效的解决方案。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 830,
+        "iterations": 1,
+        "elapsed_ms": 17214,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "为什么 CaiT 需要 LayerScale 处理深层网络优化？",
+            "doc_ids": [
+              "CaiT"
+            ]
+          },
+          "observation": "【CaiT.pdf-第5页】 score=0.6751\nLayerScale\noffers more diversity in the optimization than just adjusting the whole layer\nby a single learnable scalar as in ReZero/SkipInit, Fixup and T-Fixup. As we\nwill show empirically, offering the degrees of freedom to do so per channel is a\ndecisive advantage of LayerScale over existing approaches.In Appendix A, we\npresent other variants or intermediate choices that support our proposal, and\na control experiment that aims at disentangling the speciﬁc weighting of the\nbranches of LayerScale from its impact on optimization.\nFormally, adding these weights does not change the expressive power of the\narchitecture since, as they can be integr\n\n【CaiT.pdf-第2页】 score=0.6711\nbut not at) 0. Adding this simple layer\nafter each residual block improves the training dynamic, allowing us to train\ndeeper high-capacity image transformers that beneﬁt from depth. We refer to\nthis approach as LayerScale.\nSection 3 introduces our second contribution, namely class-attention lay-\ners, that we present in Figure 2. It is akin to an encoder/decoder architecture,\nin which we explicitly separate the transformer layers involving self-attention\nbetween patches, from class-attention layers that are devoted to extract the con-\ntent of the processed patches into a single vector so that it can be fed to a linear\nclassiﬁer. This explicit \n\n【CaiT.pdf-第7页】 score=0.6551\nme parametrization for the FFNs. However the processing of these\nlayers is much faster: the FFN only processes matrix-vector multiplications.\nThe CA function is also less expensive than SA in term of memory and\ncomputation because it computes the attention between the class vector and\nthe set of patch embeddings: Q ∈Rd means that Q.KT ∈Rh×1×p. In contrast,\nin the “regular self-attention” layers SA, we have Q ∈Rp×d and therefore\nQ.KT ∈Rh×p×p. In other words, the initially quadratic complexity in the\nnumber of patches becomes linear in our extra CaiT layers.\nExperiments\nIn this section, we report our experimental results related to LayerScale a\n\n【CaiT.pdf-第9页】 score=0.5866\nmethods, including the baseline.\nThe column α = ε reports the performance when initializing the scalar with the same\nvalue as for LayerScale. †: failed before the end of the training.\nscalar α weighting\nLayerScale\ndr = 0.05\nadjust [dr]\nRezero\nT-Fixup\nFixup\nα = ε\n79.9 [0.05]\n78.3\n79.4\n80.7\n80.4\n80.7 [0.10]\n82.0\n81.0 [0.20]\n82.3\n81.1\n81.9 [0.25]\n82.1\nstochastic depth coefficient\n78\n80\n82\ntop-1 accuracy (%)\n12 blocks\n18 blocks\n24 blocks\n36 blocks\n48 blocks\nFigure 3: We measure the impact of stochastic depth on ImageNet with a DeiT-S with\nLayerScale for different depths. The drop rate of stochastic depth needs to be adapted\nto the network depth.\n\n\n【CaiT.pdf-第22页】 score=0.6006\nzen trunk embeddings in CaiT is reminiscent of non-\nautoregressive encoder-decoders [25, 41], where a whole sequence (we have\nonly one prediction) is produced at once by iterative reﬁnements.\nDeeper architectures\nusually lead to better performance [27, 56, 61], how-\never this complicates their training process [58, 59]. One must adapt the ar-\nchitecture and the optimization procedure to train them correctly. Some ap-\nproaches focus on the initialization schemes [24, 27, 70], others on multiple\nstages training [53, 56], multiple loss at different depth [61], adding compo-\nnents in the architecture [2, 75] or regularization [33]. As pointed in ",
+          "elapsed_ms": 231.34620022028685
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "CaiT 需要 LayerScale 处理深层网络优化的原因在于，LayerScale 提供了比仅通过一个可学习标量调整整个层更丰富的优化空间。具体来说，LayerScale 提供了每通道的自由度，这是与现有方法相比的一个决定性的优势。通过实验验证，LayerScale 在优化深层网络方面表现出了显著的优势。LayerScale 的引入允许在每一层中进行参数化，这使得处理过程更快，同时在内存和计算方面也更经济。与传统的“自注意力”层相比，CaiT 的自注意力层在计算和内存使用上更高效。因此，LayerScale 为优化深层网络提供了更灵活和有效的解决方案。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "U01",
+      "type": "不可回答",
+      "question": "ViT 作者未公开的私人手机号是多少？",
+      "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "根据提供的文档内容，ViT模型的作者并未公开其私人手机号。文档中提供了关于ViT模型的详细信息，包括模型的配置、性能测试结果以及模型大小对性能的影响等。但没有提及任何关于ViT作者私人手机号的信息。因此，无法提供ViT作者未公开的私人手机号。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 1089,
+        "iterations": 1,
+        "elapsed_ms": 16689,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "ViT 作者未公开的私人手机号是多少？",
+            "doc_ids": [
+              "ViT"
+            ]
+          },
+          "observation": "【ViT.pdf-第5页】 score=0.3967\nModel\nLayers\nHidden size D\nMLP size\nHeads\nParams\nViT-Base\n768\n3072\n86M\nViT-Large\n24\n1024\n4096\n307M\nViT-Huge\n32\n1280\n5120\n632M\nTable 1: Details of Vision Transformer model variants.\nWe also evaluate on the 19-task VTAB classiﬁcation suite (Zhai et al., 2019b). VTAB evaluates\nlow-data transfer to diverse tasks, using 1 000 training examples per task. The tasks are divided into\nthree groups: Natural – tasks like the above, Pets, CIFAR, etc. Specialized – medical and satellite\nimagery, and Structured – tasks that require geometric understanding like localization.\nModel Variants. We base ViT conﬁgurations on those used for BERT (Devlin et al., 201\n\n【ViT.pdf-第15页】 score=0.3866\n1126\nResNet200x3\n87.22\n90.15\n99.34\n93.53\n96.32\n99.04\n3306\nR50x1+ViT-B/32\n84.90\n89.15\n99.01\n92.24\n95.75\n99.46\n106\nR50x1+ViT-B/16\n85.58\n89.65\n99.14\n92.63\n96.65\n99.40\n274\nR50x1+ViT-L/32\n85.68\n89.04\n99.24\n92.93\n96.97\n99.43\n246\nR50x1+ViT-L/16\n86.60\n89.72\n99.18\n93.64\n97.03\n99.40\n859\nR50x1+ViT-L/16\n89.76\n99.31\n93.89\n97.36\n99.11\n1668\nTable 6: Detailed results of model scaling experiments. These correspond to Figure 5 in the main\npaper. We show transfer accuracy on several datasets, as well as the pre-training compute (in ex-\naFLOPs).\nFigure 5 from the paper and shows the transfer performance of ViT, ResNet, and hybrid models of\nvarying size, as well \n\n【ViT.pdf-第19页】 score=0.3905\n of ViT with image size only barely starts happening\nfor the largest models at the largest resolutions.\nAnother quantity of interest is the largest batch-size each model can ﬁt onto a core, larger being\nbetter for scaling to large datasets. Figure 12 (right) shows this quantity for the same set of models.\nThis shows that large ViT models have a clear advantage in terms of memory-efﬁciency over ResNet\nmodels.\n384\n512\nInput size [px]\n104\nPeak inference speed [img/sec/core]\n384\n512\nInput size [px]\nLargest per-core batch-size\nR50x1\nR50x2\nR152x4\nFigure 12: Left: Real wall-clock timings of various architectures across input sizes. ViT models\nhave s\n\n【ViT.pdf-第20页】 score=0.3928\nderstand how ViT uses self-attention to integrate information across the image, we analyzed\nthe average distance spanned by attention weights at different layers (Figure 11). This “attention\ndistance” is analogous to receptive ﬁeld size in CNNs. Average attention distance is highly variable\nacross heads in lower layers, with some heads attending to much of the image, while others attend\nto small regions at or near the query location. As depth increases, attention distance increases for all\nheads. In the second half of the network, most heads attend widely across tokens.\nD.8\nATTENTION MAPS\nTo compute maps of the attention from the output token\n\n【ViT.pdf-第7页】 score=0.3840\n10 M\n30 M\n100 M\n300 M\nNumber of JFT pre-training samples\nLinear 5-shot ImageNet Top1 [%]\nViT-b/32\nResNet50x1 (BiT)\nResNet152x2 (BiT)\nFigure 4: Linear few-shot evaluation on Ima-\ngeNet versus pre-training size. ResNets per-\nform better with smaller pre-training datasets\nbut plateau sooner than ViT, which performs\nbetter with larger pre-training. ViT-b is ViT-B\nwith all hidden dimensions halved.\n95\nTransfer accuracy [%]\nAverage-5\nTransformer (ViT)\nResNet (BiT)\nHybrid\nTransformer (ViT)\nResNet (BiT)\nHybrid\nTotal pre-training compute [exaFLOPs]\nFigure 5: Performance versus pre-training compute for different architectures: Vision Transformers,\nResN",
+          "elapsed_ms": 58.13920032233
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "根据提供的文档内容，ViT模型的作者并未公开其私人手机号。文档中提供了关于ViT模型的详细信息，包括模型的配置、性能测试结果以及模型大小对性能的影响等。但没有提及任何关于ViT作者私人手机号的信息。因此，无法提供ViT作者未公开的私人手机号。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "U03",
+      "type": "不可回答",
+      "question": "这些论文报告的水稻亩产提升率是多少？",
+      "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "根据提供的文档内容，论文提到的水稻亩产提升率与作物比例提升率相关。文档中提到，对于变压器模型，将作物比例设置为1.0可以带来积极影响。具体来说，Wightman等人在变压器模型中将作物比例设置为1.0时，DeiT-B↑384模型在ImageNet1k验证集上的Top1准确率从85.2%提升到了85.42%。这表明作物比例提升率与模型性能提升有关。然而，文档中并没有直接提到水稻亩产提升率的具体数值。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 2342,
+        "iterations": 2,
+        "elapsed_ms": 30016,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "需要找到相关论文并提取亩产提升率信息",
+          "action": "rag_search",
+          "action_input": {
+            "query": "水稻 亩产 提升率"
+          },
+          "observation": "【CaiT.pdf-第18页】 score=0.5097\n-ratio of 1.0 [68] that we adopt for CaiT.\nNetwork\nCrop Ratio\nImNet\nReal\nV2\n0.875\n\n\n【MAE.pdf-第6页】 score=0.4883\n sees 200% (two-\ncrop) or even more (multi-crop) patches per epoch.\n\n\n【CaiT.pdf-第17页】 score=0.4845\n4.5.3\nAdaptation of the crop-ratio\nIn the typical (“center-crop”) evaluation setting, most convolutional neural net-\nworks crop a subimage with a given ratio, typically extracting a 224×224 center\ncrop from a 256×256 resized image, leading to the typical ratio of 0.875. Wight-\nman et al. [68] notice that setting this crop ratio to 1.0 for transformer models\nhas a positive impact: the distilled DeiT-B↑384 reaches a top1-accuracy on\nImagenet1k-val of 85.42% in this setting, which is a gain of +0.2% compared to\nthe accuracy of 85.2% reported by Touvron et al. [63].\nOur measurements concur with this observation: We observe a gain for\nalmost all o\n\n【CaiT.pdf-第18页】 score=0.4726\n1.0\nS36\n73.0\n88.0\n72.5\nS36↑384\n74.7\nS36Υ\nM36Υ\n74.9\n84.9\nS36↑384Υ\n89.7\n75.7\n89.8\n76.2\nM36↑384Υ\n85.9\n89.9\n76.1\n76.3\nour model M36↑384Υ increases to 86.1% top-1 accuracy on Imagenet-val1k.\n\n\n【CaiT.pdf-第15页】 score=0.4682\n15\nTable 7: Results in transfer learning. All models are trained and evaluated at resolution\n224 and with a crop-ratio of 0.875 in this comparison (see Table 10 for the comparison\nof crop-ratio on Imagenet).\n",
+          "elapsed_ms": 1723.9384995773435
+        },
+        {
+          "step_idx": 2,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "根据提供的文档内容，论文提到的水稻亩产提升率与作物比例提升率相关。文档中提到，对于变压器模型，将作物比例设置为1.0可以带来积极影响。具体来说，Wightman等人在变压器模型中将作物比例设置为1.0时，DeiT-B↑384模型在ImageNet1k验证集上的Top1准确率从85.2%提升到了85.42%。这表明作物比例提升率与模型性能提升有关。然而，文档中并没有直接提到水稻亩产提升率的具体数值。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "U04",
+      "type": "不可回答",
+      "question": "MAE 在本地未提供的私有数据集上准确率是多少？",
+      "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "根据文档【MAE.pdf-第12页】的信息，MAE在本地未提供的私有数据集上的准确率没有直接给出。文档提到了MAE在某些数据集上的表现，例如在IN-A数据集上，使用ViT-H模型，MAE的预训练准确率为33.1%，而监督学习的对照组为68.2%。但没有提及在本地未提供的私有数据集上的准确率。因此，无法从提供的信息中得出MAE在本地未提供的私有数据集上的准确率。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 883,
+        "iterations": 1,
+        "elapsed_ms": 16901,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "MAE 在本地未提供的私有数据集上准确率是多少？",
+            "doc_ids": [
+              "MAE"
+            ]
+          },
+          "observation": "【MAE.pdf-第12页】 score=0.5492\n performs much worse\n(Table 13 bottom; models described in A.2). For example,\nwith ViT-H, our MAE pre-training is 35% better on IN-A\n(68.2% vs 33.1%) than the supervised counterpart.\nFigure 10. Uncurated random samples on ImageNet validation images. For each triplet, we show the masked image (left), our MAE\nreconstruction (middle), and the ground-truth (right). The masking ratio is 75%.\n13\nFigure 11. Uncurated random samples on COCO validation images, using an MAE trained on ImageNet. For each triplet, we show the\nmasked image (left), our MAE reconstruction (middle), and the ground-truth (right). The masking ratio is 75%.\n14\n\n\n【MAE.pdf-第7页】 score=0.5544\n(e.g., 4\nor 6) can achieve accuracy close to full ﬁne-tuning.\nIn Figure 9 we also compare with MoCo v3 [9], a con-\ntrastive method with ViT-L results available. MoCo v3 has\nhigher linear probing accuracy; however, all of its partial\nﬁne-tuning results are worse than MAE. The gap is 2.6%\nwhen tuning 4 blocks. While the MAE representations are\nless linearly separable, they are stronger non-linear features\nand perform well when a non-linear head is tuned.\n\n\n【MAE.pdf-第6页】 score=0.5455\nlized pixels. It also reduces lin-\near probing accuracy. In §5 we further show that tokeniza-\ntion is not necessary in transfer learning.\nOur pixel-based MAE is much simpler than tokeniza-\ntion. The dVAE tokenizer requires one more pre-training\nstage, which may depend on extra data (250M images [50]).\nThe dVAE encoder is a large convolutional network (40%\nFLOPs of ViT-L) and adds nontrivial overhead. Using pix-\nels does not suffer from these problems.\nData augmentation. Table 1e studies the inﬂuence of data\naugmentation on our MAE pre-training.\nOur MAE works well using cropping-only augmenta-\ntion, either ﬁxed-size or random-size (both having\n\n【MAE.pdf-第6页】 score=0.5311\nnstruc-\ntion targets in Table 1d. Our results thus far are based on\npixels without (per-patch) normalization. Using pixels with\nnormalization improves accuracy. This per-patch normal-\nization enhances the contrast locally. In another variant, we\nperform PCA in the patch space and use the largest PCA\ncoefﬁcients (96 here) as the target. Doing so degrades ac-\ncuracy. Both experiments suggest that the high-frequency\ncomponents are useful in our method.\nWe also compare an MAE variant that predicts tokens,\nthe target used in BEiT [2]. Speciﬁcally for this variant,\nwe use the DALLE pre-trained dVAE [50] as the tokenizer,\nfollowing [2]. Here the MAE\n\n【MAE.pdf-第5页】 score=0.5734\n73.9\nPCA\n84.6\n72.3\ndVAE token\n85.3\n71.6\n(d) Reconstruction target. Pixels as recon-\nstruction targets are effective.\nnone\n84.0\n65.7\ncrop, ﬁxed size\ncrop, rand size\ncrop + color jit\n71.9\n(e) Data augmentation. Our MAE works with\nminimal or no augmentation.\nratio\nrandom\nblock\n83.9\n72.3\nblock\n82.8\n63.9\ngrid\n84.0\n66.0\n(f) Mask sampling. Random sampling works\nthe best. See Figure 6 for visualizations.\nTable 1. MAE ablation experiments with ViT-L/16 on ImageNet-1K. We report ﬁne-tuning (ft) and linear probing (lin) accuracy (%). If\nnot speciﬁed, the default is: the decoder has depth 8 and width 512, the reconstruction target is unnormalized pixels,",
+          "elapsed_ms": 54.22839988023043
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "根据文档【MAE.pdf-第12页】的信息，MAE在本地未提供的私有数据集上的准确率没有直接给出。文档提到了MAE在某些数据集上的表现，例如在IN-A数据集上，使用ViT-H模型，MAE的预训练准确率为33.1%，而监督学习的对照组为68.2%。但没有提及在本地未提供的私有数据集上的准确率。因此，无法从提供的信息中得出MAE在本地未提供的私有数据集上的准确率。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "U07",
+      "type": "不可回答",
+      "question": "CaiT 对新冠疫苗疗效的临床结论是什么？",
+      "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "根据提供的文档内容，CaiT 对新冠疫苗疗效的临床结论并没有直接提及或讨论。文档主要集中在介绍CaiT模型的架构、性能和在不同任务上的表现，没有提到与新冠疫苗疗效相关的临床结论。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 966,
+        "iterations": 1,
+        "elapsed_ms": 14443,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "rag_search",
+          "action_input": {
+            "query": "CaiT 对新冠疫苗疗效的临床结论是什么？",
+            "doc_ids": [
+              "CaiT"
+            ]
+          },
+          "observation": "【CaiT.pdf-第11页】 score=0.4381\nherwise the processing gets closer to\na weighted average.\nOur class-attention layers\nare designed on the assumption that there is no\nbeneﬁt in copying information from the class embedding back to the patch\nembeddings in the forward pass. Table 2 supports that hypothesis: if we com-\npare the performance for a total number of layers ﬁxed to 12, the performance\nof CaiT with 10 SA and 2 CA layers is identical to average pooling and better\nTable 3: CaiT models: The design parameters are depth and d. The mem columns cor-\nrespond to the memory usage. All models are initially trained at resolution 224 during\n400 epochs. We also ﬁne-tune these models \n\n【CaiT.pdf-第7页】 score=0.4483\nme parametrization for the FFNs. However the processing of these\nlayers is much faster: the FFN only processes matrix-vector multiplications.\nThe CA function is also less expensive than SA in term of memory and\ncomputation because it computes the attention between the class vector and\nthe set of patch embeddings: Q ∈Rd means that Q.KT ∈Rh×1×p. In contrast,\nin the “regular self-attention” layers SA, we have Q ∈Rp×d and therefore\nQ.KT ∈Rh×p×p. In other words, the initially quadratic complexity in the\nnumber of patches becomes linear in our extra CaiT layers.\nExperiments\nIn this section, we report our experimental results related to LayerScale a\n\n【CaiT.pdf-第14页】 score=0.4233\n89.3\nOur deep transformers\nCaiT-S36\n88.0\n72.5\nCaiT-S36↑384\nCaiT-S48↑384\n89M\n63.8B\n75.5\nCaiT-S36Υ\nCaiT-S36↑384Υ\n89.8\n76.2\nCaiT-M36↑384Υ\n271M\n173.3B\n76.3\nCaiT-M36↑448Υ\n271M\n247.8B\n86.3\n90.2\n76.7\nCaiT-M48↑448Υ\n356M\n329.6B\n86.5\n90.2\n76.9\n14\nFigure 5: We represent FLOPs and parameters for our best CaiT ↑384 and ↑448 Υ\nmodels trained with distillation. They are competitive on ImageNet-1k-val with the sota\nin the high accuracy regime, from XS-24 to M-48. Convolution-based neural networks\nlike NFNets and EfﬁcientNet are better in low-FLOPS and low-parameters regimes.\nTable 6: Datasets used for our different tasks.\nDataset\nTrain size\nTest size\n#classe\n\n【CaiT.pdf-第18页】 score=0.4151\n-ratio of 1.0 [68] that we adopt for CaiT.\nNetwork\nCrop Ratio\nImNet\nReal\nV2\n0.875\n\n\n【CaiT.pdf-第15页】 score=0.4360\n4.4.3\nTransfer learning\nWe evaluated our method on transfer learning tasks by ﬁne-tuning on the\ndatasets in Table 6.\nFine-tuning procedure.\nFor ﬁne-tuning we use the same hyperparameters\nas for training. We only decrease the learning rates by a factor 10 (for CARS,\nFlowers, iNaturalist), 100 (for CIFAR-100, CIFAR-10) and adapt the number\nof epochs (1000 for CIFAR-100, CIFAR-10, Flowers-102 and Cars-196, 360 for\niNaturalist 2018 and 2019). We have not used distillation for this ﬁnetuning.\nResults.\nTable 7 compares CaiT transfer learning results to those of Efﬁcient-\nNet [62], ViT [19] and DeiT [63]. These results show the excellent generalizat",
+          "elapsed_ms": 55.31900003552437
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "根据提供的文档内容，CaiT 对新冠疫苗疗效的临床结论并没有直接提及或讨论。文档主要集中在介绍CaiT模型的架构、性能和在不同任务上的表现，没有提到与新冠疫苗疗效相关的临床结论。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "T01",
+      "type": "工具路由",
+      "question": "计算 3.14*2.56",
+      "reference_answer": "8.0384",
+      "expected_tools": [
+        "calculator"
+      ],
+      "chosen_tools": [
+        "calculator"
+      ],
+      "routing_correct": true,
+      "answer": "3.14*2.56 = 8.038400000000001",
+      "success": true,
+      "metrics": {
+        "total_tokens": 0,
+        "iterations": 1,
+        "elapsed_ms": 8,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 0
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "calculator",
+          "action_input": {
+            "expr": "3.14*2.56"
+          },
+          "observation": "3.14*2.56 = 8.038400000000001",
+          "elapsed_ms": 6.811300292611122
+        }
+      ]
+    },
+    {
+      "id": "T02",
+      "type": "工具路由",
+      "question": "当前时间",
+      "reference_answer": "北京时间 UTC+08:00",
+      "expected_tools": [
+        "current_time"
+      ],
+      "chosen_tools": [
+        "current_time"
+      ],
+      "routing_correct": true,
+      "answer": "2026-10-10 18:40:30 UTC+08:00",
+      "success": true,
+      "metrics": {
+        "total_tokens": 0,
+        "iterations": 1,
+        "elapsed_ms": 3,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 0
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "current_time",
+          "action_input": {},
+          "observation": "2026-10-10 18:40:30 UTC+08:00",
+          "elapsed_ms": 1.906299963593483
+        }
+      ]
+    },
+    {
+      "id": "T03",
+      "type": "工具路由",
+      "question": "有哪些论文",
+      "reference_answer": "知识库的12篇论文",
+      "expected_tools": [
+        "list_documents"
+      ],
+      "chosen_tools": [
+        "list_documents"
+      ],
+      "routing_correct": true,
+      "answer": "已上传文档（调用 rag_search / paper_compare / summarize_paper 时，doc_id 必须严格用下面的值）：\n- BEiT\n- CLIP\n- CaiT\n- CvT\n- DETR\n- DeiT\n- MAE\n- MobileViT\n- PVT\n- Swin\n- Transformer\n- ViT",
+      "success": true,
+      "metrics": {
+        "total_tokens": 0,
+        "iterations": 1,
+        "elapsed_ms": 58,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 0
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "list_documents",
+          "action_input": {},
+          "observation": "已上传文档（调用 rag_search / paper_compare / summarize_paper 时，doc_id 必须严格用下面的值）：\n- BEiT\n- CLIP\n- CaiT\n- CvT\n- DETR\n- DeiT\n- MAE\n- MobileViT\n- PVT\n- Swin\n- Transformer\n- ViT",
+          "elapsed_ms": 55.74370035901666
+        }
+      ]
+    },
+    {
+      "id": "T04",
+      "type": "工具路由",
+      "question": "请提取 MAE 论文的作者、年份、摘要和 DOI。",
+      "reference_answer": "Kaiming He 等，arXiv首次提交2021年，10.48550/arXiv.2111.06377。",
+      "expected_tools": [
+        "paper_meta"
+      ],
+      "chosen_tools": [
+        "paper_meta"
+      ],
+      "routing_correct": true,
+      "answer": "MAE 论文的作者是 Kaiming He、Xinlei Chen、Saining Xie、Yanghao Li、Piotr Dollár 和 Ross Girshick，发表于 2021 年。论文的摘要提到，该研究展示了掩膜自编码器（MAE）在计算机视觉中的简单自监督学习方法。论文的 DOI 是 10.48550/arXiv.2111.06377。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 584,
+        "iterations": 1,
+        "elapsed_ms": 21027,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 0
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "明确的工具问题，直接路由",
+          "action": "paper_meta",
+          "action_input": {
+            "doc_id": "MAE"
+          },
+          "observation": "【MAE.pdf-第1页】\n标题：Masked Autoencoders Are Scalable Vision Learners\n作者：Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, Ross Girshick\n年份：2021\n摘要：This paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core designs.\nFirst, we develop an asymmetric\nencoder-decoder architecture, with an encoder that oper-\nates only on the visible subset of patches (without mask to-\nkens), along with a lightweight decoder that reconstructs\nthe original image from the latent representation and mask\ntokens. Second, we ﬁnd that masking a high proportion\nof the input image, e.g., 75%, yields a nontrivial and\nmeaningful self-supervisory task. Coupling these two de-\nsigns enables us to train large models efﬁciently and ef-\nfectively: we accelerate training (by 3× or more) and im-\nprove accuracy. Our scalable approach allows for learning\nhigh-capacity models that generalize well: e.g., a vanilla\nViT-Huge model achieves the best accuracy (87.8%) among\nmethods that use only ImageNet-1K data.\nTransfer per-\nformance in downstream tasks outperforms supervised pre-\ntraining and shows promising scaling behavior.\nDOI：10.48550/arXiv.2111.06377（arXiv记录DOI，非期刊DOI）",
+          "elapsed_ms": 58.59810020774603
+        },
+        {
+          "step_idx": 1,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "MAE 论文的作者是 Kaiming He、Xinlei Chen、Saining Xie、Yanghao Li、Piotr Dollár 和 Ross Girshick，发表于 2021 年。论文的摘要提到，该研究展示了掩膜自编码器（MAE）在计算机视觉中的简单自监督学习方法。论文的 DOI 是 10.48550/arXiv.2111.06377。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    }
+  ]
+}

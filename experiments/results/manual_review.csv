@@ -1,0 +1,137 @@
+﻿ID,类型,问题,参考答案,系统答案,正确性0至5,完整性0至5,引用准确性0至5,评审人,评审备注
+F01,事实性,Transformer 的 scaled dot-product attention 为什么除以 sqrt(d_k)？,缩放点积避免高维点积过大导致 softmax 梯度变小。,"Transformer 的 scaled dot-product attention 除以 sqrt(d_k) 的原因是，未缩放的 dot-product 可能会导致 softmax 函数在梯度接近于零的区域工作，这在训练过程中可能引起梯度消失的问题。具体来说，当 dk 的值较大时，query 和 key 的 dot product 可能会变得非常大，这可能导致 softmax 函数在梯度接近于零的区域工作，从而影响模型的训练效率和效果。通过除以 sqrt(d_k)，可以有效控制 dot product 的大小，确保 softmax 函数在梯度较大的区域工作，从而保持模型训练的稳定性和有效性。
+
+检索来源（模型未逐句标注引用，请核对原文）：【Transformer.pdf-第2页】、【Transformer.pdf-第3页】、【Transformer.pdf-第4页】",,,,,
+F07,事实性,DeiT 的 distillation token 如何接收教师监督？,蒸馏 token 通过注意力参与网络，并由教师预测监督。,"DeiT 的 distillation token 接收教师监督的方式是通过与教师预测 yt 的交互来模拟真实标签 y 的作用。教师预测 yt 在初始训练阶段扮演着与真实标签 y 相同的角色。此外，论文中提到，教师预测 yt 可以通过将硬标签转换为软标签来实现，其中真实标签被视为具有 1−ε 的概率，其余 ε 分配给其他类别。在所有使用真实标签的实验中，论文将此参数固定为 ε = 0.1。
+
+为了实现这一点，DeiT 在初始嵌入（包括 patch 和 class token）中添加了一个新的 distillation token。这个 distillation token 通过自注意层与 class token 和 patch tokens 交互。自注意层的输出是 distillation token 的最终输出。distillation token 的目标目标由损失函数中的 distillation 部分给出。通过这种方式，DeiT 能够从教师的输出中学习，类似于传统的 distillation 方法，同时保持与 class token 的互补性。
+
+检索来源（模型未逐句标注引用，请核对原文）：【DeiT.pdf-第6页】、【DeiT.pdf-第7页】、【DeiT.pdf-第9页】、【DeiT.pdf-第10页】",,,,,
+F10,事实性,Swin shifted windows 如何实现跨窗口信息交互？,相邻层交替使用常规窗口与移位窗口，使原本分离的窗口能够建立连接。,"Swin Transformer 实现跨窗口信息交互的方式是通过引入“Shifted windows”技术。这种技术的核心在于，Swin Transformer 在连续的自注意力层之间，对窗口的划分进行了偏移。具体来说，这种偏移使得新划分的窗口能够跨越先前层中的窗口边界，从而实现相邻窗口之间的连接。这种连接显著增强了模型的建模能力，如表4所示。
+
+这种偏移窗口的方法在实际应用中也表现出高效性。在每个窗口内，所有查询片段共享相同的键集，这有助于硬件中的内存访问。相比之下，早期基于滑动窗口的自注意力方法在通用硬件上的低延迟问题，是因为不同层之间有不同的键集。
+
+检索来源（模型未逐句标注引用，请核对原文）：【Swin.pdf-第1页】、【Swin.pdf-第2页】、【Swin.pdf-第4页】",,,,,
+F22,事实性,MAE 的 asymmetric encoder-decoder 如何工作？,编码器仅处理可见 patch，轻量解码器结合 latent 与 mask token 重建像素。,"MAE 的 asymmetric encoder-decoder 架构工作方式如下：
+
+首先，MAE 使用一个不对称的编码器-解码器架构。编码器仅作用于输入图像中可见部分的子集（不使用掩码令牌），而轻量级的解码器则从潜在表示和掩码令牌重建原始图像。这与传统的编码器-解码器架构不同，后者通常要求编码器和解码器具有相似的复杂度。
+
+其次，MAE 的解码器仅在预训练期间用于执行图像重建任务（仅编码器用于生成图像表示用于识别）。因此，解码器的架构可以灵活设计，不受编码器设计的限制。实验中，我们使用了非常小的解码器，其宽度和深度都比编码器小。例如，我们的默认解码器的每令牌计算量只有编码器的10%左右。通过这种不对称设计，只有轻量级的解码器处理了所有令牌，这显著减少了预训练的时间。
+
+最后，MAE 的重建目标是通过将输入重建为原始信号。这与传统的编码器-解码器架构不同，后者通常需要编码器和解码器具有相似的复杂度。
+
+检索来源（模型未逐句标注引用，请核对原文）：【MAE.pdf-第1页】、【MAE.pdf-第2页】、【MAE.pdf-第3页】、【MAE.pdf-第4页】、【MAE.pdf-第5页】",,,,,
+C01,对比性,ViT 与 DeiT 在训练数据需求和蒸馏机制上有什么区别？,ViT 研究大规模预训练，DeiT 强调仅用 ImageNet 训练并用蒸馏 token 接收教师监督。,"ViT 与 DeiT 在训练数据需求和蒸馏机制上存在一些区别。
+
+关于训练数据需求，论文中提到ViT模型在预训练阶段的计算效率上仍然优于先前的最先进的模型。然而，论文也指出，预训练效率可能不仅受到架构选择的影响，还受到其他参数的影响，如训练计划、优化器、权重衰减等。此外，论文还提到ViT-L/16模型在公共的ImageNet-2数据集上进行了预训练，这表明ViT模型可以在相对较小的数据集上取得良好的性能。
+
+关于蒸馏机制，论文中没有直接提及ViT模型的蒸馏机制。然而，论文提到DeiT模型使用了蒸馏机制，用于从大型预训练模型中学习，以减少模型的复杂度和参数量。对于ViT模型，论文中提到使用了额外的[class] token，该token用于将图像表示转换为类预测，这表明ViT模型可能使用了蒸馏机制来优化其架构。
+
+检索来源（模型未逐句标注引用，请核对原文）：【DeiT.pdf-第8页】、【DeiT.pdf-第9页】、【DeiT.pdf-第13页】、【DeiT.pdf-第18页】、【ViT.pdf-第4页】、【ViT.pdf-第6页】、【ViT.pdf-第14页】、【ViT.pdf-第16页】、【ViT.pdf-第20页】",,,,,
+C03,对比性,BEiT 与 MAE 的 masked modeling 预测目标有什么区别？,BEiT 预测离散视觉 token，MAE 重建像素。,"BEiT 与 MAE 的 masked modeling 预测目标存在差异。BEiT 的 masked modeling 预测目标是通过自注意力模块和前馈网络的连接来实现的。具体来说，BEiT 的自注意力模块和前馈网络通过一个 2l 的连接来实现。而 MAE 的 masked modeling 预测目标则是通过将视觉词汇表的视觉表示与前馈网络的输出进行连接来实现的。具体来说，MAE 使用的是将视觉词汇表的视觉表示与前馈网络的输出进行连接的方式。
+
+检索来源（模型未逐句标注引用，请核对原文）：【BEiT.pdf-第1页】、【BEiT.pdf-第5页】、【BEiT.pdf-第6页】、【BEiT.pdf-第14页】、【BEiT.pdf-第16页】、【MAE.pdf-第3页】、【MAE.pdf-第5页】、【MAE.pdf-第7页】、【MAE.pdf-第8页】",,,,,
+C04,对比性,Swin 与 PVT 如何降低高分辨率 attention 的成本？,Swin 限制局部窗口并移位交互，PVT 对键值进行空间缩减。,"Swin 与 PVT 通过不同的方法降低了高分辨率 attention 的成本。Swin Transformer 通过滑动窗口和移位窗口的方法，减少了每个窗口内的计算复杂度，使得自注意力计算在新的窗口边界上跨越，从而连接了先前层的窗口。此外，Swin Transformer 的移位窗口策略在硬件中的内存访问方面也更为高效，因为所有查询补丁共享相同的键集。相比之下，早期的滑动窗口自注意力方法由于不同层的键集不同，导致在通用硬件上的低延迟。
+
+PVT 提出了一种渐进式收缩金字塔和空间减小注意力（SRA）的设计，以减少Transformer的资源消耗，使其更适合学习多尺度和高分辨率特征。PVT 的设计使得其在不同参数规模下能够保持与现有技术相比的改进性能。PVT 的设计还考虑了其在不同任务上的灵活性，包括图像分类、目标检测、实例分割和语义分割等。
+
+综上所述，Swin Transformer 和 PVT 通过不同的设计策略和方法，有效地降低了高分辨率 attention 的成本。
+
+检索来源（模型未逐句标注引用，请核对原文）：【PVT.pdf-第1页】、【PVT.pdf-第2页】、【PVT.pdf-第5页】、【Swin.pdf-第2页】、【Swin.pdf-第8页】",,,,,
+C09,对比性,CaiT 与原始 ViT 如何使用分类 token？,ViT 将 class token 与 patch token 一起编码，CaiT 将 patch self-attention 与 class-attention 分阶段。,"CaiT 与原始 ViT 在使用分类 token 方面的不同在于，CaiT 采用了插入分类 token 的方法。原始 ViT 的设计中，分类 token 的位置在 transformer 的后期阶段，而 CaiT 则在插入了所谓的分类 token（记为 CLS）之后，将其放置在 transformer 的后期阶段。这有助于明确区分两个阶段：一个是用于指导自注意力的阶段，另一个是用于总结对分类器有用的资讯的阶段。
+
+检索来源（模型未逐句标注引用，请核对原文）：【CaiT.pdf-第3页】、【CaiT.pdf-第5页】、【CaiT.pdf-第12页】、【CaiT.pdf-第22页】、【CaiT.pdf-第30页】、【ViT.pdf-第5页】、【ViT.pdf-第6页】、【ViT.pdf-第9页】、【ViT.pdf-第16页】",,,,,
+S01,归纳性,归纳 ViT、Swin、PVT 的视觉特征尺度设计。,ViT 为单尺度序列，Swin 通过 patch merging 构建分层表示，PVT 形成逐级缩减的特征金字塔。,"ViT、Swin、PVT 在视觉特征尺度设计上的主要差异在于它们的架构设计和模型规模。ViT 是一种纯 Transformer 模型，其输出序列长度与输入图像相同，因此输出是单尺度的。ViT 的输入图像分辨率较低，输出分辨率也相对较低。PVT 与 ViT 类似，也是纯 Transformer 模型，但其架构设计包含金字塔结构，使得输出特征图可以是多尺度的。Swin Transformer 则通过引入窗口大小和查询维度等参数，优化了模型的大小和计算复杂度，使其更适合用于高分辨率图像的密集视觉任务。
+
+ViT 的模型规模设计主要依据 BERT 的配置，其模型大小和计算复杂度与 ViT-B/DeiT-B 类似。Swin Transformer 设计了不同规模的变体，包括 Swin-T、Swin-S 和 Swin-L，分别对应模型大小和计算复杂度的 0.25 倍、0.5 倍和 2 倍。PVT 系列模型的设计遵循了 ResNet 的两个规则，即随着模型规模的增长，输出特征图的尺寸和计算复杂度也会相应增加。PVT 系列模型的输出尺寸设计遵循了金字塔结构，不同规模的模型在不同阶段的输出尺寸有所不同。
+
+检索来源（模型未逐句标注引用，请核对原文）：【PVT.pdf-第1页】、【PVT.pdf-第2页】、【PVT.pdf-第5页】、【PVT.pdf-第10页】、【Swin.pdf-第3页】、【Swin.pdf-第5页】、【Swin.pdf-第7页】、【Swin.pdf-第8页】、【ViT.pdf-第4页】、【ViT.pdf-第5页】、【ViT.pdf-第7页】、【ViT.pdf-第8页】、【ViT.pdf-第20页】",,,,,
+S02,归纳性,归纳 BEiT、MAE、CLIP 三种预训练监督信号。,离散视觉 token 预测、像素重建、图像文本配对对比学习。,"归纳 BEiT、MAE、CLIP 三种预训练监督信号如下：
+
+BEiT 使用了 Masked Image Modeling (MIM) 作为预训练任务。BEiT 的 Masked Image Modeling 方法在性能上优于监督预训练，尽管 BEiT 并不需要手动标注进行预训练。BEiT 的 Masked Image Modeling 方法通过在图像中随机遮掩部分像素，然后通过 Transformer 编码器进行解码，从而学习到图像的视觉表示。
+
+MAE 使用了像素重建作为预训练任务。MAE 通过预训练 1600 个 epoch，将像素进行归一化处理，并且在迁移学习过程中，只在迁移学习阶段启用相对位置偏置。MAE 的预训练方法不使用相对位置偏置，以确保公平比较。MAE 的方法通过重建像素来学习图像表示，而 BEiT 则通过预测 Token 来学习表示。
+
+CLIP 使用了多种监督信号，包括 ResNeXt 模型、BiT 模型、ViT 模型、SimCLRv2 模型、BYOL 模型和原始的 ResNet 模型。CLIP 的预训练方法在广泛的评估套件上表现更佳，这主要归功于其监督信号的使用。CLIP 的预训练方法包括使用过滤后的 YFCC100M 数据集进行预训练，并与 WIT 数据集进行比较，以评估其在不同分辨率图像上的表现。
+
+检索来源（模型未逐句标注引用，请核对原文）：【BEiT.pdf-第1页】、【BEiT.pdf-第2页】、【BEiT.pdf-第5页】、【BEiT.pdf-第7页】、【BEiT.pdf-第16页】、【CLIP.pdf-第1页】、【CLIP.pdf-第8页】、【CLIP.pdf-第12页】、【CLIP.pdf-第37页】、【CLIP.pdf-第44页】、【MAE.pdf-第6页】、【MAE.pdf-第7页】、【MAE.pdf-第12页】",,,,,
+S04,归纳性,归纳融合 CNN 与 Transformer 的两种机制。,CvT 引入卷积嵌入与投影，MobileViT 结合局部卷积处理与全局 Transformer 信息处理。,"归纳融合 CNN 与 Transformer 的两种机制，可以总结为以下几点：
+
+1. **引入卷积到Transformer**：在CNN中，卷积通常用于捕捉局部关系，而Transformer则通过多头注意力机制来处理信息。在引入卷积到Transformer的架构中，模型可以进一步捕捉局部的空间上下文，从而减少注意力机制中的语义模糊性。此外，卷积操作还可以帮助管理计算复杂度，因为卷积操作允许模型在每个自注意力块前应用线性投影，而线性投影被我们提出的卷积投影所取代。这种卷积投影使用深度可分离卷积操作对二维重塑的令牌图进行操作。
+
+2. **卷积与Transformer的协同作用**：在CNN中，卷积通常用于增加序列长度的同时增加每个阶段的令牌特征维度，从而实现空间下采样，同时增加特征图的数量，类似于CNN中的多尺度设计。在Transformer中，引入卷积可以捕捉局部关系，类似于CNN中的操作。例如，在Transformer块中，卷积可以用于替代多头注意力层，或者在Transformer模块中并行或顺序添加额外的卷积层来捕捉局部关系。此外，卷积还可以用于将注意力图传递到后续层，通过残差连接进行变换，然后通过卷积进行变换。
+
+通过这些机制，CNN与Transformer可以实现优势互补，从而在视觉Transformer（CvT）中实现更好的性能。
+
+检索来源（模型未逐句标注引用，请核对原文）：【CvT.pdf-第1页】、【CvT.pdf-第2页】、【CvT.pdf-第3页】、【CvT.pdf-第9页】、【MobileViT.pdf-第1页】、【MobileViT.pdf-第3页】、【MobileViT.pdf-第4页】、【MobileViT.pdf-第9页】",,,,,
+S05,归纳性,归纳这些论文在目标检测系统中的用途。,DETR 为检测框架，Swin 与 PVT 为可适配检测任务的多尺度骨干。,"这些论文在目标检测系统中的用途主要集中在改进和增强目标检测算法的性能。具体来说，论文【DETR.pdf-第18页】提到了几种目标检测框架，包括Cascade Mask R-CNN、ATSS、RepPoints v2和Sparse RCNN。这些框架通过不同的方法来提高目标检测的准确性，例如Cascade Mask R-CNN通过多级检测来提高检测质量，而ATSS则通过注意力机制来改进目标检测。
+
+此外，论文【PVT.pdf-第11页】提到了使用Transformer进行目标检测的方法，该方法通过使用Transformer模型来改进目标检测的性能。Transformer模型通过其自注意力机制来捕捉输入序列中的长距离依赖关系，从而在目标检测任务中提供更好的性能。
+
+最后，论文【Swin.pdf-第6页】讨论了目标检测在COCO数据集上的应用，并提到了Swin Transformer模型在目标检测任务中的使用。Swin Transformer模型通过其自适应的窗口大小和多尺度训练来提高目标检测的准确性。
+
+综上所述，这些论文主要讨论了如何通过改进目标检测算法和使用先进的模型架构来提高目标检测系统的性能。",,,,,
+R01,推理性,为什么 MAE 只让 encoder 看 visible patches？,减少编码器计算开销，把重建任务交给轻量解码器。,"MAE 只让 encoder 看 visible patches 的原因是，encoder 只处理输入数据中的一部分，即 visible patches。这部分处理是通过 encoder 的 Transformer 块完成的，这些块只作用于输入数据中的一小部分，即 25% 的数据。对于其余的数据，即被遮掩的 patches，encoder 不进行处理，而是由 decoder 来处理。decoder 接收的是完整的 token 集合，其中包括编码的 visible patches 和 mask tokens。mask tokens 是一种共享的学习向量，用于指示需要预测的缺失 patch 的存在。因此，encoder 和 decoder 的设计是不对称的，encoder 只处理 visible patches，而 decoder 处理整个 token 集合。这种设计使得 MAE 可以在有限的计算和内存资源下训练非常大的 encoder。
+
+检索来源（模型未逐句标注引用，请核对原文）：【MAE.pdf-第1页】、【MAE.pdf-第2页】、【MAE.pdf-第3页】、【MAE.pdf-第4页】、【MAE.pdf-第5页】",,,,,
+R02,推理性,为什么 Swin 需要 shifted windows 而不能只用固定独立窗口？,固定窗口限制跨窗口通信，移位设计在相邻层建立跨窗口连接。,"Swin Transformer 需要 shifted windows 而不能只用固定独立窗口，是因为 shifted windows 能够在相邻的自注意力层之间建立连接，这有助于显著增强建模能力。具体来说，shifted windows 通过跨越前一层的窗口，实现了相邻层之间的连接，这在表4中有详细说明。这种设计策略不仅提高了模型的效率，还减少了硬件中的内存访问延迟。相反，传统的滑动窗口自注意力方法在通用硬件上的延迟较低，因为它们使用不同的键集。
+
+检索来源（模型未逐句标注引用，请核对原文）：【Swin.pdf-第1页】、【Swin.pdf-第2页】、【Swin.pdf-第4页】、【Swin.pdf-第8页】",,,,,
+R04,推理性,为什么 attention 点积需要缩放以避免 small gradients？,维度增加时点积幅值增大，softmax 饱和后梯度变小。,Scaled Dot-Product Attention需要缩放以避免小梯度，因为对于较大的dk值，点积可能会变得非常大，这会导致softmax函数进入梯度非常小的区域。在证据【Transformer.pdf-第4页】中提到，对于较大的dk值，点积可能会变得非常大，这会促使softmax函数进入梯度非常小的区域。,,,,,
+R06,推理性,为什么 CaiT 需要 LayerScale 处理深层网络优化？,控制残差分支初始贡献，有助于稳定更深网络的优化。,"LayerScale 需要处理深层网络优化的原因在于，它提供了更多的自由度来调整每个通道的权重，这是与现有方法相比的一个决定性的优势。这可以通过在附录 A 中展示的其他变体或中间选择来支持我们的提议，并通过一个旨在分离 LayerScale 各分支特异性加权及其对优化影响的控制实验来展示。
+
+具体来说，LayerScale 提供了比其他方法如 ReZero/SkipInit、Fixup 和 T-Fixup 更多的灵活性。LayerScale 不仅仅通过一个可学习的标量来调整整个层，而是通过为每个通道提供自由度来调整层。这种灵活性使得 LayerScale 在优化深层网络时更加有效。
+
+检索来源（模型未逐句标注引用，请核对原文）：【CaiT.pdf-第2页】、【CaiT.pdf-第5页】、【CaiT.pdf-第7页】、【CaiT.pdf-第22页】",,,,,
+U01,不可回答,ViT 作者未公开的私人手机号是多少？,当前知识库证据不足，明确拒答，不编造事实或来源。,"证据显示，ViT 作者未公开的私人手机号没有被提及或提供。ACKNOWLEDGEMENTS 部分感谢了在柏林、苏黎世和阿姆斯特丹进行的工作，并感谢了 Google 的一些同事，但没有提供任何私人联系信息。
+
+检索来源（模型未逐句标注引用，请核对原文）：【ViT.pdf-第5页】、【ViT.pdf-第9页】、【ViT.pdf-第14页】、【ViT.pdf-第19页】、【ViT.pdf-第20页】",,,,,
+U03,不可回答,这些论文报告的水稻亩产提升率是多少？,当前知识库证据不足，明确拒答，不编造事实或来源。,"论文报告的水稻亩产提升率的信息在提供的证据中不存在。证据讨论的是图像识别模型的性能提升，而不是水稻的亩产提升。
+
+检索来源（模型未逐句标注引用，请核对原文）：【CaiT.pdf-第15页】、【CaiT.pdf-第17页】、【CaiT.pdf-第18页】、【MAE.pdf-第6页】",,,,,
+U04,不可回答,MAE 在本地未提供的私有数据集上准确率是多少？,当前知识库证据不足，明确拒答，不编造事实或来源。,【MAE.pdf-第5页】 score=0.5734 表格1中显示，在本地未提供的私有数据集上，MAE的准确率是73.9%。,,,,,
+U07,不可回答,CaiT 对新冠疫苗疗效的临床结论是什么？,当前知识库证据不足，明确拒答，不编造事实或来源。,"根据提供的证据，CaiT 对新冠疫苗疗效的临床结论并未直接提及或讨论。证据主要集中在描述CaiT模型的架构和性能，以及其在图像识别任务中的应用。因此，无法从这些证据中得出关于CaiT对新冠疫苗疗效的临床结论。
+
+检索来源（模型未逐句标注引用，请核对原文）：【CaiT.pdf-第7页】、【CaiT.pdf-第11页】、【CaiT.pdf-第12页】、【CaiT.pdf-第13页】、【CaiT.pdf-第15页】",,,,,
+T01,工具路由,计算 3.14*2.56,8.0384,3.14*2.56 = 8.038400000000001,,,,,
+T02,工具路由,当前时间,北京时间 UTC+08:00,2026-10-10 18:49:24 UTC+08:00,,,,,
+T03,工具路由,有哪些论文,知识库的12篇论文,"已上传文档（调用 rag_search / paper_compare / summarize_paper 时，doc_id 必须严格用下面的值）：
+- BEiT
+- CLIP
+- CaiT
+- CvT
+- DETR
+- DeiT
+- MAE
+- MobileViT
+- PVT
+- Swin
+- Transformer
+- ViT",,,,,
+T04,工具路由,请提取 MAE 论文的作者、年份、摘要和 DOI。,Kaiming He 等，arXiv首次提交2021年，10.48550/arXiv.2111.06377。,"【MAE.pdf-第1页】
+标题：Masked Autoencoders Are Scalable Vision Learners
+作者：Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, Ross Girshick
+年份：2021
+摘要：This paper shows that masked autoencoders (MAE) are
+scalable self-supervised learners for computer vision. Our
+MAE approach is simple: we mask random patches of the
+input image and reconstruct the missing pixels. It is based
+on two core designs.
+First, we develop an asymmetric
+encoder-decoder architecture, with an encoder that oper-
+ates only on the visible subset of patches (without mask to-
+kens), along with a lightweight decoder that reconstructs
+the original image from the latent representation and mask
+tokens. Second, we ﬁnd that masking a high proportion
+of the input image, e.g., 75%, yields a nontrivial and
+meaningful self-supervisory task. Coupling these two de-
+signs enables us to train large models efﬁciently and ef-
+fectively: we accelerate training (by 3× or more) and im-
+prove accuracy. Our scalable approach allows for learning
+high-capacity models that generalize well: e.g., a vanilla
+ViT-Huge model achieves the best accuracy (87.8%) among
+methods that use only ImageNet-1K data.
+Transfer per-
+formance in downstream tasks outperforms supervised pre-
+training and shows promising scaling behavior.
+DOI：10.48550/arXiv.2111.06377（arXiv记录DOI，非期刊DOI）",,,,,

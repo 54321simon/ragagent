@@ -1,0 +1,107 @@
+[
+  {
+    "test": "cache_cold",
+    "metrics": {
+      "total_tokens": 0,
+      "iterations": 1,
+      "elapsed_ms": 98,
+      "cache_hit": false,
+      "invalid_citations": 0,
+      "missing_citations": false,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 0
+    },
+    "success": true,
+    "answer": "【MAE.pdf-第1页】\n标题：Masked Autoencoders Are Scalable Vision Learners\n作者：Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, Ross Girshick\n年份：2021\n摘要：This paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core designs.\nFirst, we develop an asymmetric\nencoder-decoder architecture, with an encoder that oper-\nates only on the visible subset of patches (without mask to-\nkens), along with a lightweight decoder that reconstructs\nthe original image from the latent representation and mask\ntokens. Second, we ﬁnd that masking a high proportion\nof the input image, e.g., 75%, yields a nontrivial and\nmeaningful self-supervisory task. Coupling these two de-\nsigns enables us to train large models efﬁciently and ef-\nfectively: we accelerate training (by 3× or more) and im-\nprove accuracy. Our scalable approach allows for learning\nhigh-capacity models that generalize well: e.g., a vanilla\nViT-Huge model achieves the best accuracy (87.8%) among\nmethods that use only ImageNet-1K data.\nTransfer per-\nformance in downstream tasks outperforms supervised pre-\ntraining and shows promising scaling behavior.\nDOI：10.48550/arXiv.2111.06377（arXiv记录DOI，非期刊DOI）"
+  },
+  {
+    "test": "cache_exact",
+    "metrics": {
+      "total_tokens": 0,
+      "iterations": 0,
+      "elapsed_ms": 1,
+      "cache_hit": true,
+      "invalid_citations": 0,
+      "missing_citations": false,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 0
+    },
+    "success": true,
+    "answer": "【MAE.pdf-第1页】\n标题：Masked Autoencoders Are Scalable Vision Learners\n作者：Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, Ross Girshick\n年份：2021\n摘要：This paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core designs.\nFirst, we develop an asymmetric\nencoder-decoder architecture, with an encoder that oper-\nates only on the visible subset of patches (without mask to-\nkens), along with a lightweight decoder that reconstructs\nthe original image from the latent representation and mask\ntokens. Second, we ﬁnd that masking a high proportion\nof the input image, e.g., 75%, yields a nontrivial and\nmeaningful self-supervisory task. Coupling these two de-\nsigns enables us to train large models efﬁciently and ef-\nfectively: we accelerate training (by 3× or more) and im-\nprove accuracy. Our scalable approach allows for learning\nhigh-capacity models that generalize well: e.g., a vanilla\nViT-Huge model achieves the best accuracy (87.8%) among\nmethods that use only ImageNet-1K data.\nTransfer per-\nformance in downstream tasks outperforms supervised pre-\ntraining and shows promising scaling behavior.\nDOI：10.48550/arXiv.2111.06377（arXiv记录DOI，非期刊DOI）"
+  },
+  {
+    "test": "cache_semantic",
+    "metrics": {
+      "total_tokens": 0,
+      "iterations": 0,
+      "elapsed_ms": 1,
+      "cache_hit": true,
+      "invalid_citations": 0,
+      "missing_citations": false,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 0
+    },
+    "success": true,
+    "answer": "【MAE.pdf-第1页】\n标题：Masked Autoencoders Are Scalable Vision Learners\n作者：Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, Ross Girshick\n年份：2021\n摘要：This paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core designs.\nFirst, we develop an asymmetric\nencoder-decoder architecture, with an encoder that oper-\nates only on the visible subset of patches (without mask to-\nkens), along with a lightweight decoder that reconstructs\nthe original image from the latent representation and mask\ntokens. Second, we ﬁnd that masking a high proportion\nof the input image, e.g., 75%, yields a nontrivial and\nmeaningful self-supervisory task. Coupling these two de-\nsigns enables us to train large models efﬁciently and ef-\nfectively: we accelerate training (by 3× or more) and im-\nprove accuracy. Our scalable approach allows for learning\nhigh-capacity models that generalize well: e.g., a vanilla\nViT-Huge model achieves the best accuracy (87.8%) among\nmethods that use only ImageNet-1K data.\nTransfer per-\nformance in downstream tasks outperforms supervised pre-\ntraining and shows promising scaling behavior.\nDOI：10.48550/arXiv.2111.06377（arXiv记录DOI，非期刊DOI）"
+  },
+  {
+    "test": "concurrent_MAE",
+    "session": "user-A",
+    "metrics": {
+      "total_tokens": 784,
+      "iterations": 1,
+      "elapsed_ms": 7554,
+      "cache_hit": false,
+      "invalid_citations": 0,
+      "missing_citations": false,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 1
+    },
+    "answer": "MAE 的编码器只看 4 个 patches 的小子集。这在第【MAE.pdf-第6页】中提到，MAE 通过每四个 patches 进行重构，这是一个更容易的任务，训练损失也较低。",
+    "success": true,
+    "isolated": true
+  },
+  {
+    "test": "concurrent_Swin",
+    "session": "user-B",
+    "metrics": {
+      "total_tokens": 767,
+      "iterations": 1,
+      "elapsed_ms": 14504,
+      "cache_hit": false,
+      "invalid_citations": 0,
+      "missing_citations": true,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 1
+    },
+    "answer": "Swin shifted windows 的作用是通过在连续的自注意层之间移动窗口分区，来提供连接，从而显著增强建模能力。这种策略在实际硬件中也提高了内存访问效率，因为窗口内的所有查询片段共享相同的键集。与基于滑动窗口的早期自注意方法相比，这种策略在一般硬件上的延迟较低。\n\n检索来源（模型未逐句标注引用，请核对原文）：【Swin.pdf-第1页】、【Swin.pdf-第2页】、【Swin.pdf-第4页】、【Swin.pdf-第8页】",
+    "success": false,
+    "isolated": true
+  },
+  {
+    "test": "301_page_limit",
+    "passed": true
+  },
+  {
+    "test": "load_docx",
+    "passed": true
+  },
+  {
+    "test": "load_txt",
+    "passed": true
+  },
+  {
+    "test": "load_md",
+    "passed": true
+  },
+  {
+    "test": "empty_knowledge_base",
+    "passed": true,
+    "details": "passed\n"
+  }
+]

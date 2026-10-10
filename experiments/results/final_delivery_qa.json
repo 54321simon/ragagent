@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-10",
+  "python_files_parsed": 45,
+  "pytest": {
+    "tests": 27,
+    "failures": 0,
+    "errors": 0
+  },
+  "word_documents": 7,
+  "word_pages": 22,
+  "word_visual_review": "all final pages checked; evaluation report trailing orphan paragraph fixed",
+  "slides": 16,
+  "editable_native_charts": 6,
+  "presentation_sha256": "8293937eb4e9cacc57a6824e1429561b5d657362809286d24c6f8c43e35bac41",
+  "presentation_package": "pass",
+  "browser": "real localhost calculator output and 12-document list observed; temporary viewport restored",
+  "docker": "static configuration checks only; not installed",
+  "independent_manual_scoring": "pending",
+  "known_final_agent_missing_citations": 17,
+  "agent_requests": 24
+}

@@ -1,26 +1,40 @@
 """bge-reranker 精排。加 sigmoid 归一化 + 长度惩罚 + 标题页惩罚。"""
+
 import math
+import os
+import threading
 import re
 from typing import List
 
 _RERANKER = None
-MODEL_NAME = "BAAI/bge-reranker-base"
+MODEL_NAME = os.getenv("RERANKER_MODEL", "BAAI/bge-reranker-base")
+_LOCK = threading.RLock()
 
 
 def get_reranker():
     global _RERANKER
-    if _RERANKER is None:
-        from sentence_transformers import CrossEncoder
-        _RERANKER = CrossEncoder(MODEL_NAME, max_length=512)
+    with _LOCK:
+        if _RERANKER is None:
+            import torch
+
+            torch.set_num_threads(4)
+            from sentence_transformers import CrossEncoder
+
+            _RERANKER = CrossEncoder(
+                MODEL_NAME,
+                max_length=512,
+                device="cpu",
+                local_files_only=os.path.isdir(MODEL_NAME),
+            )
     return _RERANKER
 
 
 def _sigmoid(x: float) -> float:
-    return 1.0 / (1.0 + math.exp(-x))
+    return 1.0 / (1.0 + math.exp(-max(-50, min(50, x))))
 
 
 def rerank(query: str, candidates: List[dict], topk: int = 5) -> List[dict]:
-    """对候选 chunk 做精排。返回 score 为 sigmoid 后的 0~1 概率。"""
+    """对候选 chunk 做精排，返回 sigmoid 与惩罚后的分值，非校准概率。"""
     if not candidates:
         return []
 
@@ -46,7 +60,8 @@ def rerank(query: str, candidates: List[dict], topk: int = 5) -> List[dict]:
 
         # 参考文献惩罚（放宽正则）
         ref_lines = sum(
-            1 for l in c["text"].split("\n")
+            1
+            for l in c["text"].split("\n")
             if re.match(r"^\[\d+(\s*,\s*\d+)*\]", l.strip())
         )
         if ref_lines >= 2:

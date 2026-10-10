@@ -1,0 +1,74 @@
+[
+  {
+    "doc_id": "BEiT",
+    "chunks": 85,
+    "elapsed_s": 0.4266987000592053,
+    "status": "ok"
+  },
+  {
+    "doc_id": "CaiT",
+    "chunks": 98,
+    "elapsed_s": 0.16710830014199018,
+    "status": "ok"
+  },
+  {
+    "doc_id": "CLIP",
+    "chunks": 260,
+    "elapsed_s": 0.47604870004579425,
+    "status": "ok"
+  },
+  {
+    "doc_id": "CvT",
+    "chunks": 67,
+    "elapsed_s": 0.118635100312531,
+    "status": "ok"
+  },
+  {
+    "doc_id": "DeiT",
+    "chunks": 71,
+    "elapsed_s": 0.12301409989595413,
+    "status": "ok"
+  },
+  {
+    "doc_id": "DETR",
+    "chunks": 92,
+    "elapsed_s": 0.16668540006503463,
+    "status": "ok"
+  },
+  {
+    "doc_id": "MAE",
+    "chunks": 70,
+    "elapsed_s": 0.15422850009053946,
+    "status": "ok"
+  },
+  {
+    "doc_id": "MobileViT",
+    "chunks": 106,
+    "elapsed_s": 0.18602109979838133,
+    "status": "ok"
+  },
+  {
+    "doc_id": "PVT",
+    "chunks": 86,
+    "elapsed_s": 0.15804290026426315,
+    "status": "ok"
+  },
+  {
+    "doc_id": "Swin",
+    "chunks": 69,
+    "elapsed_s": 0.17057179985567927,
+    "status": "ok"
+  },
+  {
+    "doc_id": "Transformer",
+    "chunks": 52,
+    "elapsed_s": 0.1557664000429213,
+    "status": "ok"
+  },
+  {
+    "doc_id": "ViT",
+    "chunks": 87,
+    "elapsed_s": 0.19195150025188923,
+    "status": "ok"
+  }
+]

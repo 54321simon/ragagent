@@ -1,0 +1,49 @@
+[
+  {
+    "name": "Ollama 服务",
+    "ok": true,
+    "message": "Ollama 运行中（2 个模型）",
+    "models": [
+      "qwen2.5:3b",
+      "bge-m3:567m"
+    ],
+    "elapsed_ms": 16
+  },
+  {
+    "name": "LLM 模型",
+    "ok": true,
+    "message": "模型 qwen2.5:3b 已就绪"
+  },
+  {
+    "name": "Embedding 模型",
+    "ok": true,
+    "message": "模型 bge-m3:567m 已就绪"
+  },
+  {
+    "name": "Chroma 向量库",
+    "ok": true,
+    "message": "向量库正常（1143 chunks / 12 文档）",
+    "count": 1143,
+    "docs": [
+      "BEiT",
+      "CLIP",
+      "CaiT",
+      "CvT",
+      "DETR",
+      "DeiT",
+      "MAE",
+      "MobileViT",
+      "PVT",
+      "Swin",
+      "Transformer",
+      "ViT"
+    ]
+  },
+  {
+    "name": "检索链路",
+    "ok": true,
+    "message": "检索链路正常（2379ms）",
+    "elapsed_ms": 2379,
+    "hits": 1
+  }
+]

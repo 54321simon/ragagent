@@ -1,0 +1,1556 @@
+[
+  {
+    "summary": {
+      "strategy": "fixed256",
+      "chunk_size": 256,
+      "overlap": 50,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 391,
+      "avg_length": 245.11508951406648,
+      "min_length": 3,
+      "split_s": 0.0008322000503540039,
+      "embedding_s": 121.36666909977794,
+      "hit@5": 0.75,
+      "mrr@5": 0.5625,
+      "recall@5": 0.75
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.25,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            11
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.25,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            14
+          ],
+          [
+            "MAE",
+            6
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            13
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            7
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            7
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "summary": {
+      "strategy": "fixed512",
+      "chunk_size": 512,
+      "overlap": 100,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 200,
+      "avg_length": 474.985,
+      "min_length": 24,
+      "split_s": 0.0004985998384654522,
+      "embedding_s": 101.81727340025827,
+      "hit@5": 0.625,
+      "mrr@5": 0.53125,
+      "recall@5": 0.625
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            8
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            3
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.25,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            13
+          ],
+          [
+            "MAE",
+            14
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            6
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            5
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            3
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "summary": {
+      "strategy": "fixed1024",
+      "chunk_size": 1024,
+      "overlap": 200,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 108,
+      "avg_length": 867.3333333333334,
+      "min_length": 24,
+      "split_s": 0.0005113999359309673,
+      "embedding_s": 90.24130180012435,
+      "hit@5": 0.625,
+      "mrr@5": 0.4791666666666667,
+      "recall@5": 0.625
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            9
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.5,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            1
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            3
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.3333333333333333,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            13
+          ],
+          [
+            "MAE",
+            14
+          ],
+          [
+            "MAE",
+            6
+          ],
+          [
+            "MAE",
+            3
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            6
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            7
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            8
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            5
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            7
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "summary": {
+      "strategy": "recursive1024",
+      "chunk_size": 1024,
+      "overlap": 200,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 102,
+      "avg_length": 889.7254901960785,
+      "min_length": 194,
+      "split_s": 85.43282889993861,
+      "embedding_s": 93.74405959993601,
+      "hit@5": 0.75,
+      "mrr@5": 0.48333333333333334,
+      "recall@5": 0.75
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            7
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.3333333333333333,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            8
+          ],
+          [
+            "Transformer",
+            1
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            9
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.3333333333333333,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            13
+          ],
+          [
+            "MAE",
+            14
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            6
+          ],
+          [
+            "MAE",
+            7
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            8
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.2,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            1
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            7
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "summary": {
+      "strategy": "semantic1024",
+      "chunk_size": 1024,
+      "overlap": 200,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 108,
+      "avg_length": 873.3148148148148,
+      "min_length": 209,
+      "split_s": 0.009953899774700403,
+      "embedding_s": 92.45142529997975,
+      "hit@5": 0.625,
+      "mrr@5": 0.24375,
+      "recall@5": 0.625
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.5,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            7
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            9
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.5,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            3
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            1
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.5,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            14
+          ],
+          [
+            "MAE",
+            14
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            7
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            7
+          ],
+          [
+            "MAE",
+            12
+          ],
+          [
+            "MAE",
+            12
+          ],
+          [
+            "MAE",
+            4
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.25,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.2,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            8
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            4
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "summary": {
+      "strategy": "section1024",
+      "chunk_size": 1024,
+      "overlap": 200,
+      "docs": 2,
+      "questions": 8,
+      "chunks": 122,
+      "avg_length": 749.516393442623,
+      "min_length": 23,
+      "split_s": 0.02652049995958805,
+      "embedding_s": 0.15860849991440773,
+      "hit@5": 0.75,
+      "mrr@5": 0.65625,
+      "recall@5": 0.75
+    },
+    "rows": [
+      {
+        "id": "F01",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            3
+          ]
+        ]
+      },
+      {
+        "id": "F02",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            6
+          ],
+          [
+            "Transformer",
+            1
+          ],
+          [
+            "Transformer",
+            8
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      },
+      {
+        "id": "F03",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            5
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            10
+          ],
+          [
+            "Transformer",
+            2
+          ]
+        ]
+      },
+      {
+        "id": "F22",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            2
+          ]
+        ]
+      },
+      {
+        "id": "F23",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            5
+          ],
+          [
+            "MAE",
+            12
+          ],
+          [
+            "MAE",
+            6
+          ]
+        ]
+      },
+      {
+        "id": "F24",
+        "hit@1": 0.0,
+        "hit@5": 0.0,
+        "mrr@5": 0,
+        "recall@5": 0.0,
+        "all_sources@5": 0.0,
+        "top5": [
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            8
+          ],
+          [
+            "MAE",
+            1
+          ]
+        ]
+      },
+      {
+        "id": "R01",
+        "hit@1": 0.0,
+        "hit@5": 1.0,
+        "mrr@5": 0.25,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "MAE",
+            4
+          ],
+          [
+            "MAE",
+            3
+          ],
+          [
+            "MAE",
+            2
+          ],
+          [
+            "MAE",
+            1
+          ],
+          [
+            "MAE",
+            5
+          ]
+        ]
+      },
+      {
+        "id": "R04",
+        "hit@1": 1.0,
+        "hit@5": 1.0,
+        "mrr@5": 1.0,
+        "recall@5": 1.0,
+        "all_sources@5": 1.0,
+        "top5": [
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            2
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            4
+          ],
+          [
+            "Transformer",
+            7
+          ]
+        ]
+      }
+    ]
+  }
+]

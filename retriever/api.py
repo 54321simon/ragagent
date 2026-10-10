@@ -1,153 +1,131 @@
-"""检索层对外接口。Agent 和前端只调这个文件。"""
-import os
-from typing import List
+"""Public retrieval API; scope filters precede ranking."""
+
+import os, threading, time
 from common.schemas import RetrievedChunk
-from retriever.chunker import chunk_pages, chunk_pages_recursive, chunk_pages_semantic
-from retriever.store import add_chunks, query_chunks, delete_doc, list_docs, get_collection
+from retriever.chunker import (
+    chunk_pages,
+    chunk_pages_recursive,
+    chunk_pages_semantic,
+    chunk_doc_by_section,
+)
+from retriever.store import (
+    add_chunks,
+    query_chunks,
+    delete_doc,
+    list_docs,
+    get_collection,
+    corpus_version,
+)
+from retriever.retrievers.bm25 import BM25Retriever
+from retriever.retrievers.rrf import rrf_fusion
+from retriever.retrievers.reranker import rerank
+
+_BM25_CACHE = {}
+_LOCK = threading.RLock()
 
 
-# ---------- 切分模式（默认 section，语义切分为可选） ----------
-_CHUNK_MODE = os.getenv("CHUNK_MODE", "section").lower()
+def get_chunk_mode():
+    return os.getenv("CHUNK_MODE", "section").lower()
 
 
-def get_chunk_mode() -> str:
-    """返回当前切分模式，供 UI 显示。"""
-    return _CHUNK_MODE
+def get_retrieval_mode():
+    return os.getenv("RETRIEVAL_MODE", "hybrid").lower()
 
 
-# ---------- 基础接口 ----------
-
-def ingest_pdf(path: str, chunk_size: int = 1024, overlap: int = 200,
-               chunk_mode: str = None) -> int:
-    """入库一篇文档（PDF / DOCX / TXT / MD），返回 chunk 数。
-
-    chunk_mode:
-      - 'section'  : 章节感知切分（默认）
-      - 'page'     : 页内固定大小切分
-      - 'semantic' : 语义切分（句子边界 + 段落边界）
-      - 'recursive': 递归字符切分
-    """
-    from retriever.chunker import chunk_doc_by_section
+def ingest_pdf(path, chunk_size=1024, overlap=200, chunk_mode=None):
     from retriever.loader import load_any
 
-    if chunk_mode is None:
-        chunk_mode = os.getenv("CHUNK_MODE", _CHUNK_MODE).lower()
-
-    pages = load_any(path)
-
-    if chunk_mode == "page":
-        chunks = chunk_pages(pages, chunk_size, overlap)
-    elif chunk_mode == "semantic":
-        chunks = chunk_pages_semantic(pages, chunk_size, overlap)
-    elif chunk_mode == "recursive":
-        chunks = chunk_pages_recursive(pages, chunk_size, overlap)
-    else:
-        # 默认 section
-        chunks = chunk_doc_by_section(pages, chunk_size, overlap)
-
+    mode = chunk_mode or get_chunk_mode()
+    fn = {
+        "page": chunk_pages,
+        "semantic": chunk_pages_semantic,
+        "recursive": chunk_pages_recursive,
+        "section": chunk_doc_by_section,
+    }.get(mode)
+    if fn is None:
+        raise ValueError(f"未知切分方式 {mode}")
+    chunks = fn(load_any(path), chunk_size, overlap)
     add_chunks(chunks)
-    global _BM25_CACHE
-    _BM25_CACHE = None
+    with _LOCK:
+        _BM25_CACHE.clear()
     return len(chunks)
 
 
-def retrieve(query: str, topk: int = 5) -> List[RetrievedChunk]:
-    """纯向量检索（bge-m3）。"""
-    return [RetrievedChunk(**r) for r in query_chunks(query, topk)]
+def ingest_with_retry(path, attempts=3, **kwargs):
+    for i in range(attempts):
+        try:
+            return ingest_pdf(path, **kwargs)
+        except (ValueError, FileNotFoundError):
+            raise
+        except Exception:
+            if i == attempts - 1:
+                raise
+            time.sleep(0.5 * 2**i)
 
 
-def remove_doc(doc_id: str):
-    delete_doc(doc_id)
-
-
-def get_docs() -> list[dict]:
+def get_docs():
     return list_docs()
 
 
-# ---------- 混合检索 ----------
-from retriever.retrievers.bm25 import BM25Retriever
-from retriever.retrievers.rrf import rrf_fusion
-
-_BM25_CACHE = None
-
-
-def _get_all_chunks() -> list[dict]:
-    col = get_collection()
-    data = col.get(include=["documents", "metadatas"])
-    out = []
-    for cid, doc, meta in zip(data["ids"], data["documents"], data["metadatas"]):
-        out.append({
-            "chunk_id": cid,
-            "doc_id": meta["doc_id"],
-            "doc_name": meta["doc_name"],
-            "page": meta["page"],
-            "text": doc,
-        })
-    return out
+def remove_doc(doc_id):
+    delete_doc(doc_id)
+    with _LOCK:
+        _BM25_CACHE.clear()
 
 
-def _get_bm25() -> BM25Retriever:
-    global _BM25_CACHE
-    if _BM25_CACHE is None:
-        _BM25_CACHE = BM25Retriever(_get_all_chunks())
-    return _BM25_CACHE
+def _get_all_chunks(doc_ids=None):
+    kw = {"where": {"doc_id": {"$in": list(doc_ids)}}} if doc_ids else {}
+    d = get_collection().get(include=["documents", "metadatas"], **kw)
+    return [
+        dict(chunk_id=cid, text=t, **{k: m[k] for k in ("doc_id", "doc_name", "page")})
+        for cid, t, m in zip(d["ids"], d["documents"], d["metadatas"])
+    ]
 
 
-def retrieve_hybrid(query: str, topk: int = 5) -> List[RetrievedChunk]:
-    """混合检索：向量 + BM25 + RRF 融合。展示分用向量 cosine 分。"""
-    vec_results = query_chunks(query, topk=topk * 2)
-    bm25 = _get_bm25()
-    bm25_results = bm25.search(query, topk=topk * 2)
-    fused = rrf_fusion(vec_results, bm25_results, topk=topk)
-
-    vec_score_map = {r["chunk_id"]: r["score"] for r in vec_results}
-
-    return [RetrievedChunk(
-        chunk_id=x["chunk_id"],
-        doc_id=x["doc_id"],
-        doc_name=x["doc_name"],
-        page=x["page"],
-        text=x["text"],
-        score=vec_score_map.get(x["chunk_id"], 0.0),
-    ) for x in fused]
+def _get_bm25(doc_ids=None):
+    key = (corpus_version(), tuple(sorted(doc_ids or [])))
+    with _LOCK:
+        if key not in _BM25_CACHE:
+            if len(_BM25_CACHE) > 24:
+                _BM25_CACHE.clear()
+            _BM25_CACHE[key] = BM25Retriever(_get_all_chunks(doc_ids))
+        return _BM25_CACHE[key]
 
 
-# ---------- 混合检索 + rerank ----------
-from retriever.retrievers.reranker import rerank as _rerank
+def retrieve(query, topk=5, doc_ids=None):
+    return [RetrievedChunk(**r) for r in query_chunks(query, topk, doc_ids)]
 
 
-def retrieve_hybrid_rerank(query: str, topk: int = 5) -> List[RetrievedChunk]:
-    vec_results = query_chunks(query, topk=topk * 3)
-    bm25 = _get_bm25()
-    bm25_results = bm25.search(query, topk=topk * 3)
-    fused = rrf_fusion(vec_results, bm25_results, topk=topk * 4)
-
-    if not fused:
-        return []
-
-    reranked = _rerank(query, fused, topk=topk)
-
-    return [RetrievedChunk(
-        chunk_id=x["chunk_id"],
-        doc_id=x["doc_id"],
-        doc_name=x["doc_name"],
-        page=x["page"],
-        text=x["text"],
-        score=x.get("rerank_score", x.get("rrf_score", 0.0)),
-    ) for x in reranked]
+def retrieve_hybrid(query, topk=5, doc_ids=None):
+    vec = query_chunks(query, topk * 3, doc_ids)
+    bm = _get_bm25(doc_ids).search(query, topk * 3)
+    fused = rrf_fusion(vec, bm, topk=topk, weight_a=0.7, weight_b=0.3)
+    scores = {r["chunk_id"]: r["score"] for r in vec}
+    return [
+        RetrievedChunk(
+            **{k: r[k] for k in ("chunk_id", "doc_id", "doc_name", "page", "text")},
+            score=scores.get(r["chunk_id"], 0.0),
+        )
+        for r in fused
+    ]
 
 
-# ---------- 统一入口 ----------
-_RETRIEVAL_MODE = os.getenv("RETRIEVAL_MODE", "hybrid").lower()
+def retrieve_hybrid_rerank(query, topk=5, doc_ids=None):
+    vec = query_chunks(query, topk * 3, doc_ids)
+    bm = _get_bm25(doc_ids).search(query, topk * 3)
+    fused = rrf_fusion(vec, bm, topk=topk * 4, weight_a=0.7, weight_b=0.3)
+    return [
+        RetrievedChunk(
+            **{k: r[k] for k in ("chunk_id", "doc_id", "doc_name", "page", "text")},
+            score=r["rerank_score"],
+        )
+        for r in rerank(query, fused, topk)
+    ]
 
 
-def get_retrieval_mode() -> str:
-    return _RETRIEVAL_MODE
-
-
-def retrieve_best(query: str, topk: int = 5) -> List[RetrievedChunk]:
-    if _RETRIEVAL_MODE == "rerank":
-        return retrieve_hybrid_rerank(query, topk)
-    if _RETRIEVAL_MODE == "vector":
-        return retrieve(query, topk)
-    return retrieve_hybrid(query, topk)
+def retrieve_best(query, topk=5, doc_ids=None):
+    return {
+        "vector": retrieve,
+        "hybrid": retrieve_hybrid,
+        "rerank": retrieve_hybrid_rerank,
+    }[get_retrieval_mode()](query, topk, doc_ids)

@@ -1,9 +1,11 @@
 """RAG 自检：判断检索到的 chunk 能否回答用户问题。
 用 qwen2.5:7b 做一次轻量 LLM 判断，避免库里没答案时硬凑。
 """
-import ollama
 
-MODEL_NAME = "qwen2.5:7b-instruct-q4_K_M"
+from common import llm as ollama
+from common.config import MODEL, EMBEDDING_MODEL
+
+MODEL_NAME = MODEL
 
 _PROMPT = """判断下面「参考片段」能否回答「用户问题」。
 

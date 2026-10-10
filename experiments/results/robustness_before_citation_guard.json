@@ -1,0 +1,107 @@
+[
+  {
+    "test": "cache_cold",
+    "metrics": {
+      "total_tokens": 546,
+      "iterations": 1,
+      "elapsed_ms": 15922,
+      "cache_hit": false,
+      "invalid_citations": 0,
+      "missing_citations": true,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 0
+    },
+    "success": true,
+    "answer": "MAE 的作者是 Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, Ross Girshick，年份是 2021。"
+  },
+  {
+    "test": "cache_exact",
+    "metrics": {
+      "total_tokens": 546,
+      "iterations": 1,
+      "elapsed_ms": 15402,
+      "cache_hit": false,
+      "invalid_citations": 0,
+      "missing_citations": true,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 0
+    },
+    "success": true,
+    "answer": "MAE 的作者是 Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, Ross Girshick，年份是 2021。"
+  },
+  {
+    "test": "cache_semantic",
+    "metrics": {
+      "total_tokens": 547,
+      "iterations": 1,
+      "elapsed_ms": 8011,
+      "cache_hit": false,
+      "invalid_citations": 0,
+      "missing_citations": true,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 0
+    },
+    "success": true,
+    "answer": "MAE 的作者是 Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dollár, Ross Girshick，年份是 2021。"
+  },
+  {
+    "test": "concurrent_MAE",
+    "session": "user-A",
+    "metrics": {
+      "total_tokens": 747,
+      "iterations": 1,
+      "elapsed_ms": 10779,
+      "cache_hit": false,
+      "invalid_citations": 0,
+      "missing_citations": true,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 1
+    },
+    "answer": "MAE 的编码器只看 25% 的全集 patches。这个小子集的操作包括移除遮挡的 patches，不使用 mask tokens。",
+    "success": true,
+    "isolated": false
+  },
+  {
+    "test": "concurrent_Swin",
+    "session": "user-B",
+    "metrics": {
+      "total_tokens": 850,
+      "iterations": 1,
+      "elapsed_ms": 24910,
+      "cache_hit": false,
+      "invalid_citations": 0,
+      "missing_citations": true,
+      "model": "qwen2.5:3b",
+      "token_source": "ollama_api",
+      "rag_evidence_hits": 1
+    },
+    "answer": "Swin shifted windows的作用是通过在连续的自注意力层之间移动窗口分区，使得新窗口跨越了前一层窗口的边界，从而在新的窗口中进行自注意力计算时提供连接。这种策略不仅显著增强了建模能力（见表4），而且在硬件内存访问方面也更为高效。与基于滑动窗口的自注意力方法相比，Swin Transformer的移位窗口方法在通用硬件上的延迟更低。",
+    "success": true,
+    "isolated": false
+  },
+  {
+    "test": "301_page_limit",
+    "passed": true
+  },
+  {
+    "test": "load_docx",
+    "passed": true
+  },
+  {
+    "test": "load_txt",
+    "passed": true
+  },
+  {
+    "test": "load_md",
+    "passed": true
+  },
+  {
+    "test": "empty_knowledge_base",
+    "passed": true,
+    "details": "passed\n"
+  }
+]

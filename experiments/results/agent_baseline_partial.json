@@ -1,0 +1,194 @@
+{
+  "rows": [
+    {
+      "id": "F01",
+      "type": "事实性",
+      "question": "Transformer 的 scaled dot-product attention 为什么除以 sqrt(d_k)？",
+      "reference_answer": "缩放点积避免高维点积过大导致 softmax 梯度变小。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search",
+        "summarize_paper",
+        "summarize_paper",
+        "summarize_paper"
+      ],
+      "routing_correct": true,
+      "answer": "### 背景\nTransformer模型是一种强大的序列建模和转换模型，广泛应用于自然语言处理（NLP）任务中。它采用了自注意力机制，使得模型能够处理任意长度的序列，而无需进行序列的固定长度划分。Transformer模型的架构包括编码器-解码器结构，其中编码器将输入序列映射为连续表示，解码器则根据这些连续表示生成输出序列。Transformer模型的核心是自注意力机制，它允许模型在处理序列时关注输入或输出序列中的不同位置。\n\n### 方法\n在Transformer模型中，自注意力机制的核心是“Scaled Dot-Product Attention”。该机制通过计算查询（queries）、键（keys）和值（values）之间的点积，并对每个点积进行归一化处理，以生成权重。归一化处理的公式为：\n\n\\[ \\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V \\]\n\n其中，\\(Q\\)、\\(K\\) 和 \\(V\\) 分别代表查询、键和值的矩阵，\\(d_k\\) 是键的维度。在实际应用中，同时处理一组查询，将它们打包成矩阵 \\(Q\\)，将键和值打包成矩阵 \\(K\\) 和 \\(V\\)。通过上述公式，模型可以生成一个输出矩阵，该矩阵中的每个元素表示查询与键之间注意力的权重。\n\n### 结果\n在Transformer模型中，自注意力机制的一个关键改进是引入了“Scaled Dot-Product Attention”。具体来说，通过在点积之前除以 \\(\\sqrt{d_k}\\)，即：\n\n\\[ \\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V \\]\n\n其中，\\(\\sqrt{d_k}\\) 的引入是为了防止注意力机制在处理大型模型时导致点积结果过大。具体来说，当 \\(q\\) 和 \\(k\\) 的每个元素都是独立的随机变量，且均值为 0，方差为 1 时，点积 \\(q \\cdot k\\) 的均值为 0，方差为 \\(d_k\\)。因此，如果直接使用点积，点积的结果可能会变得非常大，导致softmax函数的输出不稳定。通过除以 \\(\\sqrt{d_k}\\)，可以将点",
+      "success": true,
+      "metrics": {
+        "total_tokens": 7741,
+        "iterations": 4,
+        "elapsed_ms": 134096,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 1
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "需要查找相关文档以获取解释",
+          "action": "rag_search",
+          "action_input": {
+            "query": "Transformer scaled dot-product attention sqrt(d_k)",
+            "doc_ids": [
+              "Transformer"
+            ]
+          },
+          "observation": "【Transformer.pdf-第4页】 score=0.6856\n3.2.1\nScaled Dot-Product Attention\nWe call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists of\nqueries and keys of dimension dk, and values of dimension dv. We compute the dot products of the\nquery with all keys, divide each by √dk, and apply a softmax function to obtain the weights on the\nvalues.\nIn practice, we compute the attention function on a set of queries simultaneously, packed together\ninto a matrix Q. The keys and values are also packed together into matrices K and V . We compute\nthe matrix of outputs as:\nAttention(Q, K, V ) = softmax(QKT\n√dk\n)V\n(1)\nThe two most commonly used attention functions\n\n【Transformer.pdf-第3页】 score=0.6205\n3\nScaled Dot-Product Attention\nMulti-Head Attention\nFigure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several\nattention layers running in parallel.\nof the values, where the weight assigned to each value is computed by a compatibility function of the\nquery with the corresponding key.\n\n\n【Transformer.pdf-第4页】 score=0.6327\n3.2.2\nMulti-Head Attention\nInstead of performing a single attention function with dmodel-dimensional keys, values and queries,\nwe found it beneficial to linearly project the queries, keys and values h times with different, learned\nlinear projections to dk, dk and dv dimensions, respectively. On each of these projected versions of\nqueries, keys and values we then perform the attention function in parallel, yielding dv-dimensional\n4To illustrate why the dot products get large, assume that the components of q and k are independent random\nvariables with mean 0 and variance 1. Then their dot product, q · k = Pdk\ni=1 qiki, has mean 0 and variance d\n\n【Transformer.pdf-第5页】 score=0.5745\n each position in the decoder to attend to\nall positions in the decoder up to and including that position. We need to prevent leftward\ninformation flow in the decoder to preserve the auto-regressive property. We implement this\ninside of scaled dot-product attention by masking out (setting to −∞) all values in the input\nof the softmax which correspond to illegal connections. See Figure 2.\n\n\n【Transformer.pdf-第4页】 score=0.6047\nttention computes the compatibility function using a feed-forward network with\na single hidden layer. While the two are similar in theoretical complexity, dot-product attention is\nmuch faster and more space-efficient in practice, since it can be implemented using highly optimized\nmatrix multiplication code.\nWhile for small values of dk the two mechanisms perform similarly, additive attention outperforms\ndot product attention without scaling for larger values of dk [3]. We suspect that for large values of\ndk, the dot products grow large in magnitude, pushing the softmax function into regions where it has\nextremely small gradients 4. To counter",
+          "elapsed_ms": 4185.702700167894
+        },
+        {
+          "step_idx": 1,
+          "thought": "信息足够",
+          "action": "summarize_paper",
+          "action_input": {
+            "doc_id": "Transformer"
+          },
+          "observation": "请根据证据整理背景、方法、结果和结论，并逐项保留引用。\n【Transformer.pdf-第2页】 3\nModel Architecture\nMost competitive neural sequence transduction models have an encoder-decoder structure [5, 2, 35].\nHere, the encoder maps an input sequence of symbol representations (x1, ..., xn) to a sequence\nof continuous representations z = (z1, ..., zn). Given z, the decoder then generates an output\nsequence (y1, ..., ym) of symbols one element at a time. At each step the model is auto-regressive\n[10], consuming the previously generated symbols as additional input when generating the next.\nFigure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-attention and point-wise, ful\n\n【Transformer.pdf-第8页】 French used\ndropout rate Pdrop = 0.1, instead of 0.3.\nFor the base models, we used a single model obtained by averaging the last 5 checkpoints, which\nwere written at 10-minute intervals. For the big models, we averaged the last 20 checkpoints. We\nused beam search with a beam size of 4 and length penalty α = 0.6 [38]. These hyperparameters\nwere chosen after experimentation on the development set. We set the maximum output length during\ninference to input length + 50, but terminate early when possible [38].\nTable 2 summarizes our results and compares our translation quality and training costs to other model\narchitectures from the literature. We\n\n【Transformer.pdf-第8页】 uring training, we employed label smoothing of value ϵls = 0.1 [36]. This\nhurts perplexity, as the model learns to be more unsure, but improves accuracy and BLEU score.\nResults\n\n\n【Transformer.pdf-第2页】 at longer\nsequence lengths, as memory constraints limit batching across examples. Recent work has achieved\nsignificant improvements in computational efficiency through factorization tricks [21] and conditional\ncomputation [32], while also improving model performance in case of the latter. The fundamental\nconstraint of sequential computation, however, remains.\nAttention mechanisms have become an integral part of compelling sequence modeling and transduc-\ntion models in various tasks, allowing modeling of dependencies without regard to their distance in\nthe input or output sequences [2, 19]. In all but a few cases [27], however, such attention \n\n【Transformer.pdf-第9页】 more sophisticated compatibility\nfunction than dot product may be beneficial. We further observe in rows (C) and (D) that, as expected,\nbigger models are better, and dropout is very helpful in avoiding over-fitting. In row (E) we replace our\nsinusoidal positional encoding with learned positional embeddings [9], and observe nearly identical\nresults to the base model.\n\n\n【Transformer.pdf-第10页】 7\nConclusion\nIn this work, we presented the Transformer, the first sequence transduction model based entirely on\nattention, replacing the recurrent layers most commonly used in encoder-decoder architectures with\nmulti-headed self-attention.\nFor translation tasks, the Transformer can be trained significantly faster than architectures based\non recurrent or convolutional layers. On both WMT 2014 English-to-German and WMT 2014\nEnglish-to-French translation tasks, we achieve a new state of the art. In the former task our best\nmodel outperforms even all previously reported ensembles.\nWe are excited about the future of attention-based models and pla",
+          "elapsed_ms": 154.64359987527132
+        },
+        {
+          "step_idx": 2,
+          "thought": "已检索到相关文档",
+          "action": "summarize_paper",
+          "action_input": {
+            "doc_id": "Transformer"
+          },
+          "observation": "请根据证据整理背景、方法、结果和结论，并逐项保留引用。\n【Transformer.pdf-第2页】 3\nModel Architecture\nMost competitive neural sequence transduction models have an encoder-decoder structure [5, 2, 35].\nHere, the encoder maps an input sequence of symbol representations (x1, ..., xn) to a sequence\nof continuous representations z = (z1, ..., zn). Given z, the decoder then generates an output\nsequence (y1, ..., ym) of symbols one element at a time. At each step the model is auto-regressive\n[10], consuming the previously generated symbols as additional input when generating the next.\nFigure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-attention and point-wise, ful\n\n【Transformer.pdf-第8页】 French used\ndropout rate Pdrop = 0.1, instead of 0.3.\nFor the base models, we used a single model obtained by averaging the last 5 checkpoints, which\nwere written at 10-minute intervals. For the big models, we averaged the last 20 checkpoints. We\nused beam search with a beam size of 4 and length penalty α = 0.6 [38]. These hyperparameters\nwere chosen after experimentation on the development set. We set the maximum output length during\ninference to input length + 50, but terminate early when possible [38].\nTable 2 summarizes our results and compares our translation quality and training costs to other model\narchitectures from the literature. We\n\n【Transformer.pdf-第8页】 uring training, we employed label smoothing of value ϵls = 0.1 [36]. This\nhurts perplexity, as the model learns to be more unsure, but improves accuracy and BLEU score.\nResults\n\n\n【Transformer.pdf-第2页】 at longer\nsequence lengths, as memory constraints limit batching across examples. Recent work has achieved\nsignificant improvements in computational efficiency through factorization tricks [21] and conditional\ncomputation [32], while also improving model performance in case of the latter. The fundamental\nconstraint of sequential computation, however, remains.\nAttention mechanisms have become an integral part of compelling sequence modeling and transduc-\ntion models in various tasks, allowing modeling of dependencies without regard to their distance in\nthe input or output sequences [2, 19]. In all but a few cases [27], however, such attention \n\n【Transformer.pdf-第9页】 more sophisticated compatibility\nfunction than dot product may be beneficial. We further observe in rows (C) and (D) that, as expected,\nbigger models are better, and dropout is very helpful in avoiding over-fitting. In row (E) we replace our\nsinusoidal positional encoding with learned positional embeddings [9], and observe nearly identical\nresults to the base model.\n\n\n【Transformer.pdf-第10页】 7\nConclusion\nIn this work, we presented the Transformer, the first sequence transduction model based entirely on\nattention, replacing the recurrent layers most commonly used in encoder-decoder architectures with\nmulti-headed self-attention.\nFor translation tasks, the Transformer can be trained significantly faster than architectures based\non recurrent or convolutional layers. On both WMT 2014 English-to-German and WMT 2014\nEnglish-to-French translation tasks, we achieve a new state of the art. In the former task our best\nmodel outperforms even all previously reported ensembles.\nWe are excited about the future of attention-based models and pla",
+          "elapsed_ms": 59.44710038602352
+        },
+        {
+          "step_idx": 3,
+          "thought": "信息足够",
+          "action": "summarize_paper",
+          "action_input": {
+            "doc_id": "Transformer"
+          },
+          "observation": "请根据证据整理背景、方法、结果和结论，并逐项保留引用。\n【Transformer.pdf-第2页】 3\nModel Architecture\nMost competitive neural sequence transduction models have an encoder-decoder structure [5, 2, 35].\nHere, the encoder maps an input sequence of symbol representations (x1, ..., xn) to a sequence\nof continuous representations z = (z1, ..., zn). Given z, the decoder then generates an output\nsequence (y1, ..., ym) of symbols one element at a time. At each step the model is auto-regressive\n[10], consuming the previously generated symbols as additional input when generating the next.\nFigure 1: The Transformer - model architecture.\nThe Transformer follows this overall architecture using stacked self-attention and point-wise, ful\n\n【Transformer.pdf-第8页】 French used\ndropout rate Pdrop = 0.1, instead of 0.3.\nFor the base models, we used a single model obtained by averaging the last 5 checkpoints, which\nwere written at 10-minute intervals. For the big models, we averaged the last 20 checkpoints. We\nused beam search with a beam size of 4 and length penalty α = 0.6 [38]. These hyperparameters\nwere chosen after experimentation on the development set. We set the maximum output length during\ninference to input length + 50, but terminate early when possible [38].\nTable 2 summarizes our results and compares our translation quality and training costs to other model\narchitectures from the literature. We\n\n【Transformer.pdf-第8页】 uring training, we employed label smoothing of value ϵls = 0.1 [36]. This\nhurts perplexity, as the model learns to be more unsure, but improves accuracy and BLEU score.\nResults\n\n\n【Transformer.pdf-第2页】 at longer\nsequence lengths, as memory constraints limit batching across examples. Recent work has achieved\nsignificant improvements in computational efficiency through factorization tricks [21] and conditional\ncomputation [32], while also improving model performance in case of the latter. The fundamental\nconstraint of sequential computation, however, remains.\nAttention mechanisms have become an integral part of compelling sequence modeling and transduc-\ntion models in various tasks, allowing modeling of dependencies without regard to their distance in\nthe input or output sequences [2, 19]. In all but a few cases [27], however, such attention \n\n【Transformer.pdf-第9页】 more sophisticated compatibility\nfunction than dot product may be beneficial. We further observe in rows (C) and (D) that, as expected,\nbigger models are better, and dropout is very helpful in avoiding over-fitting. In row (E) we replace our\nsinusoidal positional encoding with learned positional embeddings [9], and observe nearly identical\nresults to the base model.\n\n\n【Transformer.pdf-第10页】 7\nConclusion\nIn this work, we presented the Transformer, the first sequence transduction model based entirely on\nattention, replacing the recurrent layers most commonly used in encoder-decoder architectures with\nmulti-headed self-attention.\nFor translation tasks, the Transformer can be trained significantly faster than architectures based\non recurrent or convolutional layers. On both WMT 2014 English-to-German and WMT 2014\nEnglish-to-French translation tasks, we achieve a new state of the art. In the former task our best\nmodel outperforms even all previously reported ensembles.\nWe are excited about the future of attention-based models and pla",
+          "elapsed_ms": 84.45509988814592
+        },
+        {
+          "step_idx": 4,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "### 背景\nTransformer模型是一种强大的序列建模和转换模型，广泛应用于自然语言处理（NLP）任务中。它采用了自注意力机制，使得模型能够处理任意长度的序列，而无需进行序列的固定长度划分。Transformer模型的架构包括编码器-解码器结构，其中编码器将输入序列映射为连续表示，解码器则根据这些连续表示生成输出序列。Transformer模型的核心是自注意力机制，它允许模型在处理序列时关注输入或输出序列中的不同位置。\n\n### 方法\n在Transformer模型中，自注意力机制的核心是“Scaled Dot-Product Attention”。该机制通过计算查询（queries）、键（keys）和值（values）之间的点积，并对每个点积进行归一化处理，以生成权重。归一化处理的公式为：\n\n\\[ \\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{QK^T}{\\sqrt{d_k}}\\right)V \\]\n\n其中，\\(Q\\)、\\(K\\) 和 \\(V\\) 分别代表查询、键和值的矩阵，\\(d_k\\) 是键的维度。在实际应用中，同",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "F07",
+      "type": "事实性",
+      "question": "DeiT 的 distillation token 如何接收教师监督？",
+      "reference_answer": "蒸馏 token 通过注意力参与网络，并由教师预测监督。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [],
+      "routing_correct": false,
+      "answer": "DeiT 的 distillation token 如何接收教师监督",
+      "success": true,
+      "metrics": {
+        "total_tokens": 480,
+        "iterations": 1,
+        "elapsed_ms": 1847,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 0
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "信息足够",
+          "action": "Final",
+          "action_input": {},
+          "observation": "",
+          "elapsed_ms": 0.0
+        }
+      ]
+    },
+    {
+      "id": "F10",
+      "type": "事实性",
+      "question": "Swin shifted windows 如何实现跨窗口信息交互？",
+      "reference_answer": "相邻层交替使用常规窗口与移位窗口，使原本分离的窗口能够建立连接。",
+      "expected_tools": [
+        "rag_search"
+      ],
+      "chosen_tools": [
+        "rag_search",
+        "rag_search",
+        "rag_search"
+      ],
+      "routing_correct": true,
+      "answer": "Swin Transformer通过使用\"Shifted Windows\"技术实现了跨窗口信息的交互。具体来说，Swin Transformer在相邻的自注意力层之间移动窗口分区。这使得自注意力计算仅限于不重叠的局部窗口，从而提高了效率。在每个窗口内进行自注意力计算，然后在下一个窗口中进行计算时，窗口分区被移动，从而在新的窗口中进行自注意力计算时跨越了之前的窗口边界，从而实现了跨窗口的信息交互。\n\n这种技术降低了延迟，并且在四个网络阶段上，Swin Transformer架构的速度分别比基于滑动窗口的变体快4.1倍、4.0倍和3.6倍。此外，基于Shifted Windows的自注意力模块在原始/内核实现上分别比滑动窗口快40.8倍/2.5倍、20.2倍/2.5倍、9.3倍/2.1倍和7.6倍/1.8倍。这表明Shifted Windows技术在自注意力模块的效率上具有显著优势。",
+      "success": true,
+      "metrics": {
+        "total_tokens": 5636,
+        "iterations": 3,
+        "elapsed_ms": 71837,
+        "cache_hit": false,
+        "invalid_citations": 0,
+        "model": "qwen2.5:3b",
+        "token_source": "ollama_api",
+        "rag_evidence_hits": 3
+      },
+      "trace": [
+        {
+          "step_idx": 0,
+          "thought": "需要找到关于Swin的文档",
+          "action": "rag_search",
+          "action_input": {
+            "query": "Swin shifted windows",
+            "doc_ids": [
+              "Swin"
+            ]
+          },
+          "observation": "【Swin.pdf-第8页】 score=0.6525\nr deeper stages. Overall, it brings a 13%, 18% and 18%\nspeed-up on Swin-T, Swin-S and Swin-B, respectively.\nThe self-attention modules built on the proposed\nshifted window approach are 40.8×/2.5×, 20.2×/2.5×,\n9.3×/2.1×, and 7.6×/1.8× more efﬁcient than those of slid-\ning windows in naive/kernel implementations on four net-\nwork stages, respectively. Overall, the Swin Transformer\narchitectures built on shifted windows are 4.1/1.5, 4.0/1.5,\n3.6/1.5 times faster than variants built on sliding windows\nfor Swin-T, Swin-S, and Swin-B, respectively. Table 6 com-\npares their accuracy on the three tasks, showing that they are\nsimilarly accurate in vis\n\n【Swin.pdf-第8页】 score=0.6385\n4.4. Ablation Study\nIn this section, we ablate important design elements in\nthe proposed Swin Transformer, using ImageNet-1K image\nclassiﬁcation, Cascade Mask R-CNN on COCO object de-\ntection, and UperNet on ADE20K semantic segmentation.\nShifted windows\nAblations of the shifted window ap-\nproach on the three tasks are reported in Table 4. Swin-T\nwith the shifted window partitioning outperforms the coun-\nterpart built on a single window partitioning at each stage by\n+1.1% top-1 accuracy on ImageNet-1K, +2.8 box AP/+2.2\nmask AP on COCO, and +2.8 mIoU on ADE20K. The re-\nsults indicate the effectiveness of using shifted windows to\nbuild connectio\n\n【Swin.pdf-第1页】 score=0.6462\nAbstract\nThis paper presents a new vision Transformer, called\nSwin Transformer, that capably serves as a general-purpose\nbackbone for computer vision.\nChallenges in adapting\nTransformer from language to vision arise from differences\nbetween the two domains, such as large variations in the\nscale of visual entities and the high resolution of pixels\nin images compared to words in text.\nTo address these\ndifferences, we propose a hierarchical Transformer whose\nrepresentation is computed with Shifted windows.\nThe\nshifted windowing scheme brings greater efﬁciency by lim-\niting self-attention computation to non-overlapping local\nwindows while also al\n\n【Swin.pdf-第4页】 score=0.6401\n6\nPatch Partition\nFigure 3. (a) The architecture of a Swin Transformer (Swin-T); (b) two successive Swin Transformer Blocks (notation presented with\nEq. (3)). W-MSA and SW-MSA are multi-head self attention modules with regular and shifted windowing conﬁgurations, respectively.\nwith the same feature map resolutions as those of typical\nconvolutional networks, e.g., VGG [52] and ResNet [30].\nAs a result, the proposed architecture can conveniently re-\nplace the backbone networks in existing methods for vari-\nous vision tasks.\nSwin Transformer block\nSwin Transformer is built by\nreplacing the standard multi-head self attention (MSA)\nmodule in a Tra\n\n【Swin.pdf-第4页】 score=0.6377\ntegy which starts from the top-left\npixel, and the 8 × 8 feature map is evenly partitioned into\n2 × 2 windows of size 4 × 4 (M = 4). Then, the next mod-\nule adopts a windowing conﬁguration that is shifted from\nthat of the preceding layer, by displacing the windows by\n(⌊M\n2 ⌋, ⌊M\n2 ⌋) pixels from the regularly partitioned windows.\nWith the shifted window partitioning approach, consec-\nutive Swin Transformer blocks are computed as\nˆzl = W-MSA\n\u0000zl−1\u0001\u0001\n+ zl−1,\nzl = MLP\n\u0000ˆzl\u0001\u0001\n+ ˆzl,\nˆzl+1 = SW-MSA\n\u0000zl\u0001\u0001\n+ zl,\nzl+1 = MLP\n\u0000ˆzl+1\u0001\u0001\n+ ˆzl+1,\n(3)\nwhere ˆzl and zl denote the output features of the (S)W-\nMSA module and the MLP module for block l, respec",
+          "elapsed_ms": 303.61360032111406
+        },
+        {
+          "step_idx": 1,
+          "thought": "需要进一步分析第8页和第4页的内容以确定Swin shifted windows的具体实现方式",
+          "action": "rag_search",
+          "action_input": {
+            "query": "Swin shifted windows 实现",
+            "doc_ids": [
+              "Swin"
+            ]
+          },
+          "observation": "【Swin.pdf-第8页】 score=0.7159\nr deeper stages. Overall, it brings a 13%, 18% and 18%\nspeed-up on Swin-T, Swin-S and Swin-B, respectively.\nThe self-attention modules built on the proposed\nshifted window approach are 40.8×/2.5×, 20.2×/2.5×,\n9.3×/2.1×, and 7.6×/1.8× more efﬁcient than those of slid-\ning windows in naive/kernel implementations on four net-\nwork stages, respectively. Overall, the Swin Transformer\narchitectures built on shifted windows are 4.1/1.5, 4.0/1.5,\n3.6/1.5 times faster than variants built on sliding windows\nfor Swin-T, Swin-S, and Swin-B, respectively. Table 6 com-\npares their accuracy on the three tasks, showing that they are\nsimilarly accurate in vis\n\n【Swin.pdf-第2页】 score=0.6831\n sliding-window\nbased convolution layer on general hardware, thanks to its shared kernel\nFigure 2. An illustration of the shifted window approach for com-\nputing self-attention in the proposed Swin Transformer architec-\nture. In layer l (left), a regular window partitioning scheme is\nadopted, and self-attention is computed within each window. In\nthe next layer l + 1 (right), the window partitioning is shifted, re-\nsulting in new windows. The self-attention computation in the new\nwindows crosses the boundaries of the previous windows in layer\nl, providing connections among them.\nshifted window approach has much lower latency than the\nsliding w\n\n【Swin.pdf-第1页】 score=0.7009\nAbstract\nThis paper presents a new vision Transformer, called\nSwin Transformer, that capably serves as a general-purpose\nbackbone for computer vision.\nChallenges in adapting\nTransformer from language to vision arise from differences\nbetween the two domains, such as large variations in the\nscale of visual entities and the high resolution of pixels\nin images compared to words in text.\nTo address these\ndifferences, we propose a hierarchical Transformer whose\nrepresentation is computed with Shifted windows.\nThe\nshifted windowing scheme brings greater efﬁciency by lim-\niting self-attention computation to non-overlapping local\nwindows while also al\n\n【Swin.pdf-第2页】 score=0.6826\nc complexity.\nA key design element of Swin Transformer is its shift\nof the window partition between consecutive self-attention\nlayers, as illustrated in Figure 2.\nThe shifted windows\nbridge the windows of the preceding layer, providing con-\nnections among them that signiﬁcantly enhance modeling\npower (see Table 4). This strategy is also efﬁcient in re-\ngards to real-world latency: all query patches within a win-\ndow share the same key set1, which facilitates memory ac-\ncess in hardware. In contrast, earlier sliding window based\nself-attention approaches [33, 50] suffer from low latency\non general hardware due to different key sets for differe\n\n【Swin.pdf-第4页】 score=0.6821\n6\nPatch Partition\nFigure 3. (a) The architecture of a Swin Transformer (Swin-T); (b) two successive Swin Transformer Blocks (notation presented with\nEq. (3)). W-MSA and SW-MSA are multi-head self attention modules with regular and shifted windowing conﬁgurations, respectively.\nwith the same feature map resolutions as those of typical\nconvolutional networks, e.g., VGG [52] and ResNet [30].\nAs a result, the proposed architecture can conveniently re-\nplace the backbone networks in existing methods for vari-\nous vision tasks.\nSwin Transformer block\nSwin Transformer is built by\nreplacing the standard multi-head self attention (MSA)\nmodule in a Tra",
+          "elapsed_ms": 146.0605999454856
+        },
+        {
+          "step_idx": 2,
+          "thought": "独立任务可并行",
+          "action": "rag_search",
+          "action_input": {
+            "query": "Swin shifted windows 实现",
+            "doc_ids": [
+              "Swin"
+            ]
+          },
+          "observation": "【Swin.pdf-第8页】 score=0.7159\nr deeper stages. Overall, it brings a 13%, 18% and 18%\nspeed-up on Swin-T, Swin-S and Swin-B, respectively.\nThe self-attention modules built on the proposed\nshifted window approach are 40.8×/2.5×, 20.2×/2.5×,\n9.3×/2.1×, and 7.6×/1.8× more efﬁcient than those of slid-\ning windows in naive/kernel implementations on four net-\nwork stages, respectively. Overall, the Swin Transformer\narchitectures built on shifted windows are 4.1/1.5, 4.0/1.5,\n3.6/1.5 times faster than variants built on sliding windows\nfor Swin-T, Swin-S, and Swin-B, respectively. Table 6 com-\npares their accuracy on the three tasks, showing that they are\nsimilarly accurate in vis\n\n【Swin.pdf-第2页】 score=0.6831\n sliding-window\nbased convolution layer on general hardware, thanks to its shared kernel\nFigure 2. An illustration of the shifted window approach for com-\nputing self-attention in the proposed Swin Transformer architec-\nture. In layer l (left), a regular window partitioning scheme is\nadopted, and self-attention is computed within each window. In\nthe next layer l + 1 (right), the window partitioning is shifted, re-\nsulting in new windows. The self-attention computation in the new\nwindows crosses the boundaries of the previous windows in layer\nl, providing connections among them.\nshifted window approach has much lower latency than the\nsliding w\n\n【Swin.pdf-第1页】 score=0.7009\nAbstract\nThis paper presents a new vision Transformer, called\nSwin Transformer, that capably serves as a general-purpose\nbackbone for computer vision.\nChallenges in adapting\nTransformer from language to vision arise from differences\nbetween the two domains, such as large variations in the\nscale of visual entities and the high resolution of pixels\nin images compared to words in text.\nTo address these\ndifferences, we propose a hierarchical Transformer whose\nrepresentation is computed with Shifted windows.\nThe\nshifted windowing scheme brings greater efﬁciency by lim-\niting self-attention computation to non-overlapping local\nwindows while also al\n\n【Swin.pdf-第2页】 score=0.6826\nc complexity.\nA key design element of Swin Transformer is its shift\nof the window partition between consecutive self-attention\nlayers, as illustrated in Figure 2.\nThe shifted windows\nbridge the windows of the preceding layer, providing con-\nnections among them that signiﬁcantly enhance modeling\npower (see Table 4). This strategy is also efﬁcient in re-\ngards to real-world latency: all query patches within a win-\ndow share the same key set1, which facilitates memory ac-\ncess in hardware. In contrast, earlier sliding window based\nself-attention approaches [33, 50] suffer from low latency\non general hardware due to different key sets for differe\n\n【Swin.pdf-第4页】 score=0.6821\n6\nPatch Partition\nFigure 3. (a) The architecture of a Swin Transformer (Swin-T); (b) two successive Swin Transformer Blocks (notation presented with\nEq. (3)). W-MSA and SW-MSA are multi-head self attention modules with regular and shifted windowing conﬁgurations, respectively.\nwith the same feature map resolutions as those of typical\nconvolutional networks, e.g., VGG [52] and ResNet [30].\nAs a result, the proposed architecture can conveniently re-\nplace the backbone networks in existing methods for vari-\nous vision tasks.\nSwin Transformer block\nSwin Transformer is built by\nreplacing the standard multi-head self attention (MSA)\nmodule in a Tra",
+          "elapsed_ms": 54.06210012733936
+        },
+        {
+          "step_idx": 3,
+          "thought": "综合已收集证据",
+          "action": "Final",
+          "action_input": {},
+          "observation": "Swin Transformer通过使用\"Shifted Windows\"技术实现了跨窗口信息的交互。具体来说，Swin Transformer在相邻的自注意力层之间移动窗口分区。这使得自注意力计算仅限于不重叠的局部窗口，从而提高了效率。在每个窗口内进行自注意力计算，然后在下一个窗口中进行计算时，窗口分区被移动，从而在新的窗口中进行自注意力计算时跨越了之前的窗口边界，从而实现了跨窗口的信息交互。\n\n这种技术降低了延迟，并且在四个网络阶段上，Swin Transformer架构的速度分别比基于滑动窗口的变体快4.1倍、4.0倍和3.6倍。此外，基于Shifted Windows的自注意力模块在原始/内核实现上分别比滑动窗口快40.8倍/2.5倍、20.2倍/2.5倍、9.3倍/2.1倍和7.6倍/1.8倍。这表明Shifted Windows技术在自注意力模块的效率上具有显著优势。",
+          "elapsed_ms": 0.0
+        }
+      ]
+    }
+  ]
+}

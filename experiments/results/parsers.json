@@ -1,0 +1,20 @@
+[
+  {
+    "parser": "pypdf",
+    "pages": 29,
+    "characters": 100126,
+    "elapsed_s": 6.8403529999777675
+  },
+  {
+    "parser": "pdfplumber",
+    "pages": 29,
+    "characters": 91479,
+    "elapsed_s": 7.354302499908954
+  },
+  {
+    "parser": "pymupdf",
+    "pages": 29,
+    "characters": 100030,
+    "elapsed_s": 0.23644329980015755
+  }
+]

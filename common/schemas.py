@@ -1,4 +1,5 @@
 """全系统统一数据结构。任何模块的输入输出都必须是这里的类型。"""
+
 from dataclasses import dataclass, field
 from typing import Any, Optional, List
 
@@ -6,6 +7,7 @@ from typing import Any, Optional, List
 @dataclass
 class RetrievedChunk:
     """检索返回的单个文本块。引用溯源依赖 doc_name + page。"""
+
     chunk_id: str
     doc_id: str
     doc_name: str
@@ -21,6 +23,7 @@ class RetrievedChunk:
 @dataclass
 class ToolResult:
     """工具调用的统一返回值。Agent 的 Observation 用它。"""
+
     tool_name: str
     success: bool
     data: Any
@@ -37,6 +40,7 @@ class ToolResult:
 @dataclass
 class AgentStep:
     """Agent 单步推理轨迹。前端可视化依赖它。"""
+
     step_idx: int
     thought: str
     action: str
@@ -48,6 +52,7 @@ class AgentStep:
 @dataclass
 class ChatResponse:
     """一次完整问答的返回。"""
+
     answer: str
     citations: List[RetrievedChunk] = field(default_factory=list)
     agent_trace: List[AgentStep] = field(default_factory=list)

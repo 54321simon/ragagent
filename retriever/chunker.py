@@ -3,11 +3,13 @@ chunk 的 page 字段是「该 chunk 实际内容起始位置所在的页」。
 
 新增：语义切分（基于句子边界 / 段落边界）。
 """
+
 import re
 from typing import List
 
 
 # ---------- 基础切分 ----------
+
 
 def fixed_chunk(text: str, size: int = 1024, overlap: int = 200) -> List[str]:
     if size <= overlap:
@@ -15,7 +17,7 @@ def fixed_chunk(text: str, size: int = 1024, overlap: int = 200) -> List[str]:
     chunks = []
     start = 0
     while start < len(text):
-        chunks.append(text[start:start + size])
+        chunks.append(text[start : start + size])
         start += size - overlap
     return chunks
 
@@ -26,18 +28,21 @@ def chunk_pages(pages: list[dict], size: int = 1024, overlap: int = 200) -> list
     for p in pages:
         for i, ch in enumerate(fixed_chunk(p["text"], size, overlap)):
             if ch.strip():
-                out.append({
-                    "chunk_id": f"{p['doc_id']}-p{p['page']}-c{i}",
-                    "doc_id": p["doc_id"],
-                    "doc_name": p["doc_name"],
-                    "page": p["page"],
-                    "text": ch,
-                })
+                out.append(
+                    {
+                        "chunk_id": f"{p['doc_id']}-p{p['page']}-c{i}",
+                        "doc_id": p["doc_id"],
+                        "doc_name": p["doc_name"],
+                        "page": p["page"],
+                        "text": ch,
+                    }
+                )
     return out
 
 
 def recursive_chunk(text: str, size: int = 1024, overlap: int = 200) -> list[str]:
     from langchain_text_splitters import RecursiveCharacterTextSplitter
+
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=size,
         chunk_overlap=overlap,
@@ -47,26 +52,28 @@ def recursive_chunk(text: str, size: int = 1024, overlap: int = 200) -> list[str
     return splitter.split_text(text)
 
 
-def chunk_pages_recursive(pages: list[dict], size: int = 1024, overlap: int = 200) -> list[dict]:
+def chunk_pages_recursive(
+    pages: list[dict], size: int = 1024, overlap: int = 200
+) -> list[dict]:
     out = []
     for p in pages:
         for i, ch in enumerate(recursive_chunk(p["text"], size, overlap)):
             if ch.strip():
-                out.append({
-                    "chunk_id": f"{p['doc_id']}-p{p['page']}-r{i}",
-                    "doc_id": p["doc_id"],
-                    "doc_name": p["doc_name"],
-                    "page": p["page"],
-                    "text": ch,
-                })
+                out.append(
+                    {
+                        "chunk_id": f"{p['doc_id']}-p{p['page']}-r{i}",
+                        "doc_id": p["doc_id"],
+                        "doc_name": p["doc_name"],
+                        "page": p["page"],
+                        "text": ch,
+                    }
+                )
     return out
 
 
 # 句子模式：内容 + 句末标点 + 后续空白
 # 或：末尾没标点的残余
-_SENT_PATTERN = re.compile(
-    r"[^。！？；;.!?]*[。！？；;.!?]+[\s]*|[^。！？；;.!?]+$"
-)
+_SENT_PATTERN = re.compile(r"[^。！？；;.!?]*[。！？；;.!?]+[\s]*|[^。！？；;.!?]+$")
 
 
 def split_sentences(text: str) -> list[str]:
@@ -106,7 +113,7 @@ def semantic_chunk(text: str, size: int = 1024, overlap: int = 200) -> list[str]
     units = split_sentences(text)  # 句子 + "\n\n" 标记
 
     chunks: list[str] = []
-    cur = ""             # 当前累积的文本
+    cur = ""  # 当前累积的文本
     cur_len = 0
 
     def _flush():
@@ -129,7 +136,7 @@ def semantic_chunk(text: str, size: int = 1024, overlap: int = 200) -> list[str]
             _flush()
             start = 0
             while start < u_len:
-                chunks.append(u[start:start + size])
+                chunks.append(u[start : start + size])
                 start += size - overlap
             continue
 
@@ -148,7 +155,9 @@ def semantic_chunk(text: str, size: int = 1024, overlap: int = 200) -> list[str]
     return chunks
 
 
-def chunk_pages_semantic(pages: list[dict], size: int = 1024, overlap: int = 200) -> list[dict]:
+def chunk_pages_semantic(
+    pages: list[dict], size: int = 1024, overlap: int = 200
+) -> list[dict]:
     """
     整篇语义切分：把所有页拼起来做语义切分，再用 page_offsets 回查每个 chunk 的页码。
     chunk 的 page 是该 chunk 实际起始位置所在的页。
@@ -179,13 +188,15 @@ def chunk_pages_semantic(pages: list[dict], size: int = 1024, overlap: int = 200
             pos = cursor
         cursor = pos + len(ch)
         page = _page_at_pos(page_offsets, pos)
-        out.append({
-            "chunk_id": f"{doc_id}-p{page}-sem{i}",
-            "doc_id": doc_id,
-            "doc_name": doc_name,
-            "page": page,
-            "text": ch,
-        })
+        out.append(
+            {
+                "chunk_id": f"{doc_id}-p{page}-sem{i}",
+                "doc_id": doc_id,
+                "doc_name": doc_name,
+                "page": page,
+                "text": ch,
+            }
+        )
     return out
 
 
@@ -197,9 +208,21 @@ SECTION_PATTERN = re.compile(
 )
 
 SECTION_KEYWORDS = [
-    "Introduction", "Background", "Related Work", "Method", "Approach",
-    "Model", "Architecture", "Experiment", "Evaluation", "Result",
-    "Discussion", "Conclusion", "Future Work", "References", "Abstract",
+    "Introduction",
+    "Background",
+    "Related Work",
+    "Method",
+    "Approach",
+    "Model",
+    "Architecture",
+    "Experiment",
+    "Evaluation",
+    "Result",
+    "Discussion",
+    "Conclusion",
+    "Future Work",
+    "References",
+    "Abstract",
 ]
 
 
@@ -233,30 +256,36 @@ def split_into_sections(pages: list[dict]):
     matches.sort(key=lambda x: x[0])
 
     if not matches:
-        return [{
-            "section_title": "full",
-            "start_pos": 0,
-            "start_page": page_offsets[0][1] if page_offsets else 1,
-            "text": full_text,
-        }], page_offsets
+        return [
+            {
+                "section_title": "full",
+                "start_pos": 0,
+                "start_page": page_offsets[0][1] if page_offsets else 1,
+                "text": full_text,
+            }
+        ], page_offsets
 
     sections = []
     if matches[0][0] > 0:
-        sections.append({
-            "section_title": "preamble",
-            "start_pos": 0,
-            "start_page": page_offsets[0][1] if page_offsets else 1,
-            "text": full_text[:matches[0][0]],
-        })
+        sections.append(
+            {
+                "section_title": "preamble",
+                "start_pos": 0,
+                "start_page": page_offsets[0][1] if page_offsets else 1,
+                "text": full_text[: matches[0][0]],
+            }
+        )
 
     for i, (pos, title) in enumerate(matches):
         end = matches[i + 1][0] if i + 1 < len(matches) else len(full_text)
-        sections.append({
-            "section_title": title,
-            "start_pos": pos,
-            "start_page": _page_at_pos(page_offsets, pos),
-            "text": full_text[pos:end],
-        })
+        sections.append(
+            {
+                "section_title": title,
+                "start_pos": pos,
+                "start_page": _page_at_pos(page_offsets, pos),
+                "text": full_text[pos:end],
+            }
+        )
 
     return sections, page_offsets
 
@@ -273,7 +302,9 @@ def _page_at_pos(page_offsets: list, pos: int) -> int:
     return page
 
 
-def chunk_doc_by_section(pages: list[dict], size: int = 1024, overlap: int = 200) -> list[dict]:
+def chunk_doc_by_section(
+    pages: list[dict], size: int = 1024, overlap: int = 200
+) -> list[dict]:
     if not pages:
         return []
 
@@ -297,13 +328,15 @@ def chunk_doc_by_section(pages: list[dict], size: int = 1024, overlap: int = 200
             chunk_start_in_full = sec_start + c_idx * step
             page = _page_at_pos(page_offsets, chunk_start_in_full)
 
-            out.append({
-                "chunk_id": f"{doc_id}-p{page}-s{s_idx}-c{c_idx}",
-                "doc_id": doc_id,
-                "doc_name": doc_name,
-                "page": page,
-                "section": sec["section_title"],
-                "text": ch,
-            })
+            out.append(
+                {
+                    "chunk_id": f"{doc_id}-p{page}-s{s_idx}-c{c_idx}",
+                    "doc_id": doc_id,
+                    "doc_name": doc_name,
+                    "page": page,
+                    "section": sec["section_title"],
+                    "text": ch,
+                }
+            )
 
     return out

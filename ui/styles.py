@@ -94,4 +94,5 @@ CUSTOM_CSS = """
 
 def inject_css():
     import streamlit as st
+
     st.markdown(CUSTOM_CSS, unsafe_allow_html=True)

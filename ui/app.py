@@ -1,5 +1,8 @@
 """智能科研助理 —— Streamlit 主应用。"""
+
 import json
+import html
+import uuid
 import os
 import re
 import sys
@@ -16,7 +19,8 @@ from ui.components import (
     render_metrics,
     render_doc_list,
 )
-from retriever.api import ingest_pdf, get_docs, remove_doc, get_retrieval_mode
+from common.config import MODEL
+from retriever.api import ingest_with_retry, get_docs, remove_doc, get_retrieval_mode
 from agent.react_loop import react_loop_stream, trim_history
 from tools.registry import get_all_tools
 
@@ -24,21 +28,33 @@ from tools.registry import get_all_tools
 # ============ 辅助：事件列表 → AgentStep 列表 ============
 def _as_steps(events: list) -> list:
     from common.schemas import AgentStep
+
     steps = []
     idx = 0
     for ev in events:
         kind = ev.get("kind")
         if kind == "thought":
-            steps.append(AgentStep(
-                step_idx=idx, thought=ev["content"],
-                action="", action_input={}, observation="", elapsed_ms=0,
-            ))
+            steps.append(
+                AgentStep(
+                    step_idx=idx,
+                    thought=ev["content"],
+                    action="",
+                    action_input={},
+                    observation="",
+                    elapsed_ms=0,
+                )
+            )
         elif kind == "action":
-            steps.append(AgentStep(
-                step_idx=idx, thought="",
-                action=ev["tool"], action_input=ev.get("args", {}),
-                observation="", elapsed_ms=0,
-            ))
+            steps.append(
+                AgentStep(
+                    step_idx=idx,
+                    thought="",
+                    action=ev["tool"],
+                    action_input=ev.get("args", {}),
+                    observation="",
+                    elapsed_ms=0,
+                )
+            )
             idx += 1
         elif kind == "observation":
             if steps:
@@ -52,49 +68,52 @@ def _render_trace_html(events: list) -> str:
     if not events:
         return ""
     parts = []
-    for ev in events:
+    for original in events:
+        ev = {
+            k: html.escape(v) if isinstance(v, str) else v for k, v in original.items()
+        }
         kind = ev.get("kind")
         if kind == "thought":
             parts.append(
                 f'<div style="margin:6px 0;padding:8px 10px;'
-                f'background:#f8fafc;border-left:3px solid #94a3b8;'
+                f"background:#f8fafc;border-left:3px solid #94a3b8;"
                 f'border-radius:4px;font-size:0.88em;">'
-                f'<b>💭 思考</b><br>{ev["content"]}</div>'
+                f"<b>💭 思考</b><br>{ev['content']}</div>"
             )
         elif kind == "action":
-            args_str = json.dumps(ev.get("args", {}), ensure_ascii=False)
+            args_str = html.escape(json.dumps(ev.get("args", {}), ensure_ascii=False))
             parts.append(
                 f'<div style="margin:6px 0;padding:8px 10px;'
-                f'background:#eff6ff;border-left:3px solid #3b82f6;'
+                f"background:#eff6ff;border-left:3px solid #3b82f6;"
                 f'border-radius:4px;font-size:0.88em;">'
-                f'<b>🎯 动作</b>：<code>{ev["tool"]}</code><br>'
+                f"<b>🎯 动作</b>：<code>{ev['tool']}</code><br>"
                 f'<span style="color:#475569;">输入：{args_str}</span></div>'
             )
         elif kind == "actions":
             items_html = "".join(
                 f'<div style="margin:4px 0;padding:6px 8px;'
                 f'background:#eef2ff;border-radius:4px;font-size:0.85em;">'
-                f'<b>🎯</b> <code>{it["tool"]}</code> '
+                f"<b>🎯</b> <code>{html.escape(it['tool'])}</code> "
                 f'<span style="color:#64748b;">'
-                f'{json.dumps(it.get("args", {}), ensure_ascii=False)}</span>'
-                f'</div>'
+                f"{html.escape(json.dumps(it.get('args', {}), ensure_ascii=False))}</span>"
+                f"</div>"
                 for it in ev.get("items", [])
             )
             parts.append(
                 f'<div style="margin:6px 0;padding:8px 10px;'
-                f'background:#eff6ff;border-left:3px solid #3b82f6;'
+                f"background:#eff6ff;border-left:3px solid #3b82f6;"
                 f'border-radius:4px;font-size:0.88em;">'
-                f'<b>⚡ 并行调用（{len(ev.get("items", []))} 个）</b>'
-                f'{items_html}</div>'
+                f"<b>⚡ 并行调用（{len(ev.get('items', []))} 个）</b>"
+                f"{items_html}</div>"
             )
         elif kind == "observation":
             obs = (ev.get("content") or "")[:300]
             ms = ev.get("elapsed_ms", 0)
             parts.append(
                 f'<div style="margin:6px 0;padding:8px 10px;'
-                f'background:#f0fdf4;border-left:3px solid #22c55e;'
+                f"background:#f0fdf4;border-left:3px solid #22c55e;"
                 f'border-radius:4px;font-size:0.88em;">'
-                f'<b>👁 观察</b>（{ms:.0f}ms）<br>'
+                f"<b>👁 观察</b>（{ms:.0f}ms）<br>"
                 f'<span style="color:#475569;">{obs}</span></div>'
             )
         elif kind == "action_result":
@@ -105,9 +124,9 @@ def _render_trace_html(events: list) -> str:
             icon = "✓" if ok else "✗"
             parts.append(
                 f'<div style="margin:4px 0;padding:6px 8px;'
-                f'background:#f8fafc;border-left:3px solid {color};'
+                f"background:#f8fafc;border-left:3px solid {color};"
                 f'border-radius:4px;font-size:0.85em;">'
-                f'<b>{icon} {ev["tool"]}</b> （{ms:.0f}ms）<br>'
+                f"<b>{icon} {ev['tool']}</b> （{ms:.0f}ms）<br>"
                 f'<span style="color:#475569;">{obs}</span></div>'
             )
     return "".join(parts)
@@ -122,7 +141,7 @@ def _render_answer_html(text: str) -> str:
         doc, page = m.group(1), m.group(2)
         return f'<span class="citation">【{doc}-第{page}页】</span>'
 
-    return re.sub(r"【([^】]+?)-第(\d+)页】", repl, text)
+    return re.sub(r"【([^】]+?)-第(\d+)页】", repl, html.escape(text))
 
 
 # ============ 辅助：指标 HTML ============
@@ -134,11 +153,11 @@ def render_metrics_html(metrics: dict) -> str:
     ]
     cells = "".join(
         f'<div style="flex:1;background:linear-gradient(135deg,#f8fafc,#eef2f7);'
-        f'border:1px solid #e2e8f0;border-radius:10px;padding:14px 10px;'
+        f"border:1px solid #e2e8f0;border-radius:10px;padding:14px 10px;"
         f'text-align:center;margin:0 4px;">'
         f'<div style="font-size:1.5em;font-weight:700;color:#1a56db;">{v}</div>'
         f'<div style="font-size:0.8em;color:#64748b;margin-top:4px;">{k}</div>'
-        f'</div>'
+        f"</div>"
         for k, v in items
     )
     return f'<div style="display:flex;gap:8px;">{cells}</div>'
@@ -153,26 +172,25 @@ def render_tool_stats_html(tool_stats: dict) -> str:
     tools = {k: v for k, v in tool_stats.items() if k != "_meta"}
 
     rows = []
-    for name, s in sorted(tools.items(),
-                          key=lambda kv: kv[1]["calls"], reverse=True):
+    for name, s in sorted(tools.items(), key=lambda kv: kv[1]["calls"], reverse=True):
         calls = s["calls"]
         ok = s["success"]
         rate = (ok / calls * 100) if calls else 0.0
         avg_ms = (s["total_ms"] / calls) if calls else 0.0
         rows.append(
-            f'<tr>'
+            f"<tr>"
             f'<td style="padding:6px 8px;border-bottom:1px solid #eaecef;">'
-            f'<code>{name}</code></td>'
+            f"<code>{name}</code></td>"
             f'<td style="padding:6px 8px;border-bottom:1px solid #eaecef;'
             f'text-align:center;">{calls}</td>'
             f'<td style="padding:6px 8px;border-bottom:1px solid #eaecef;'
             f'text-align:center;color:{"#16a34a" if rate >= 80 else "#dc2626"};">'
-            f'{rate:.0f}%</td>'
+            f"{rate:.0f}%</td>"
             f'<td style="padding:6px 8px;border-bottom:1px solid #eaecef;'
             f'text-align:right;">{avg_ms:.0f}ms</td>'
             f'<td style="padding:6px 8px;border-bottom:1px solid #eaecef;'
             f'text-align:right;">{s["tokens"]}</td>'
-            f'</tr>'
+            f"</tr>"
         )
 
     if not rows:
@@ -189,7 +207,7 @@ def render_tool_stats_html(tool_stats: dict) -> str:
         '<th style="padding:8px;text-align:center;border-bottom:2px solid #e2e8f0;">成功率</th>'
         '<th style="padding:8px;text-align:right;border-bottom:2px solid #e2e8f0;">平均耗时</th>'
         '<th style="padding:8px;text-align:right;border-bottom:2px solid #e2e8f0;">代币</th>'
-        '</tr></thead><tbody>' + "".join(rows) + '</tbody></table>'
+        "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
 
     rag_total = meta.get("rag_total", 0)
@@ -197,18 +215,18 @@ def render_tool_stats_html(tool_stats: dict) -> str:
     rag_rate = (rag_hit / rag_total * 100) if rag_total else 0.0
     rag_html = (
         f'<div style="margin-top:10px;padding:10px 12px;'
-        f'background:#f0f9ff;border-left:3px solid #0ea5e9;'
+        f"background:#f0f9ff;border-left:3px solid #0ea5e9;"
         f'border-radius:4px;font-size:0.9em;">'
-        f'<b>🎯 RAG 命中率</b>：{rag_hit} / {rag_total} '
-        f'（{rag_rate:.0f}%）</div>'
+        f"<b>🎯 RAG 命中率</b>：{rag_hit} / {rag_total} "
+        f"（{rag_rate:.0f}%）</div>"
     )
 
     final_tokens = meta.get("final_tokens", 0)
     final_html = (
         f'<div style="margin-top:6px;padding:10px 12px;'
-        f'background:#fefce8;border-left:3px solid #eab308;'
+        f"background:#fefce8;border-left:3px solid #eab308;"
         f'border-radius:4px;font-size:0.9em;">'
-        f'<b>✍️ 最终答案 Token</b>：{final_tokens}</div>'
+        f"<b>✍️ 最终答案 Token</b>：{final_tokens}</div>"
     )
 
     return table + rag_html + final_html
@@ -217,7 +235,7 @@ def render_tool_stats_html(tool_stats: dict) -> str:
 # ============ 会话管理 ============
 def _new_session(title: str = "新会话") -> dict:
     return {
-        "id": f"session-{int(time.time() * 1000)}",
+        "id": f"session-{uuid.uuid4().hex}",
         "title": title,
         "created_at": time.time(),
         "messages": [],
@@ -268,7 +286,8 @@ _ensure_session_state()
 
 
 # ============ 额外美化 CSS ============
-st.markdown("""
+st.markdown(
+    """
 <style>
 html, body, [class*="css"] {
     font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
@@ -347,7 +366,9 @@ hr { margin: 1rem 0; border: none; border-top: 1px solid #eaecef; }
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 
 # ============ 侧边栏 ============
@@ -371,7 +392,7 @@ with st.sidebar:
 
     for s in session_items:
         sid = s["id"]
-        is_active = (sid == st.session_state.current_session_id)
+        is_active = sid == st.session_state.current_session_id
         title = s.get("title") or "新会话"
         title_show = title[:14] + ("…" if len(title) > 14 else "")
 
@@ -402,6 +423,9 @@ with st.sidebar:
 
     if st.button("🗑️ 清缓存", use_container_width=True):
         st.session_state.ingested_keys = set()
+        from rag.cache import SemanticCache
+
+        SemanticCache().clear()
         st.toast("已清空上传缓存", icon="✅")
         time.sleep(0.8)
         st.rerun()
@@ -409,6 +433,7 @@ with st.sidebar:
     if st.button("🩺 系统检查", use_container_width=True):
         with st.spinner("检查中..."):
             from ui.health import run_all_checks
+
             st.session_state.health_checks = run_all_checks()
 
     if st.session_state.get("health_checks"):
@@ -421,15 +446,18 @@ with st.sidebar:
     st.markdown("**📊 系统状态**")
 
     cur = _cur_session()
-    st.markdown(f"""
+    st.markdown(
+        f"""
     <div style="font-size:0.85em; line-height:1.8;">
-    <div>🧠 模型 <span style="float:right; color:#1a56db; font-weight:600;">qwen2.5:7b</span></div>
+    <div>🧠 模型 <span style="float:right; color:#1a56db; font-weight:600;">{html.escape(MODEL)}</span></div>
     <div>🎯 档位 <span style="float:right; color:#1a56db; font-weight:600;">{get_retrieval_mode()}</span></div>
     <div>🔧 工具 <span style="float:right; color:#1a56db; font-weight:600;">{len(get_all_tools())}</span></div>
     <div>📄 文档 <span style="float:right; color:#1a56db; font-weight:600;">{len(get_docs())}</span></div>
     <div>💭 记忆 <span style="float:right; color:#1a56db; font-weight:600;">{len(cur["history"]) // 2} 轮</span></div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 
 # ============ 三栏布局 ============
@@ -450,15 +478,24 @@ with col_left:
 
     if uploaded:
         ingested_keys = st.session_state.ingested_keys
-        new_files = [(f, f"{f.name}_{f.size}") for f in uploaded
-                     if f"{f.name}_{f.size}" not in ingested_keys]
+        new_files = [
+            (f, f"{f.name}_{f.size}")
+            for f in uploaded
+            if f"{f.name}_{f.size}" not in ingested_keys
+        ]
 
         if new_files:
             ingested_count = 0
-            for f, key in new_files:
+            progress = st.progress(0, text="准备批量入库")
+            for file_index, (f, key) in enumerate(new_files):
+                if f.size > 32 * 1024 * 1024:
+                    st.error(f"{f.name} 超过 32 MB，请拆分后上传。")
+                    continue
                 save_path = os.path.join(
                     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                    "data", "papers", f.name,
+                    "data",
+                    "papers",
+                    os.path.basename(f.name),
                 )
                 os.makedirs(os.path.dirname(save_path), exist_ok=True)
                 with open(save_path, "wb") as out:
@@ -468,7 +505,7 @@ with col_left:
                     try:
                         ext = os.path.splitext(f.name)[1].lower()
                         if ext in (".pdf", ".docx", ".txt", ".md"):
-                            n = ingest_pdf(save_path)
+                            n = ingest_with_retry(save_path)
                             st.success(f"✅ {f.name} · {n} chunks")
                             ingested_keys.add(key)
                             ingested_count += 1
@@ -477,6 +514,11 @@ with col_left:
                             ingested_keys.add(key)
                     except Exception as e:
                         st.error(f"❌ {f.name}: {e}")
+
+                progress.progress(
+                    (file_index + 1) / len(new_files),
+                    text=f"已处理 {file_index + 1}/{len(new_files)}",
+                )
 
             if ingested_count > 0:
                 time.sleep(1.2)
@@ -493,7 +535,9 @@ with col_left:
     selected = st.multiselect(
         "选择要提问的文档",
         options=all_doc_ids,
-        default=_cur_session().get("selected_docs") or [],
+        default=[
+            d for d in (_cur_session().get("selected_docs") or []) if d in all_doc_ids
+        ],
         label_visibility="collapsed",
         placeholder="不选 = 全部文档",
         help="不选 = 全部文档；选 1 篇 = 限定；选多篇 = 范围内检索",
@@ -578,9 +622,12 @@ with col_mid:
                     now_ms = time.time() * 1000
 
                     if etype == "thought":
-                        live_trace.append({
-                            "kind": "thought", "content": event["content"],
-                        })
+                        live_trace.append(
+                            {
+                                "kind": "thought",
+                                "content": event["content"],
+                            }
+                        )
                         if trace_ph is not None:
                             trace_ph.markdown(
                                 _render_trace_html(live_trace),
@@ -588,10 +635,13 @@ with col_mid:
                             )
 
                     elif etype == "action":
-                        live_trace.append({
-                            "kind": "action", "tool": event["tool"],
-                            "args": event["args"],
-                        })
+                        live_trace.append(
+                            {
+                                "kind": "action",
+                                "tool": event["tool"],
+                                "args": event["args"],
+                            }
+                        )
                         if trace_ph is not None:
                             trace_ph.markdown(
                                 _render_trace_html(live_trace),
@@ -599,9 +649,12 @@ with col_mid:
                             )
 
                     elif etype == "actions":
-                        live_trace.append({
-                            "kind": "actions", "items": event["items"],
-                        })
+                        live_trace.append(
+                            {
+                                "kind": "actions",
+                                "items": event["items"],
+                            }
+                        )
                         if trace_ph is not None:
                             trace_ph.markdown(
                                 _render_trace_html(live_trace),
@@ -609,11 +662,13 @@ with col_mid:
                             )
 
                     elif etype == "observation":
-                        live_trace.append({
-                            "kind": "observation",
-                            "content": event["content"],
-                            "elapsed_ms": event.get("elapsed_ms", 0),
-                        })
+                        live_trace.append(
+                            {
+                                "kind": "observation",
+                                "content": event["content"],
+                                "elapsed_ms": event.get("elapsed_ms", 0),
+                            }
+                        )
                         if trace_ph is not None:
                             trace_ph.markdown(
                                 _render_trace_html(live_trace),
@@ -621,13 +676,15 @@ with col_mid:
                             )
 
                     elif etype == "action_result":
-                        live_trace.append({
-                            "kind": "action_result",
-                            "tool": event["tool"],
-                            "observation": event["observation"],
-                            "elapsed_ms": event.get("elapsed_ms", 0),
-                            "ok": event.get("ok", True),
-                        })
+                        live_trace.append(
+                            {
+                                "kind": "action_result",
+                                "tool": event["tool"],
+                                "observation": event["observation"],
+                                "elapsed_ms": event.get("elapsed_ms", 0),
+                                "ok": event.get("ok", True),
+                            }
+                        )
                         if trace_ph is not None:
                             trace_ph.markdown(
                                 _render_trace_html(live_trace),
@@ -642,9 +699,8 @@ with col_mid:
                         full_text += event["content"]
                         if now_ms - last_answer_flush >= FLUSH_INTERVAL_MS:
                             answer_ph.markdown(
-                                _render_answer_html(full_text)
-                                + '<span style="color:#1a56db;">▌</span>',
-                                unsafe_allow_html=True,
+                                full_text + '<span style="color:#1a56db;">▌</span>',
+                                unsafe_allow_html=False,
                             )
                             last_answer_flush = now_ms
 
@@ -663,8 +719,8 @@ with col_mid:
                 }
 
             answer_ph.markdown(
-                _render_answer_html(full_text),
-                unsafe_allow_html=True,
+                full_text,
+                unsafe_allow_html=False,
             )
 
             if done_payload:
@@ -674,10 +730,12 @@ with col_mid:
                     obs = getattr(step, "observation", None)
                     if act in ("rag_search", "paper_compare") and obs:
                         for m in re.finditer(r"【([^】]+?)-第(\d+)页】", obs):
-                            citations.append({
-                                "doc_name": m.group(1),
-                                "page": int(m.group(2)),
-                            })
+                            citations.append(
+                                {
+                                    "doc_name": m.group(1),
+                                    "page": int(m.group(2)),
+                                }
+                            )
 
                 if citations:
                     unique_cites = {}
@@ -685,7 +743,7 @@ with col_mid:
                         unique_cites[(c["doc_name"], c["page"])] = c
                     cite_ph.markdown("**📚 引用来源**")
                     html_cites = " ".join(
-                        f'<span class="citation">【{doc}-第{page}页】</span>'
+                        f'<span class="citation">【{html.escape(doc)}-第{page}页】</span>'
                         for (doc, page) in unique_cites
                     )
                     cite_ph.markdown(html_cites, unsafe_allow_html=True)
@@ -734,6 +792,9 @@ with col_right:
 
     st.divider()
     st.markdown("### 📊 指标统计")
+    st.caption("RAG 命中表示检索返回证据，真实检索准确率见评测报告。")
+    if _cur_session().get("metrics", {}).get("missing_citations"):
+        st.warning("本轮模型未逐句标注引用，请核对答案末尾的检索来源。")
     st.caption("按工具聚合 · 当前会话最近一轮")
     stats = _cur_session().get("tool_stats") or {}
     st.markdown(render_tool_stats_html(stats), unsafe_allow_html=True)

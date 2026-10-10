@@ -1,145 +1,49 @@
-# 智能科研助理
+# 智能科研助理 题目一
 
-> 基于 RAG + Agent 的论文知识库问答系统
->
-> 南京农业大学课程实践项目
+基于原仓库 https://github.com/54321simon/ragagent 继续完成的本地 RAG + 手写 ReAct 系统。12 篇计算机视觉与 Transformer 论文、68 道检索评测题、24 道真实模型 Agent 评测题。结果在 experiments/results，报告在 docs。
 
-## 一、项目简介
+## 本机启动
 
-上传论文 PDF/Word，用自然语言提问，Agent 自动推理并给出**带引用来源**的答案。
+双击 start_app.cmd，打开 http://127.0.0.1:8501。代码和 Python 环境在 D:/生产实习大作业/ragagent，模型在同级 models，索引在 D:/NJAU_RAG_Data/index。需要保持这些目录。首次模型加载及 CPU 生成较慢。
 
-**核心特性**：
+## 新电脑部署
 
-- 🏠 完全本地部署：Ollama + bge-m3，不依赖云端 API
-- 🔧 手写 ReAct 循环：约 250 行，不用 LangChain Agent 高层封装
-- 🔍 混合检索：bge-m3 向量 + BM25 + RRF + 可选 reranker
-- 📚 引用溯源：答案标注 【文档名-第X页】
-- 🔬 可视化推理：右侧展示 Thought → Action → Observation
-- 🎯 多文档检索：可选 1 篇或多篇文档提问
-- 🛡️ LLM 自检拒答：库外问题不硬凑
+1. 将仓库解压到 D 盘。在 PowerShell 执行 `powershell -ExecutionPolicy Bypass -File scripts/setup.ps1`。首次安装需要联网，自动下载官方 uv、Python、Ollama 和两个模型。
+2. 检查 .env 中 INDEX_DIR 使用 ASCII 路径。不同项目应使用不同索引目录。
+3. 使用 `.venv/Scripts/python.exe scripts/download_papers.py` 下载论文，或保留交付包内的 data/papers。
+4. 使用 `.venv/Scripts/python.exe scripts/ingest_corpus.py` 创建索引。首次完整嵌入需要几分钟。
+5. 双击 start_app.cmd。
 
-## 二、快速开始
+默认 vector 是本次 60 道题上 Hit@5 最好的模式。修改 .env 的 RETRIEVAL_MODE 为 hybrid 或 rerank 可以切换；更换配置后重启应用。Rerank 需下载 BAAI/bge-reranker-base，本机使用同级 models/bge-reranker-base。更换嵌入模型必须新建索引，不能混用不同向量。
 
-### 环境要求
+## 复现测试与实验
 
-- Windows 10/11 或 Linux
-- Python 3.10+
-- uv 包管理器
-- Ollama 本地大模型服务
-
-### 安装步骤
-
-1. 克隆仓库
-
-```bash
-git clone https://github.com/54321simon/ragagent.git
-cd ragagent
+```powershell
+.venv/Scripts/python.exe -m pytest -q
+.venv/Scripts/python.exe experiments/evaluate.py --modes vector hybrid rerank
+.venv/Scripts/python.exe experiments/component_exp.py
+.venv/Scripts/python.exe experiments/embedding_exp.py
+.venv/Scripts/python.exe experiments/prompt_exp.py
+.venv/Scripts/python.exe experiments/agent_eval.py
+.venv/Scripts/python.exe experiments/robustness.py
 ```
 
-2. 安装依赖
+embedding_exp 需要同级 models 下的 m3e-base 和 bge-large-zh-v1.5（本机已下载）。全部数据使用真实模型，本机 CPU 延迟受并行实验影响。组件实验仅 2 篇论文、8 道题，不应外推到全语料。manual_review.csv 保留独立人工评分列，不用执行成功率替代正确性。
 
-```bash
-uv sync
-```
+## Docker
 
-3. 拉取 Ollama 模型
+安装 Docker 后在仓库执行 `docker compose up --build`。初始化服务下载模型，首次随后执行 `docker compose exec app python scripts/ingest_corpus.py`，打开 localhost:8501。本机无 Docker，配置只经过静态检查，未声明镜像构建或容器运行通过。默认仅绑定本机端口。
 
-```bash
-ollama pull qwen2.5:7b-instruct-q4_K_M
-ollama pull bge-m3:567m
-```
+## 工程实现
 
-4. 配置环境变量（可选）
+retriever：多格式加载、四类切分、Chroma 增量索引、向量/BM25/RRF/重排序。
+rag：证据拼接、页码引用、语义缓存、降级、自检、请求日志。
+agent：共享同步/流式 ReAct 引擎、快速路由、最多三工具并行、错误恢复、历史窗口和摘要。
+tools：8 个注册工具；联网学术检索为可选扩展，当前不提供联网搜索。
+ui：三列 Streamlit、文档管理、会话隔离、过程轨迹、指标与健康检查。
 
-```bash
-cp .env.example .env
-```
+PDF 页码采用物理页，不是期刊页码。DOCX/TXT/MD 当前标注为逻辑页 1。扫描版 PDF 无 OCR。模型可能误读证据；缺少逐句引用时显示核对提示，错误页码替换为“引用未核验”，不缓存这类答案。引用存在只证明来源可定位，不能证明句子事实正确。
 
-5. 启动应用
+## 提交前
 
-```bash
-uv run streamlit run ui/app.py
-```
-
-浏览器打开 http://localhost:8501
-
-## 三、项目结构
-
-```
-agent/          Agent 决策层（手写 ReAct 循环）
-common/         共享数据结构
-rag/            RAG 生成层（prompt / context / citation / fallback / self_check）
-retriever/      检索层（loader / chunker / embedder / store / api + BM25/RRF/reranker）
-tools/          Agent 工具集（8 个工具）
-ui/             Streamlit 前端
-experiments/    评测脚本 + 20 条评测集
-data/           论文文件 + Chroma 索引（gitignore）
-```
-
-## 四、技术栈
-
-- LLM: Ollama + qwen2.5:7b-instruct-q4_K_M
-- Embedding: bge-m3:567m（1024 维）
-- Reranker: BAAI/bge-reranker-base
-- 向量库: ChromaDB（cosine）
-- 关键词检索: rank_bm25 + jieba
-- 融合: 手写 RRF
-- 前端: Streamlit
-- 环境: Python 3.10 + uv
-
-## 五、核心设计
-
-### 5.1 手写 ReAct 循环
-
-- System Prompt 用 inspect.signature 自动生成工具签名
-- 强制 JSON 输出：ollama.chat(..., format="json")
-- 三层容错解析：json.loads → 正则提取 → 兜底
-- 硬性保护：rag_search 无新增页码时强制终止
-- 最多 4 轮
-
-### 5.2 三档检索对比（15 条可回答 query）
-
-| 档位 | Hit@1 | Hit@5 | MRR | 延迟(ms) |
-|---|---|---|---|---|
-| vector | 0.667 | 0.800 | 0.717 | 42 |
-| hybrid | 0.667 | 0.867 | 0.739 | 44 |
-| hybrid_rerank | 0.667 | 0.867 | 0.767 | 1592 |
-
-结论：hybrid 是默认档。
-
-### 5.3 8 个工具
-
-rag_search / paper_meta / paper_compare / extract_keywords / summarize_paper / current_time / calculator / list_documents
-
-### 5.4 拒答机制
-
-两层保护：
-
-1. LLM 自检（rag/self_check.py）
-2. Agent 决策判断
-
-## 六、评测
-
-```bash
-uv run python experiments/retrieval_exp_v2.py
-```
-
-## 七、已知问题
-
-1. DOCX 切分较粗
-2. 跨语言检索不稳（中文 query 对英文论文）
-3. 拒答依赖 LLM 自检，延迟增加
-4. CPU 推理较慢
-5. 无 Docker 部署
-
-## 八、课程对应
-
-- 模块一：文档处理与检索层 → retriever/
-- 模块二：RAG 生成层 → rag/
-- 模块三：Agent 决策层 → agent/ + tools/
-- 模块四：系统集成与前端 → ui/
-- 模块五：评测与交付 → experiments/
-
-## 九、致谢
-
-南京农业大学课程实践项目。
+填写报告封面的组员、学号、班级和教师信息。由独立评审人在 manual_review.csv 填写正确性、完整性、引用准确性。答辩可按 PPT 备注演示。完整历史保留在 Git 中，未替用户推送远端。

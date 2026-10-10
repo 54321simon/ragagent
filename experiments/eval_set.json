@@ -1,87 +1,1784 @@
 [
   {
-    "question": "这篇论文提出了什么模型？",
-    "relevant_pages": [1, 2]
+    "id": "F01",
+    "type": "事实性",
+    "question": "Transformer 的 scaled dot-product attention 为什么除以 sqrt(d_k)？",
+    "reference_answer": "缩放点积避免高维点积过大导致 softmax 梯度变小。",
+    "answerable": true,
+    "doc_ids": [
+      "Transformer"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Transformer",
+        "page": 4,
+        "evidence_terms": [
+          "dot products grow large in magnitude",
+          "small gradients",
+          "scaling factor"
+        ],
+        "evidence_excerpt": "Scaled Dot-Product Attention\nMulti-Head Attention\nFigure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several\nattention layers running in parallel.\nof the values, where the weight assigned to each value is computed by a compatibility function of the\nquery with the corresponding key.\n3.2.1\nScaled Dot-Product Attention\nWe call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文的标题是什么？",
-    "relevant_pages": [1]
+    "id": "F02",
+    "type": "事实性",
+    "question": "Transformer 使用哪种 positional encoding？",
+    "reference_answer": "原论文采用不同频率的正弦和余弦位置编码，并试验学习的位置嵌入。",
+    "answerable": true,
+    "doc_ids": [
+      "Transformer"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Transformer",
+        "page": 6,
+        "evidence_terms": [
+          "sine and cosine",
+          "positional encodings"
+        ],
+        "evidence_excerpt": "Table 1: Maximum path lengths, per-layer complexity and minimum number of sequential operations\nfor different layer types. n is the sequence length, d is the representation dimension, k is the kernel\nsize of convolutions and r the size of the neighborhood in restricted self-attention.\nLayer Type\nComplexity per Layer\nSequential\nMaximum Path Length\nOperations\nSelf-Attention\nO(n2 · d)\nRecurrent\nO(n · d2)\nO(n)\nO(n)\nConvolutional\nO(k · n · d2)\nO(logk("
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "Transformer 的整体架构是什么？",
-    "relevant_pages": [3]
+    "id": "F03",
+    "type": "事实性",
+    "question": "Transformer base 的 multi-head attention 使用多少个头？",
+    "reference_answer": "base 模型采用 8 个注意力头，d_k=d_v=64。",
+    "answerable": true,
+    "doc_ids": [
+      "Transformer"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Transformer",
+        "page": 5,
+        "evidence_terms": [
+          "h = 8"
+        ],
+        "evidence_excerpt": "output values. These are concatenated and once again projected, resulting in the final values, as\ndepicted in Figure 2.\nMulti-head attention allows the model to jointly attend to information from different representation\nsubspaces at different positions. With a single attention head, averaging inhibits this.\nMultiHead(Q, K, V ) = Concat(head1, ..., headh)W O\nwhere headi = Attention(QW Q\ni , KW K\ni , V W V\ni )\nWhere the projections are parameter m"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "Scaled Dot-Product Attention 是怎么计算的？",
-    "relevant_pages": [4]
+    "id": "F04",
+    "type": "事实性",
+    "question": "ViT 如何将图像转换成 patch token 序列？",
+    "reference_answer": "将图像划分为固定大小的二维 patch，展平并线性投影后加位置嵌入。",
+    "answerable": true,
+    "doc_ids": [
+      "ViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "ViT",
+        "page": 3,
+        "evidence_terms": [
+          "flattened 2d patches",
+          "linear projection",
+          "patch embeddings"
+        ],
+        "evidence_excerpt": "Transformer Encoder\nMLP \nHead\nVision Transformer (ViT)\n*\nLinear Projection of Flattened Patches\n* Extra learnable\n     [ cl ass] embedding\nPatch + Position \nEmbedding\nClass\nBird\nBall\nCar\nEmbedded \nPatches\nMulti-Head \nAttention\nNorm\nMLP\nNorm\n+\nL x\n+\nTransformer Encoder\nFigure 1: Model overview. We split an image into ﬁxed-size patches, linearly embed each of them,\nadd position embeddings, and feed the resulting sequence of vectors to a standard Tr"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "Multi-Head Attention 是什么？",
-    "relevant_pages": [4, 5]
+    "id": "F05",
+    "type": "事实性",
+    "question": "ViT 预训练使用哪些大规模数据集？",
+    "reference_answer": "原论文比较 ImageNet、ImageNet-21k 和 JFT-300M 的预训练。",
+    "answerable": true,
+    "doc_ids": [
+      "ViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "ViT",
+        "page": 2,
+        "evidence_terms": [
+          "jft",
+          "300m",
+          "21k"
+        ],
+        "evidence_excerpt": "inherent to CNNs, such as translation equivariance and locality, and therefore do not generalize well\nwhen trained on insufﬁcient amounts of data.\nHowever, the picture changes if the models are trained on larger datasets (14M-300M images). We\nﬁnd that large scale training trumps inductive bias. Our Vision Transformer (ViT) attains excellent\nresults when pre-trained at sufﬁcient scale and transferred to tasks with fewer datapoints. When\npre-traine"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "Transformer 用了哪些注意力机制？",
-    "relevant_pages": [5]
+    "id": "F06",
+    "type": "事实性",
+    "question": "ViT 的 class token 在分类时承担什么作用？",
+    "reference_answer": "可学习 class token 与 patch 序列一起编码，其输出用于分类。",
+    "answerable": true,
+    "doc_ids": [
+      "ViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "ViT",
+        "page": 3,
+        "evidence_terms": [
+          "classification head"
+        ],
+        "evidence_excerpt": "Transformer Encoder\nMLP \nHead\nVision Transformer (ViT)\n*\nLinear Projection of Flattened Patches\n* Extra learnable\n     [ cl ass] embedding\nPatch + Position \nEmbedding\nClass\nBird\nBall\nCar\nEmbedded \nPatches\nMulti-Head \nAttention\nNorm\nMLP\nNorm\n+\nL x\n+\nTransformer Encoder\nFigure 1: Model overview. We split an image into ﬁxed-size patches, linearly embed each of them,\nadd position embeddings, and feed the resulting sequence of vectors to a standard Tr"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "位置编码是怎么实现的？",
-    "relevant_pages": [6]
+    "id": "F07",
+    "type": "事实性",
+    "question": "DeiT 的 distillation token 如何接收教师监督？",
+    "reference_answer": "蒸馏 token 通过注意力参与网络，并由教师预测监督。",
+    "answerable": true,
+    "doc_ids": [
+      "DeiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DeiT",
+        "page": 3,
+        "evidence_terms": [
+          "distillation token",
+          "teacher"
+        ],
+        "evidence_excerpt": "In summary, our work makes the following contributions:\n• We show that our neural networks that contains no convolutional layer\ncan achieve competitive results against the state of the art on ImageNet\nwith no external data. They are learned on a single node with 4 GPUs in\nthree days1. Our two new models DeiT-S and DeiT-Ti have fewer param-\neters and can be seen as the counterpart of ResNet-50 and ResNet-18.\n• We introduce a new distillation proce"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文在什么数据集上训练？",
-    "relevant_pages": [7]
+    "id": "F08",
+    "type": "事实性",
+    "question": "DeiT 是否必须使用外部大规模预训练数据？",
+    "reference_answer": "论文在仅使用 ImageNet 的设置下训练，强调数据高效性。",
+    "answerable": true,
+    "doc_ids": [
+      "DeiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DeiT",
+        "page": 1,
+        "evidence_terms": [
+          "imagenet only",
+          "no external data"
+        ],
+        "evidence_excerpt": "Training data-efﬁcient image transformers\n& distillation through attention\nHugo Touvron⋆,†\nMatthieu Cord†\nMatthijs Douze⋆\nFrancisco Massa⋆\nAlexandre Sablayrolles⋆\nHerv´e J´egou⋆\n⋆Facebook AI\n†Sorbonne University\nAbstract\nRecently, neural networks purely based on attention were shown to ad-\ndress image understanding tasks such as image classiﬁcation. These high-\nperforming vision transformers are pre-trained with hundreds of millions\nof images usi"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文的训练设置是什么？",
-    "relevant_pages": [7]
+    "id": "F09",
+    "type": "事实性",
+    "question": "DeiT 为什么选择 convnet 作为蒸馏教师？",
+    "reference_answer": "实验发现卷积教师的归纳偏置对 Transformer 学生的蒸馏更有帮助。",
+    "answerable": true,
+    "doc_ids": [
+      "DeiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DeiT",
+        "page": 4,
+        "evidence_terms": [
+          "inductive bias"
+        ],
+        "evidence_excerpt": "Recently Vision transformers (ViT) [15] closed the gap with the state of the\nart on ImageNet, without using any convolution. This performance is remark-\nable since convnet methods for image classiﬁcation have beneﬁted from years\nof tuning and optimization [22, 55]. Nevertheless, according to this study [15],\na pre-training phase on a large volume of curated data is required for the\nlearned transformer to be effective. In our paper we achieve a st"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文在 WMT 2014 英德翻译上的 BLEU 分数是多少？",
-    "relevant_pages": [8]
+    "id": "F10",
+    "type": "事实性",
+    "question": "Swin shifted windows 如何实现跨窗口信息交互？",
+    "reference_answer": "相邻层交替使用常规窗口与移位窗口，使原本分离的窗口能够建立连接。",
+    "answerable": true,
+    "doc_ids": [
+      "Swin"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Swin",
+        "page": 4,
+        "evidence_terms": [
+          "shifted window",
+          "cross-window"
+        ],
+        "evidence_excerpt": "(a) Architecture\nMLP\nW-MSA\n(b) Two Successive Swin Transformer Blocks\nMLP\nSW-MSA\nImages\nLinear Embedding\nStage 1\nStage 2\nStage 3\nStage 4\n6\nPatch Partition\nFigure 3. (a) The architecture of a Swin Transformer (Swin-T); (b) two successive Swin Transformer Blocks (notation presented with\nEq. (3)). W-MSA and SW-MSA are multi-head self attention modules with regular and shifted windowing conﬁgurations, respectively.\nwith the same feature map resolutio"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文在 WMT 2014 英法翻译上的 BLEU 分数是多少？",
-    "relevant_pages": [8]
+    "id": "F11",
+    "type": "事实性",
+    "question": "Swin 的计算复杂度与图像大小有什么关系？",
+    "reference_answer": "固定窗口大小时，窗口自注意力复杂度随图像像素数线性增长。",
+    "answerable": true,
+    "doc_ids": [
+      "Swin"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Swin",
+        "page": 2,
+        "evidence_terms": [
+          "linear computational complexity",
+          "image size"
+        ],
+        "evidence_excerpt": "backbone for computer vision, as it does for NLP and\nas CNNs do in vision. We observe that signiﬁcant chal-\nlenges in transferring its high performance in the language\ndomain to the visual domain can be explained by differ-\nences between the two modalities.\nOne of these differ-\nences involves scale.\nUnlike the word tokens that serve\nas the basic elements of processing in language Trans-\nformers, visual elements can vary substantially in scale, a\n"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文通过哪些变体验证了架构设计？",
-    "relevant_pages": [9]
+    "id": "F12",
+    "type": "事实性",
+    "question": "Swin 为什么使用 hierarchical representation？",
+    "reference_answer": "分层和 patch merging 产生多尺度特征，适配检测和分割等密集预测任务。",
+    "answerable": true,
+    "doc_ids": [
+      "Swin"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Swin",
+        "page": 3,
+        "evidence_terms": [
+          "patch merging",
+          "hierarchical"
+        ],
+        "evidence_excerpt": "HRNet [65], and EfﬁcientNet [58].\nIn addition to these\narchitectural advances, there has also been much work on\nimproving individual convolution layers, such as depth-\nwise convolution [70] and deformable convolution [18, 84].\nWhile the CNN and its variants are still the primary back-\nbone architectures for computer vision applications, we\nhighlight the strong potential of Transformer-like architec-\ntures for uniﬁed modeling between vision and la"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文在 WSJ 数据集上的句法分析 F1 分数是多少？",
-    "relevant_pages": [10]
+    "id": "F13",
+    "type": "事实性",
+    "question": "DETR 的 Hungarian matching 用来解决什么问题？",
+    "reference_answer": "通过预测集合与真实目标的一对一最优匹配，构建集合预测损失。",
+    "answerable": true,
+    "doc_ids": [
+      "DETR"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DETR",
+        "page": 3,
+        "evidence_terms": [
+          "hungarian",
+          "bipartite matching"
+        ],
+        "evidence_excerpt": "from auxiliary decoding losses in the transformer. We thoroughly explore what\ncomponents are crucial for the demonstrated performance.\nThe design ethos of DETR easily extend to more complex tasks. In our\nexperiments, we show that a simple segmentation head trained on top of a pre-\ntrained DETR outperfoms competitive baselines on Panoptic Segmentation [19],\na challenging pixel-level recognition task that has recently gained popularity.\nRelated wor"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文未来打算把 Transformer 应用到哪些任务？",
-    "relevant_pages": [10]
+    "id": "F14",
+    "type": "事实性",
+    "question": "DETR 的 learned object queries 有什么作用？",
+    "reference_answer": "一组可学习对象查询作为解码器输入，产生固定大小的对象预测集合。",
+    "answerable": true,
+    "doc_ids": [
+      "DETR"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DETR",
+        "page": 7,
+        "evidence_terms": [
+          "object queries",
+          "learned"
+        ],
+        "evidence_excerpt": "7\nCNN\nset of image features\n…\n…\npositional encoding\nclass,\nbox\nclass,\nbox\nno \nobject\nno \nobject\nobject queries\nbackbone\nprediction heads\nFig. 2: DETR uses a conventional CNN backbone to learn a 2D representation of an\ninput image. The model ﬂattens it and supplements it with a positional encoding before\npassing it into a transformer encoder. A transformer decoder then takes as input a\nsmall ﬁxed number of learned positional embeddings, which we c"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "论文的核心贡献是什么？",
-    "relevant_pages": [1, 2, 10]
-  },
-    {
-    "question": "这篇论文里 RAG 有哪些主流范式？",
-    "relevant_pages": [],
-    "answerable": false
+    "id": "F15",
+    "type": "事实性",
+    "question": "DETR 还需要 anchor generation 和 NMS 吗？",
+    "reference_answer": "原框架直接预测目标集合，移除手工 anchor 生成和非极大值抑制。",
+    "answerable": true,
+    "doc_ids": [
+      "DETR"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DETR",
+        "page": 1,
+        "evidence_terms": [
+          "non-maximum suppression",
+          "anchor generation"
+        ],
+        "evidence_excerpt": "Nicolas Carion⋆, Francisco Massa⋆, Gabriel Synnaeve, Nicolas Usunier,\nAlexander Kirillov, and Sergey Zagoruyko\nFacebook AI\nAbstract. We present a new method that views object detection as a\ndirect set prediction problem. Our approach streamlines the detection\npipeline, eﬀectively removing the need for many hand-designed compo-\nnents like a non-maximum suppression procedure or anchor generation\nthat explicitly encode our prior knowledge about the "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "BERT 的预训练任务是什么？",
-    "relevant_pages": [],
-    "answerable": false
+    "id": "F16",
+    "type": "事实性",
+    "question": "PVT 的 spatial-reduction attention 为什么降低计算成本？",
+    "reference_answer": "对键和值的空间分辨率进行缩减，减少注意力计算和内存开销。",
+    "answerable": true,
+    "doc_ids": [
+      "PVT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "PVT",
+        "page": 2,
+        "evidence_terms": [
+          "spatial-reduction"
+        ],
+        "evidence_excerpt": "28\n32\n34\n36\n38\n42\n44\n60\n70\n80\n90\n100\n110\n120\n130\n#Parameter (M)\nX101-32x4d\nX101-64x4d\nViT-S/32\nPVT-T\nPVT-S\nPVT-M\nPVT-L\nR50\nR101\nR18\n#Param (M) AP\nR18 [22]\n21.3\n31.8\nPVT-T (ours)\n23.0\nR50 [22]\n37.7\nPVT-S (ours)\nR101 [22]\nX101-32x4d [73]\n56.4\n39.9\nViT-S/32 [13]\n60.8\n31.7\nPVT-M (ours)\nX101-64x4d [73]\n95.5\nPVT-L (ours)\n71.1\nFigure 2: Performance comparison on COCO val2017\nof different backbones using RetinaNet for object detec-\ntion, where “T”, “S”, "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "GPT-3 有多少参数？",
-    "relevant_pages": [],
-    "answerable": false
+    "id": "F17",
+    "type": "事实性",
+    "question": "PVT 与 ViT 的特征尺度结构有何不同？",
+    "reference_answer": "PVT 逐级缩小空间分辨率并形成特征金字塔，ViT 原始分类骨干为单尺度柱状结构。",
+    "answerable": true,
+    "doc_ids": [
+      "PVT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "PVT",
+        "page": 2,
+        "evidence_terms": [
+          "pyramid structure",
+          "columnar"
+        ],
+        "evidence_excerpt": "28\n32\n34\n36\n38\n42\n44\n60\n70\n80\n90\n100\n110\n120\n130\n#Parameter (M)\nX101-32x4d\nX101-64x4d\nViT-S/32\nPVT-T\nPVT-S\nPVT-M\nPVT-L\nR50\nR101\nR18\n#Param (M) AP\nR18 [22]\n21.3\n31.8\nPVT-T (ours)\n23.0\nR50 [22]\n37.7\nPVT-S (ours)\nR101 [22]\nX101-32x4d [73]\n56.4\n39.9\nViT-S/32 [13]\n60.8\n31.7\nPVT-M (ours)\nX101-64x4d [73]\n95.5\nPVT-L (ours)\n71.1\nFigure 2: Performance comparison on COCO val2017\nof different backbones using RetinaNet for object detec-\ntion, where “T”, “S”, "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "这篇论文的作者在哪所大学？",
-    "relevant_pages": [],
-    "answerable": false
+    "id": "F18",
+    "type": "事实性",
+    "question": "PVT 原论文验证了哪些 dense prediction 任务？",
+    "reference_answer": "验证目标检测、实例分割和语义分割等密集预测任务。",
+    "answerable": true,
+    "doc_ids": [
+      "PVT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "PVT",
+        "page": 2,
+        "evidence_terms": [
+          "object detection",
+          "semantic",
+          "instance segmentation"
+        ],
+        "evidence_excerpt": "28\n32\n34\n36\n38\n42\n44\n60\n70\n80\n90\n100\n110\n120\n130\n#Parameter (M)\nX101-32x4d\nX101-64x4d\nViT-S/32\nPVT-T\nPVT-S\nPVT-M\nPVT-L\nR50\nR101\nR18\n#Param (M) AP\nR18 [22]\n21.3\n31.8\nPVT-T (ours)\n23.0\nR50 [22]\n37.7\nPVT-S (ours)\nR101 [22]\nX101-32x4d [73]\n56.4\n39.9\nViT-S/32 [13]\n60.8\n31.7\nPVT-M (ours)\nX101-64x4d [73]\n95.5\nPVT-L (ours)\n71.1\nFigure 2: Performance comparison on COCO val2017\nof different backbones using RetinaNet for object detec-\ntion, where “T”, “S”, "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
   },
   {
-    "question": "对比 Transformer 和 LSTM 的训练速度差异",
-    "relevant_pages": [],
-    "answerable": false
+    "id": "F19",
+    "type": "事实性",
+    "question": "BEiT masked image modeling 的预测目标是什么？",
+    "reference_answer": "预测被遮挡图像 patch 对应的离散视觉 token，而不是直接重建像素。",
+    "answerable": true,
+    "doc_ids": [
+      "BEiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "BEiT",
+        "page": 2,
+        "evidence_terms": [
+          "visual tokens",
+          "masked image modeling"
+        ],
+        "evidence_excerpt": "123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n0\nFlatten\nTokenizer\nDecoder\nPosition \nEmbedding\nPatch \nEmbedding\nOriginal \nPatches\nVisual Tokens\n𝐡2\n𝐡3\n𝐡6\n𝐡7\n𝐡14\nMasked Image Modeling Head\nReconstructed \nUnused During \nPre-Training\n234 456\n876 765\n322\n[S]\nFigure 1: Overview of BEIT pre-training. Before pre-training, we learn an “image tokenizer” via\nautoencoding-style reconstructio"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F20",
+    "type": "事实性",
+    "question": "BEiT 如何获得 discrete visual tokens？",
+    "reference_answer": "通过图像 tokenizer 将图像转成离散视觉 token，用作预训练目标。",
+    "answerable": true,
+    "doc_ids": [
+      "BEiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "BEiT",
+        "page": 2,
+        "evidence_terms": [
+          "tokenizer",
+          "discrete"
+        ],
+        "evidence_excerpt": "123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n0\nFlatten\nTokenizer\nDecoder\nPosition \nEmbedding\nPatch \nEmbedding\nOriginal \nPatches\nVisual Tokens\n𝐡2\n𝐡3\n𝐡6\n𝐡7\n𝐡14\nMasked Image Modeling Head\nReconstructed \nUnused During \nPre-Training\n234 456\n876 765\n322\n[S]\nFigure 1: Overview of BEIT pre-training. Before pre-training, we learn an “image tokenizer” via\nautoencoding-style reconstructio"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F21",
+    "type": "事实性",
+    "question": "BEiT 在预训练后如何处理下游任务？",
+    "reference_answer": "在预训练编码器上添加任务层，对图像分类和语义分割等任务微调。",
+    "answerable": true,
+    "doc_ids": [
+      "BEiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "BEiT",
+        "page": 2,
+        "evidence_terms": [
+          "fine-tune",
+          "semantic segmentation"
+        ],
+        "evidence_excerpt": "123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n0\nFlatten\nTokenizer\nDecoder\nPosition \nEmbedding\nPatch \nEmbedding\nOriginal \nPatches\nVisual Tokens\n𝐡2\n𝐡3\n𝐡6\n𝐡7\n𝐡14\nMasked Image Modeling Head\nReconstructed \nUnused During \nPre-Training\n234 456\n876 765\n322\n[S]\nFigure 1: Overview of BEIT pre-training. Before pre-training, we learn an “image tokenizer” via\nautoencoding-style reconstructio"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F22",
+    "type": "事实性",
+    "question": "MAE 的 asymmetric encoder-decoder 如何工作？",
+    "reference_answer": "编码器仅处理可见 patch，轻量解码器结合 latent 与 mask token 重建像素。",
+    "answerable": true,
+    "doc_ids": [
+      "MAE"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MAE",
+        "page": 1,
+        "evidence_terms": [
+          "visible subset",
+          "lightweight decoder"
+        ],
+        "evidence_excerpt": "Masked Autoencoders Are Scalable Vision Learners\nKaiming He∗,†\nXinlei Chen∗\nSaining Xie\nYanghao Li\nPiotr Doll´ar\nRoss Girshick\n∗equal technical contribution\n†project lead\nFacebook AI Research (FAIR)\nAbstract\nThis paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core desig"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F23",
+    "type": "事实性",
+    "question": "MAE 论文推荐的典型 masking ratio 是多少？",
+    "reference_answer": "论文发现约 75% 的高遮挡比例能形成有效的自监督学习任务。",
+    "answerable": true,
+    "doc_ids": [
+      "MAE"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MAE",
+        "page": 2,
+        "evidence_terms": [
+          "75%",
+          "masking"
+        ],
+        "evidence_excerpt": "Figure 2. Example results on ImageNet validation images. For each triplet, we show the masked image (left), our MAE reconstruction†\n(middle), and the ground-truth (right). The masking ratio is 80%, leaving only 39 out of 196 patches. More examples are in the appendix.\n†As no loss is computed on visible patches, the model output on visible patches is qualitatively worse. One can simply overlay the output with the visible\npatches to improve visual "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F24",
+    "type": "事实性",
+    "question": "MAE 重建目标是像素还是离散视觉 token？",
+    "reference_answer": "原始 MAE 重建被遮挡图像 patch 的像素。",
+    "answerable": true,
+    "doc_ids": [
+      "MAE"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MAE",
+        "page": 2,
+        "evidence_terms": [
+          "reconstruct",
+          "pixels"
+        ],
+        "evidence_excerpt": "Figure 2. Example results on ImageNet validation images. For each triplet, we show the masked image (left), our MAE reconstruction†\n(middle), and the ground-truth (right). The masking ratio is 80%, leaving only 39 out of 196 patches. More examples are in the appendix.\n†As no loss is computed on visible patches, the model output on visible patches is qualitatively worse. One can simply overlay the output with the visible\npatches to improve visual "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F25",
+    "type": "事实性",
+    "question": "CLIP 的训练数据规模和数据形式是什么？",
+    "reference_answer": "从互联网收集约 4 亿图像文本对进行对比预训练。",
+    "answerable": true,
+    "doc_ids": [
+      "CLIP"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CLIP",
+        "page": 2,
+        "evidence_terms": [
+          "400 million",
+          "image, text"
+        ],
+        "evidence_excerpt": "I1·T2\nI1·T3\nI2·T1\nI2·T3\nI3·T1\nI3·T2\nI1·T1\nI2·T2\nI3·T3\n(1) Contrastive pre-training\nImage\nText\nT1\nT2\nT3\nI1\nI2\nI3\n(2) Create dataset classiﬁer from label text\nplane\ncar\ndog\nbird\nA photo of\na {object}.\nText\nT1\nT2\nT3\nTN\n(3) Use for zero-shot prediction\nImage\nI1\nI1·T2\nI1·TN\nI1·T1\nA photo of\n a dog.\nTN\nIN·T1\nIN·T2\nIN·T3\nI1·TN\nI2·TN\nI3·TN\nIN\n⋱\nIN·TN\nI1·T3\nFigure 1. Summary of our approach. While standard image models jointly train an image feature extra"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F26",
+    "type": "事实性",
+    "question": "CLIP 如何实现 zero-shot image classification？",
+    "reference_answer": "将候选类别描述编码为文本向量，与图像编码比较相似度进行零样本分类。",
+    "answerable": true,
+    "doc_ids": [
+      "CLIP"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CLIP",
+        "page": 2,
+        "evidence_terms": [
+          "zero-shot",
+          "classification"
+        ],
+        "evidence_excerpt": "I1·T2\nI1·T3\nI2·T1\nI2·T3\nI3·T1\nI3·T2\nI1·T1\nI2·T2\nI3·T3\n(1) Contrastive pre-training\nImage\nText\nT1\nT2\nT3\nI1\nI2\nI3\n(2) Create dataset classiﬁer from label text\nplane\ncar\ndog\nbird\nA photo of\na {object}.\nText\nT1\nT2\nT3\nTN\n(3) Use for zero-shot prediction\nImage\nI1\nI1·T2\nI1·TN\nI1·T1\nA photo of\n a dog.\nTN\nIN·T1\nIN·T2\nIN·T3\nI1·TN\nI2·TN\nI3·TN\nIN\n⋱\nIN·TN\nI1·T3\nFigure 1. Summary of our approach. While standard image models jointly train an image feature extra"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F27",
+    "type": "事实性",
+    "question": "CLIP 的 contrastive objective 如何匹配图像与文本？",
+    "reference_answer": "在 batch 中提高正确配对图像与文本的相似度，并抑制错误配对。",
+    "answerable": true,
+    "doc_ids": [
+      "CLIP"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CLIP",
+        "page": 2,
+        "evidence_terms": [
+          "contrastive",
+          "batch",
+          "pairs"
+        ],
+        "evidence_excerpt": "I1·T2\nI1·T3\nI2·T1\nI2·T3\nI3·T1\nI3·T2\nI1·T1\nI2·T2\nI3·T3\n(1) Contrastive pre-training\nImage\nText\nT1\nT2\nT3\nI1\nI2\nI3\n(2) Create dataset classiﬁer from label text\nplane\ncar\ndog\nbird\nA photo of\na {object}.\nText\nT1\nT2\nT3\nTN\n(3) Use for zero-shot prediction\nImage\nI1\nI1·T2\nI1·TN\nI1·T1\nA photo of\n a dog.\nTN\nIN·T1\nIN·T2\nIN·T3\nI1·TN\nI2·TN\nI3·TN\nIN\n⋱\nIN·TN\nI1·T3\nFigure 1. Summary of our approach. While standard image models jointly train an image feature extra"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F28",
+    "type": "事实性",
+    "question": "CvT 在 ViT 中引入了哪两类卷积机制？",
+    "reference_answer": "卷积 token embedding 和注意力块内的卷积 projection。",
+    "answerable": true,
+    "doc_ids": [
+      "CvT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CvT",
+        "page": 2,
+        "evidence_terms": [
+          "convolutional token embedding",
+          "convolutional projection"
+        ],
+        "evidence_excerpt": "Needs Position Encoding (PE)\nToken Embedding\nProjection for Attention\nHierarchical Transformers\nViT [11], DeiT [30]\nCPVT [6]\nno (w/ PE Generator)\nTNT [14]\nnon-overlapping (patch+pixel)\nT2T [41]\noverlapping (concatenate)\npartial (tokenization)\nPVT [34]\nspatial reduction\nCvT (ours)\noverlapping (convolution)\nconvolution\nTable 1: Representative works of vision Transformers.\ntecture forces the capture of this local structure by using\nlocal receptive ﬁ"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F29",
+    "type": "事实性",
+    "question": "CvT 是否必须保留 positional encoding？",
+    "reference_answer": "作者实验发现 CvT 中位置编码可以移除而保持性能。",
+    "answerable": true,
+    "doc_ids": [
+      "CvT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CvT",
+        "page": 1,
+        "evidence_terms": [
+          "positional encoding",
+          "removed"
+        ],
+        "evidence_excerpt": "CvT: Introducing Convolutions to Vision Transformers\nHaiping Wu1,2*\nBin Xiao2†\nNoel Codella2\nMengchen Liu2\nXiyang Dai2\nLu Yuan2\nLei Zhang2\n1McGill University\n2Microsoft Cloud + AI\nhaiping.wu2@mail.mcgill.ca, {bixi, ncodella, mengcliu, xidai, luyuan, leizhang}@microsoft.com\nAbstract\nWe present in this paper a new architecture, named Con-\nvolutional vision Transformer (CvT), that improves Vision\nTransformer (ViT) in performance and efﬁciency by int"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F30",
+    "type": "事实性",
+    "question": "CvT 如何组织 hierarchical Transformer stages？",
+    "reference_answer": "通过分层结构逐级产生不同空间尺度的特征。",
+    "answerable": true,
+    "doc_ids": [
+      "CvT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CvT",
+        "page": 4,
+        "evidence_terms": [
+          "hierarchy",
+          "stages"
+        ],
+        "evidence_excerpt": "prior works.\n3. Convolutional vision Transformer\nThe overall pipeline of the Convolutional vision Trans-\nformer (CvT) is shown in Figure 2.\nWe introduce two\nconvolution-based operations into the Vision Transformer\narchitecture, namely the Convolutional Token Embedding\nand Convolutional Projection. As shown in Figure 2 (a), a\nmulti-stage hierarchy design borrowed from CNNs [20, 15]\nis employed, where three stages in total are used in this\nwork.\nEa"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F31",
+    "type": "事实性",
+    "question": "CaiT 的 LayerScale 如何帮助训练更深的网络？",
+    "reference_answer": "对残差分支输出使用可学习逐通道缩放，较小初始化有助于优化深层 Transformer。",
+    "answerable": true,
+    "doc_ids": [
+      "CaiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CaiT",
+        "page": 2,
+        "evidence_terms": [
+          "layerscale",
+          "initialization"
+        ],
+        "evidence_excerpt": "they are easier to train: shortly after their seminal work, He et al. discussed [28]\nthe importance of having a clear path both forward and backward, and advo-\ncate setting gl to the identity function.\nThe vision transformers [19] instantiate a particular form of residual ar-\nchitecture: after casting the input image into a set x0 of vectors, the network\nalternates self-attention layers (SA) with feed-forward networks (FFN), as\nl = xl + SA(η(xl))"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F32",
+    "type": "事实性",
+    "question": "CaiT 的 class-attention 与 self-attention 阶段如何分工？",
+    "reference_answer": "先用 self-attention 处理 patch token，再用 class-attention 聚合分类表示。",
+    "answerable": true,
+    "doc_ids": [
+      "CaiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CaiT",
+        "page": 2,
+        "evidence_terms": [
+          "class-attention",
+          "self-attention"
+        ],
+        "evidence_excerpt": "they are easier to train: shortly after their seminal work, He et al. discussed [28]\nthe importance of having a clear path both forward and backward, and advo-\ncate setting gl to the identity function.\nThe vision transformers [19] instantiate a particular form of residual ar-\nchitecture: after casting the input image into a set x0 of vectors, the network\nalternates self-attention layers (SA) with feed-forward networks (FFN), as\nl = xl + SA(η(xl))"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F33",
+    "type": "事实性",
+    "question": "CaiT 研究的主要优化问题是什么？",
+    "reference_answer": "使图像 Transformer 在增加深度时保持有效训练，避免性能过早饱和。",
+    "answerable": true,
+    "doc_ids": [
+      "CaiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CaiT",
+        "page": 8,
+        "evidence_terms": [
+          "depth",
+          "saturate"
+        ],
+        "evidence_excerpt": "4.1\nPreliminary analysis with deeper architectures\nIn our early experiments, we observe that Vision Transformers become increas-\ningly more difﬁcult to train when we scale architectures. Depth is one of the\nmain source of instability. For instance the DeiT procedure [63] fails to properly\nconverge above 18 layers without adjusting hyper-parameters. Large ViT [19]\nmodels with 24 and 32 layers were trained with large training datasets, but\nwhen tra"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F34",
+    "type": "事实性",
+    "question": "MobileViT 如何结合 CNN 与 Transformer？",
+    "reference_answer": "结合卷积的局部归纳偏置与 Transformer 的全局信息处理。",
+    "answerable": true,
+    "doc_ids": [
+      "MobileViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MobileViT",
+        "page": 2,
+        "evidence_terms": [
+          "cnns",
+          "global representations"
+        ],
+        "evidence_excerpt": "3P\nFlatten image patches\n⊕\nPositional encoding\nTransformer\nL×\nLogits\n(a) Standard visual transformer (ViT)\nMobileViT block\nLocal\nrepresentations\nTransformers as Convolutions\n(global representations)\nFusion\nX\nConv-n × n\ny\nConv-1x1\nTransformer\nL×\nConv-1x1\n2C\nConv-n × n\nY\nUnfold\nFold\nConv-3 × 3\n2×\nL = 2\nL = 4\nL = 3\nConv-1 × 1\nGlobal pool\n→Linear\nLogits\nOutput spatial →\n128 × 128\n64 × 64\n32 × 32\n16 × 16\n8 × 8\n1 × 1\n(b) MobileViT. Here, Conv-n × n in"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F35",
+    "type": "事实性",
+    "question": "MobileViT 约 6M 参数模型在 ImageNet-1k 的 top-1 accuracy 是多少？",
+    "reference_answer": "论文摘要报告约 600 万参数时 top-1 为 78.4%。",
+    "answerable": true,
+    "doc_ids": [
+      "MobileViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MobileViT",
+        "page": 3,
+        "evidence_terms": [
+          "78.4%",
+          "6 million"
+        ],
+        "evidence_excerpt": "folding. MobileViT block replaces local processing in convolutions with global processing using\ntransformers. This allows MobileViT block to have CNN- and ViT-like properties, which helps it\nlearn better representations with fewer parameters and simple training recipes (e.g., basic augmen-\ntation). To the best of our knowledge, this is the ﬁrst work that shows that light-weight ViTs can\nachieve light-weight CNN-level performance with simple train"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "F36",
+    "type": "事实性",
+    "question": "MobileViT 面向哪些任务和设备？",
+    "reference_answer": "面向移动设备的轻量视觉骨干，验证图像分类和目标检测。",
+    "answerable": true,
+    "doc_ids": [
+      "MobileViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MobileViT",
+        "page": 1,
+        "evidence_terms": [
+          "mobile devices",
+          "object detection"
+        ],
+        "evidence_excerpt": "MOBILEVIT:\nLIGHT-WEIGHT,\nGENERAL-PURPOSE,\nAND MOBILE-FRIENDLY VISION TRANSFORMER\nSachin Mehta\nApple\nMohammad Rastegari\nApple\nABSTRACT\nLight-weight convolutional neural networks (CNNs) are the de-facto for mo-\nbile vision tasks. Their spatial inductive biases allow them to learn representa-\ntions with fewer parameters across different vision tasks. However, these net-\nworks are spatially local. To learn global representations, self-attention-based"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "C01",
+    "type": "对比性",
+    "question": "ViT 与 DeiT 在训练数据需求和蒸馏机制上有什么区别？",
+    "reference_answer": "ViT 研究大规模预训练，DeiT 强调仅用 ImageNet 训练并用蒸馏 token 接收教师监督。",
+    "answerable": true,
+    "doc_ids": [
+      "ViT",
+      "DeiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "ViT",
+        "page": 2,
+        "evidence_terms": [
+          "jft",
+          "300m",
+          "21k"
+        ],
+        "evidence_excerpt": "inherent to CNNs, such as translation equivariance and locality, and therefore do not generalize well\nwhen trained on insufﬁcient amounts of data.\nHowever, the picture changes if the models are trained on larger datasets (14M-300M images). We\nﬁnd that large scale training trumps inductive bias. Our Vision Transformer (ViT) attains excellent\nresults when pre-trained at sufﬁcient scale and transferred to tasks with fewer datapoints. When\npre-traine"
+      },
+      {
+        "doc_id": "DeiT",
+        "page": 3,
+        "evidence_terms": [
+          "distillation token",
+          "teacher"
+        ],
+        "evidence_excerpt": "In summary, our work makes the following contributions:\n• We show that our neural networks that contains no convolutional layer\ncan achieve competitive results against the state of the art on ImageNet\nwith no external data. They are learned on a single node with 4 GPUs in\nthree days1. Our two new models DeiT-S and DeiT-Ti have fewer param-\neters and can be seen as the counterpart of ResNet-50 and ResNet-18.\n• We introduce a new distillation proce"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C02",
+    "type": "对比性",
+    "question": "ViT 与 Swin 的 attention 范围和多尺度结构有什么区别？",
+    "reference_answer": "ViT 对 patch 序列进行全局注意力，Swin 采用窗口与移位窗口和分层结构。",
+    "answerable": true,
+    "doc_ids": [
+      "ViT",
+      "Swin"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "ViT",
+        "page": 3,
+        "evidence_terms": [
+          "flattened 2d patches",
+          "linear projection",
+          "patch embeddings"
+        ],
+        "evidence_excerpt": "Transformer Encoder\nMLP \nHead\nVision Transformer (ViT)\n*\nLinear Projection of Flattened Patches\n* Extra learnable\n     [ cl ass] embedding\nPatch + Position \nEmbedding\nClass\nBird\nBall\nCar\nEmbedded \nPatches\nMulti-Head \nAttention\nNorm\nMLP\nNorm\n+\nL x\n+\nTransformer Encoder\nFigure 1: Model overview. We split an image into ﬁxed-size patches, linearly embed each of them,\nadd position embeddings, and feed the resulting sequence of vectors to a standard Tr"
+      },
+      {
+        "doc_id": "Swin",
+        "page": 3,
+        "evidence_terms": [
+          "patch merging",
+          "hierarchical"
+        ],
+        "evidence_excerpt": "HRNet [65], and EfﬁcientNet [58].\nIn addition to these\narchitectural advances, there has also been much work on\nimproving individual convolution layers, such as depth-\nwise convolution [70] and deformable convolution [18, 84].\nWhile the CNN and its variants are still the primary back-\nbone architectures for computer vision applications, we\nhighlight the strong potential of Transformer-like architec-\ntures for uniﬁed modeling between vision and la"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C03",
+    "type": "对比性",
+    "question": "BEiT 与 MAE 的 masked modeling 预测目标有什么区别？",
+    "reference_answer": "BEiT 预测离散视觉 token，MAE 重建像素。",
+    "answerable": true,
+    "doc_ids": [
+      "BEiT",
+      "MAE"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "BEiT",
+        "page": 2,
+        "evidence_terms": [
+          "visual tokens",
+          "masked image modeling"
+        ],
+        "evidence_excerpt": "123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n0\nFlatten\nTokenizer\nDecoder\nPosition \nEmbedding\nPatch \nEmbedding\nOriginal \nPatches\nVisual Tokens\n𝐡2\n𝐡3\n𝐡6\n𝐡7\n𝐡14\nMasked Image Modeling Head\nReconstructed \nUnused During \nPre-Training\n234 456\n876 765\n322\n[S]\nFigure 1: Overview of BEIT pre-training. Before pre-training, we learn an “image tokenizer” via\nautoencoding-style reconstructio"
+      },
+      {
+        "doc_id": "MAE",
+        "page": 2,
+        "evidence_terms": [
+          "reconstruct",
+          "pixels"
+        ],
+        "evidence_excerpt": "Figure 2. Example results on ImageNet validation images. For each triplet, we show the masked image (left), our MAE reconstruction†\n(middle), and the ground-truth (right). The masking ratio is 80%, leaving only 39 out of 196 patches. More examples are in the appendix.\n†As no loss is computed on visible patches, the model output on visible patches is qualitatively worse. One can simply overlay the output with the visible\npatches to improve visual "
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C04",
+    "type": "对比性",
+    "question": "Swin 与 PVT 如何降低高分辨率 attention 的成本？",
+    "reference_answer": "Swin 限制局部窗口并移位交互，PVT 对键值进行空间缩减。",
+    "answerable": true,
+    "doc_ids": [
+      "Swin",
+      "PVT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Swin",
+        "page": 4,
+        "evidence_terms": [
+          "shifted window",
+          "cross-window"
+        ],
+        "evidence_excerpt": "(a) Architecture\nMLP\nW-MSA\n(b) Two Successive Swin Transformer Blocks\nMLP\nSW-MSA\nImages\nLinear Embedding\nStage 1\nStage 2\nStage 3\nStage 4\n6\nPatch Partition\nFigure 3. (a) The architecture of a Swin Transformer (Swin-T); (b) two successive Swin Transformer Blocks (notation presented with\nEq. (3)). W-MSA and SW-MSA are multi-head self attention modules with regular and shifted windowing conﬁgurations, respectively.\nwith the same feature map resolutio"
+      },
+      {
+        "doc_id": "PVT",
+        "page": 2,
+        "evidence_terms": [
+          "spatial-reduction"
+        ],
+        "evidence_excerpt": "28\n32\n34\n36\n38\n42\n44\n60\n70\n80\n90\n100\n110\n120\n130\n#Parameter (M)\nX101-32x4d\nX101-64x4d\nViT-S/32\nPVT-T\nPVT-S\nPVT-M\nPVT-L\nR50\nR101\nR18\n#Param (M) AP\nR18 [22]\n21.3\n31.8\nPVT-T (ours)\n23.0\nR50 [22]\n37.7\nPVT-S (ours)\nR101 [22]\nX101-32x4d [73]\n56.4\n39.9\nViT-S/32 [13]\n60.8\n31.7\nPVT-M (ours)\nX101-64x4d [73]\n95.5\nPVT-L (ours)\n71.1\nFigure 2: Performance comparison on COCO val2017\nof different backbones using RetinaNet for object detec-\ntion, where “T”, “S”, "
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C05",
+    "type": "对比性",
+    "question": "CvT 与原始 ViT 对 positional encoding 的需求有什么差异？",
+    "reference_answer": "ViT 加入位置嵌入，CvT 实验显示位置编码可以移除。",
+    "answerable": true,
+    "doc_ids": [
+      "CvT",
+      "ViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CvT",
+        "page": 1,
+        "evidence_terms": [
+          "positional encoding",
+          "removed"
+        ],
+        "evidence_excerpt": "CvT: Introducing Convolutions to Vision Transformers\nHaiping Wu1,2*\nBin Xiao2†\nNoel Codella2\nMengchen Liu2\nXiyang Dai2\nLu Yuan2\nLei Zhang2\n1McGill University\n2Microsoft Cloud + AI\nhaiping.wu2@mail.mcgill.ca, {bixi, ncodella, mengcliu, xidai, luyuan, leizhang}@microsoft.com\nAbstract\nWe present in this paper a new architecture, named Con-\nvolutional vision Transformer (CvT), that improves Vision\nTransformer (ViT) in performance and efﬁciency by int"
+      },
+      {
+        "doc_id": "ViT",
+        "page": 3,
+        "evidence_terms": [
+          "flattened 2d patches",
+          "linear projection",
+          "patch embeddings"
+        ],
+        "evidence_excerpt": "Transformer Encoder\nMLP \nHead\nVision Transformer (ViT)\n*\nLinear Projection of Flattened Patches\n* Extra learnable\n     [ cl ass] embedding\nPatch + Position \nEmbedding\nClass\nBird\nBall\nCar\nEmbedded \nPatches\nMulti-Head \nAttention\nNorm\nMLP\nNorm\n+\nL x\n+\nTransformer Encoder\nFigure 1: Model overview. We split an image into ﬁxed-size patches, linearly embed each of them,\nadd position embeddings, and feed the resulting sequence of vectors to a standard Tr"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C06",
+    "type": "对比性",
+    "question": "MobileViT 与原始 ViT 的移动部署定位有什么不同？",
+    "reference_answer": "MobileViT 结合局部卷积与全局表示来构建轻量骨干，原始 ViT 着重扩大预训练与模型规模。",
+    "answerable": true,
+    "doc_ids": [
+      "MobileViT",
+      "ViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MobileViT",
+        "page": 2,
+        "evidence_terms": [
+          "cnns",
+          "global representations"
+        ],
+        "evidence_excerpt": "3P\nFlatten image patches\n⊕\nPositional encoding\nTransformer\nL×\nLogits\n(a) Standard visual transformer (ViT)\nMobileViT block\nLocal\nrepresentations\nTransformers as Convolutions\n(global representations)\nFusion\nX\nConv-n × n\ny\nConv-1x1\nTransformer\nL×\nConv-1x1\n2C\nConv-n × n\nY\nUnfold\nFold\nConv-3 × 3\n2×\nL = 2\nL = 4\nL = 3\nConv-1 × 1\nGlobal pool\n→Linear\nLogits\nOutput spatial →\n128 × 128\n64 × 64\n32 × 32\n16 × 16\n8 × 8\n1 × 1\n(b) MobileViT. Here, Conv-n × n in"
+      },
+      {
+        "doc_id": "ViT",
+        "page": 2,
+        "evidence_terms": [
+          "jft",
+          "300m",
+          "21k"
+        ],
+        "evidence_excerpt": "inherent to CNNs, such as translation equivariance and locality, and therefore do not generalize well\nwhen trained on insufﬁcient amounts of data.\nHowever, the picture changes if the models are trained on larger datasets (14M-300M images). We\nﬁnd that large scale training trumps inductive bias. Our Vision Transformer (ViT) attains excellent\nresults when pre-trained at sufﬁcient scale and transferred to tasks with fewer datapoints. When\npre-traine"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C07",
+    "type": "对比性",
+    "question": "DETR 与 PVT 在视觉系统中分别承担什么角色？",
+    "reference_answer": "DETR 是端到端检测框架，PVT 是可用于密集预测的多尺度骨干。",
+    "answerable": true,
+    "doc_ids": [
+      "DETR",
+      "PVT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DETR",
+        "page": 3,
+        "evidence_terms": [
+          "hungarian",
+          "bipartite matching"
+        ],
+        "evidence_excerpt": "from auxiliary decoding losses in the transformer. We thoroughly explore what\ncomponents are crucial for the demonstrated performance.\nThe design ethos of DETR easily extend to more complex tasks. In our\nexperiments, we show that a simple segmentation head trained on top of a pre-\ntrained DETR outperfoms competitive baselines on Panoptic Segmentation [19],\na challenging pixel-level recognition task that has recently gained popularity.\nRelated wor"
+      },
+      {
+        "doc_id": "PVT",
+        "page": 2,
+        "evidence_terms": [
+          "object detection",
+          "semantic",
+          "instance segmentation"
+        ],
+        "evidence_excerpt": "28\n32\n34\n36\n38\n42\n44\n60\n70\n80\n90\n100\n110\n120\n130\n#Parameter (M)\nX101-32x4d\nX101-64x4d\nViT-S/32\nPVT-T\nPVT-S\nPVT-M\nPVT-L\nR50\nR101\nR18\n#Param (M) AP\nR18 [22]\n21.3\n31.8\nPVT-T (ours)\n23.0\nR50 [22]\n37.7\nPVT-S (ours)\nR101 [22]\nX101-32x4d [73]\n56.4\n39.9\nViT-S/32 [13]\n60.8\n31.7\nPVT-M (ours)\nX101-64x4d [73]\n95.5\nPVT-L (ours)\n71.1\nFigure 2: Performance comparison on COCO val2017\nof different backbones using RetinaNet for object detec-\ntion, where “T”, “S”, "
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C08",
+    "type": "对比性",
+    "question": "CLIP 与 DeiT 的监督信号来源有什么区别？",
+    "reference_answer": "CLIP 利用图像文本配对进行对比学习，DeiT 利用分类标签并引入教师蒸馏。",
+    "answerable": true,
+    "doc_ids": [
+      "CLIP",
+      "DeiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CLIP",
+        "page": 2,
+        "evidence_terms": [
+          "contrastive",
+          "batch",
+          "pairs"
+        ],
+        "evidence_excerpt": "I1·T2\nI1·T3\nI2·T1\nI2·T3\nI3·T1\nI3·T2\nI1·T1\nI2·T2\nI3·T3\n(1) Contrastive pre-training\nImage\nText\nT1\nT2\nT3\nI1\nI2\nI3\n(2) Create dataset classiﬁer from label text\nplane\ncar\ndog\nbird\nA photo of\na {object}.\nText\nT1\nT2\nT3\nTN\n(3) Use for zero-shot prediction\nImage\nI1\nI1·T2\nI1·TN\nI1·T1\nA photo of\n a dog.\nTN\nIN·T1\nIN·T2\nIN·T3\nI1·TN\nI2·TN\nI3·TN\nIN\n⋱\nIN·TN\nI1·T3\nFigure 1. Summary of our approach. While standard image models jointly train an image feature extra"
+      },
+      {
+        "doc_id": "DeiT",
+        "page": 3,
+        "evidence_terms": [
+          "distillation token",
+          "teacher"
+        ],
+        "evidence_excerpt": "In summary, our work makes the following contributions:\n• We show that our neural networks that contains no convolutional layer\ncan achieve competitive results against the state of the art on ImageNet\nwith no external data. They are learned on a single node with 4 GPUs in\nthree days1. Our two new models DeiT-S and DeiT-Ti have fewer param-\neters and can be seen as the counterpart of ResNet-50 and ResNet-18.\n• We introduce a new distillation proce"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C09",
+    "type": "对比性",
+    "question": "CaiT 与原始 ViT 如何使用分类 token？",
+    "reference_answer": "ViT 将 class token 与 patch token 一起编码，CaiT 将 patch self-attention 与 class-attention 分阶段。",
+    "answerable": true,
+    "doc_ids": [
+      "CaiT",
+      "ViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CaiT",
+        "page": 2,
+        "evidence_terms": [
+          "class-attention",
+          "self-attention"
+        ],
+        "evidence_excerpt": "they are easier to train: shortly after their seminal work, He et al. discussed [28]\nthe importance of having a clear path both forward and backward, and advo-\ncate setting gl to the identity function.\nThe vision transformers [19] instantiate a particular form of residual ar-\nchitecture: after casting the input image into a set x0 of vectors, the network\nalternates self-attention layers (SA) with feed-forward networks (FFN), as\nl = xl + SA(η(xl))"
+      },
+      {
+        "doc_id": "ViT",
+        "page": 3,
+        "evidence_terms": [
+          "classification head"
+        ],
+        "evidence_excerpt": "Transformer Encoder\nMLP \nHead\nVision Transformer (ViT)\n*\nLinear Projection of Flattened Patches\n* Extra learnable\n     [ cl ass] embedding\nPatch + Position \nEmbedding\nClass\nBird\nBall\nCar\nEmbedded \nPatches\nMulti-Head \nAttention\nNorm\nMLP\nNorm\n+\nL x\n+\nTransformer Encoder\nFigure 1: Model overview. We split an image into ﬁxed-size patches, linearly embed each of them,\nadd position embeddings, and feed the resulting sequence of vectors to a standard Tr"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C10",
+    "type": "对比性",
+    "question": "BEiT 与 CLIP 的预训练目标有什么区别？",
+    "reference_answer": "BEiT 预测被遮挡的离散视觉 token，CLIP 对齐图像与配对文本。",
+    "answerable": true,
+    "doc_ids": [
+      "BEiT",
+      "CLIP"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "BEiT",
+        "page": 2,
+        "evidence_terms": [
+          "visual tokens",
+          "masked image modeling"
+        ],
+        "evidence_excerpt": "123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n0\nFlatten\nTokenizer\nDecoder\nPosition \nEmbedding\nPatch \nEmbedding\nOriginal \nPatches\nVisual Tokens\n𝐡2\n𝐡3\n𝐡6\n𝐡7\n𝐡14\nMasked Image Modeling Head\nReconstructed \nUnused During \nPre-Training\n234 456\n876 765\n322\n[S]\nFigure 1: Overview of BEIT pre-training. Before pre-training, we learn an “image tokenizer” via\nautoencoding-style reconstructio"
+      },
+      {
+        "doc_id": "CLIP",
+        "page": 2,
+        "evidence_terms": [
+          "contrastive",
+          "batch",
+          "pairs"
+        ],
+        "evidence_excerpt": "I1·T2\nI1·T3\nI2·T1\nI2·T3\nI3·T1\nI3·T2\nI1·T1\nI2·T2\nI3·T3\n(1) Contrastive pre-training\nImage\nText\nT1\nT2\nT3\nI1\nI2\nI3\n(2) Create dataset classiﬁer from label text\nplane\ncar\ndog\nbird\nA photo of\na {object}.\nText\nT1\nT2\nT3\nTN\n(3) Use for zero-shot prediction\nImage\nI1\nI1·T2\nI1·TN\nI1·T1\nA photo of\n a dog.\nTN\nIN·T1\nIN·T2\nIN·T3\nI1·TN\nI2·TN\nI3·TN\nIN\n⋱\nIN·TN\nI1·T3\nFigure 1. Summary of our approach. While standard image models jointly train an image feature extra"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C11",
+    "type": "对比性",
+    "question": "MAE 与 Swin 分别主要改变训练目标还是视觉骨干结构？",
+    "reference_answer": "MAE 主要提供遮挡重建自监督方法，Swin 主要提供分层窗口注意力骨干。",
+    "answerable": true,
+    "doc_ids": [
+      "MAE",
+      "Swin"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MAE",
+        "page": 1,
+        "evidence_terms": [
+          "visible subset",
+          "lightweight decoder"
+        ],
+        "evidence_excerpt": "Masked Autoencoders Are Scalable Vision Learners\nKaiming He∗,†\nXinlei Chen∗\nSaining Xie\nYanghao Li\nPiotr Doll´ar\nRoss Girshick\n∗equal technical contribution\n†project lead\nFacebook AI Research (FAIR)\nAbstract\nThis paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core desig"
+      },
+      {
+        "doc_id": "Swin",
+        "page": 3,
+        "evidence_terms": [
+          "patch merging",
+          "hierarchical"
+        ],
+        "evidence_excerpt": "HRNet [65], and EfﬁcientNet [58].\nIn addition to these\narchitectural advances, there has also been much work on\nimproving individual convolution layers, such as depth-\nwise convolution [70] and deformable convolution [18, 84].\nWhile the CNN and its variants are still the primary back-\nbone architectures for computer vision applications, we\nhighlight the strong potential of Transformer-like architec-\ntures for uniﬁed modeling between vision and la"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "C12",
+    "type": "对比性",
+    "question": "CvT 与 MobileViT 为什么都结合卷积和 Transformer？",
+    "reference_answer": "两者希望融合局部归纳偏置与全局建模，CvT 改造 token embedding 和 projection，MobileViT 强调移动设备轻量化。",
+    "answerable": true,
+    "doc_ids": [
+      "CvT",
+      "MobileViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CvT",
+        "page": 2,
+        "evidence_terms": [
+          "convolutional token embedding",
+          "convolutional projection"
+        ],
+        "evidence_excerpt": "Needs Position Encoding (PE)\nToken Embedding\nProjection for Attention\nHierarchical Transformers\nViT [11], DeiT [30]\nCPVT [6]\nno (w/ PE Generator)\nTNT [14]\nnon-overlapping (patch+pixel)\nT2T [41]\noverlapping (concatenate)\npartial (tokenization)\nPVT [34]\nspatial reduction\nCvT (ours)\noverlapping (convolution)\nconvolution\nTable 1: Representative works of vision Transformers.\ntecture forces the capture of this local structure by using\nlocal receptive ﬁ"
+      },
+      {
+        "doc_id": "MobileViT",
+        "page": 2,
+        "evidence_terms": [
+          "cnns",
+          "global representations"
+        ],
+        "evidence_excerpt": "3P\nFlatten image patches\n⊕\nPositional encoding\nTransformer\nL×\nLogits\n(a) Standard visual transformer (ViT)\nMobileViT block\nLocal\nrepresentations\nTransformers as Convolutions\n(global representations)\nFusion\nX\nConv-n × n\ny\nConv-1x1\nTransformer\nL×\nConv-1x1\n2C\nConv-n × n\nY\nUnfold\nFold\nConv-3 × 3\n2×\nL = 2\nL = 4\nL = 3\nConv-1 × 1\nGlobal pool\n→Linear\nLogits\nOutput spatial →\n128 × 128\n64 × 64\n32 × 32\n16 × 16\n8 × 8\n1 × 1\n(b) MobileViT. Here, Conv-n × n in"
+      }
+    ],
+    "expected_tools": [
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "S01",
+    "type": "归纳性",
+    "question": "归纳 ViT、Swin、PVT 的视觉特征尺度设计。",
+    "reference_answer": "ViT 为单尺度序列，Swin 通过 patch merging 构建分层表示，PVT 形成逐级缩减的特征金字塔。",
+    "answerable": true,
+    "doc_ids": [
+      "ViT",
+      "Swin",
+      "PVT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "ViT",
+        "page": 3,
+        "evidence_terms": [
+          "flattened 2d patches",
+          "linear projection",
+          "patch embeddings"
+        ],
+        "evidence_excerpt": "Transformer Encoder\nMLP \nHead\nVision Transformer (ViT)\n*\nLinear Projection of Flattened Patches\n* Extra learnable\n     [ cl ass] embedding\nPatch + Position \nEmbedding\nClass\nBird\nBall\nCar\nEmbedded \nPatches\nMulti-Head \nAttention\nNorm\nMLP\nNorm\n+\nL x\n+\nTransformer Encoder\nFigure 1: Model overview. We split an image into ﬁxed-size patches, linearly embed each of them,\nadd position embeddings, and feed the resulting sequence of vectors to a standard Tr"
+      },
+      {
+        "doc_id": "Swin",
+        "page": 3,
+        "evidence_terms": [
+          "patch merging",
+          "hierarchical"
+        ],
+        "evidence_excerpt": "HRNet [65], and EfﬁcientNet [58].\nIn addition to these\narchitectural advances, there has also been much work on\nimproving individual convolution layers, such as depth-\nwise convolution [70] and deformable convolution [18, 84].\nWhile the CNN and its variants are still the primary back-\nbone architectures for computer vision applications, we\nhighlight the strong potential of Transformer-like architec-\ntures for uniﬁed modeling between vision and la"
+      },
+      {
+        "doc_id": "PVT",
+        "page": 2,
+        "evidence_terms": [
+          "pyramid structure",
+          "columnar"
+        ],
+        "evidence_excerpt": "28\n32\n34\n36\n38\n42\n44\n60\n70\n80\n90\n100\n110\n120\n130\n#Parameter (M)\nX101-32x4d\nX101-64x4d\nViT-S/32\nPVT-T\nPVT-S\nPVT-M\nPVT-L\nR50\nR101\nR18\n#Param (M) AP\nR18 [22]\n21.3\n31.8\nPVT-T (ours)\n23.0\nR50 [22]\n37.7\nPVT-S (ours)\nR101 [22]\nX101-32x4d [73]\n56.4\n39.9\nViT-S/32 [13]\n60.8\n31.7\nPVT-M (ours)\nX101-64x4d [73]\n95.5\nPVT-L (ours)\n71.1\nFigure 2: Performance comparison on COCO val2017\nof different backbones using RetinaNet for object detec-\ntion, where “T”, “S”, "
+      }
+    ],
+    "expected_tools": [
+      "rag_search",
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "S02",
+    "type": "归纳性",
+    "question": "归纳 BEiT、MAE、CLIP 三种预训练监督信号。",
+    "reference_answer": "离散视觉 token 预测、像素重建、图像文本配对对比学习。",
+    "answerable": true,
+    "doc_ids": [
+      "BEiT",
+      "MAE",
+      "CLIP"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "BEiT",
+        "page": 2,
+        "evidence_terms": [
+          "visual tokens",
+          "masked image modeling"
+        ],
+        "evidence_excerpt": "123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n0\nFlatten\nTokenizer\nDecoder\nPosition \nEmbedding\nPatch \nEmbedding\nOriginal \nPatches\nVisual Tokens\n𝐡2\n𝐡3\n𝐡6\n𝐡7\n𝐡14\nMasked Image Modeling Head\nReconstructed \nUnused During \nPre-Training\n234 456\n876 765\n322\n[S]\nFigure 1: Overview of BEIT pre-training. Before pre-training, we learn an “image tokenizer” via\nautoencoding-style reconstructio"
+      },
+      {
+        "doc_id": "MAE",
+        "page": 2,
+        "evidence_terms": [
+          "reconstruct",
+          "pixels"
+        ],
+        "evidence_excerpt": "Figure 2. Example results on ImageNet validation images. For each triplet, we show the masked image (left), our MAE reconstruction†\n(middle), and the ground-truth (right). The masking ratio is 80%, leaving only 39 out of 196 patches. More examples are in the appendix.\n†As no loss is computed on visible patches, the model output on visible patches is qualitatively worse. One can simply overlay the output with the visible\npatches to improve visual "
+      },
+      {
+        "doc_id": "CLIP",
+        "page": 2,
+        "evidence_terms": [
+          "contrastive",
+          "batch",
+          "pairs"
+        ],
+        "evidence_excerpt": "I1·T2\nI1·T3\nI2·T1\nI2·T3\nI3·T1\nI3·T2\nI1·T1\nI2·T2\nI3·T3\n(1) Contrastive pre-training\nImage\nText\nT1\nT2\nT3\nI1\nI2\nI3\n(2) Create dataset classiﬁer from label text\nplane\ncar\ndog\nbird\nA photo of\na {object}.\nText\nT1\nT2\nT3\nTN\n(3) Use for zero-shot prediction\nImage\nI1\nI1·T2\nI1·TN\nI1·T1\nA photo of\n a dog.\nTN\nIN·T1\nIN·T2\nIN·T3\nI1·TN\nI2·TN\nI3·TN\nIN\n⋱\nIN·TN\nI1·T3\nFigure 1. Summary of our approach. While standard image models jointly train an image feature extra"
+      }
+    ],
+    "expected_tools": [
+      "rag_search",
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "S03",
+    "type": "归纳性",
+    "question": "这些论文如何缓解大规模人工标注数据需求？",
+    "reference_answer": "DeiT 利用数据高效训练和蒸馏，BEiT 与 MAE 利用自监督预训练。",
+    "answerable": true,
+    "doc_ids": [
+      "DeiT",
+      "BEiT",
+      "MAE"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DeiT",
+        "page": 1,
+        "evidence_terms": [
+          "imagenet only",
+          "no external data"
+        ],
+        "evidence_excerpt": "Training data-efﬁcient image transformers\n& distillation through attention\nHugo Touvron⋆,†\nMatthieu Cord†\nMatthijs Douze⋆\nFrancisco Massa⋆\nAlexandre Sablayrolles⋆\nHerv´e J´egou⋆\n⋆Facebook AI\n†Sorbonne University\nAbstract\nRecently, neural networks purely based on attention were shown to ad-\ndress image understanding tasks such as image classiﬁcation. These high-\nperforming vision transformers are pre-trained with hundreds of millions\nof images usi"
+      },
+      {
+        "doc_id": "BEiT",
+        "page": 2,
+        "evidence_terms": [
+          "visual tokens",
+          "masked image modeling"
+        ],
+        "evidence_excerpt": "123 234 456 567\n987 876 765 543\n112 223 334 445\n211 322 433 544\nBEIT Encoder\nBlockwise\nMasking\n6\n7\n8\n9\n11\n13\n14\n15\n0\nFlatten\nTokenizer\nDecoder\nPosition \nEmbedding\nPatch \nEmbedding\nOriginal \nPatches\nVisual Tokens\n𝐡2\n𝐡3\n𝐡6\n𝐡7\n𝐡14\nMasked Image Modeling Head\nReconstructed \nUnused During \nPre-Training\n234 456\n876 765\n322\n[S]\nFigure 1: Overview of BEIT pre-training. Before pre-training, we learn an “image tokenizer” via\nautoencoding-style reconstructio"
+      },
+      {
+        "doc_id": "MAE",
+        "page": 1,
+        "evidence_terms": [
+          "visible subset",
+          "lightweight decoder"
+        ],
+        "evidence_excerpt": "Masked Autoencoders Are Scalable Vision Learners\nKaiming He∗,†\nXinlei Chen∗\nSaining Xie\nYanghao Li\nPiotr Doll´ar\nRoss Girshick\n∗equal technical contribution\n†project lead\nFacebook AI Research (FAIR)\nAbstract\nThis paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core desig"
+      }
+    ],
+    "expected_tools": [
+      "rag_search",
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "S04",
+    "type": "归纳性",
+    "question": "归纳融合 CNN 与 Transformer 的两种机制。",
+    "reference_answer": "CvT 引入卷积嵌入与投影，MobileViT 结合局部卷积处理与全局 Transformer 信息处理。",
+    "answerable": true,
+    "doc_ids": [
+      "CvT",
+      "MobileViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CvT",
+        "page": 2,
+        "evidence_terms": [
+          "convolutional token embedding",
+          "convolutional projection"
+        ],
+        "evidence_excerpt": "Needs Position Encoding (PE)\nToken Embedding\nProjection for Attention\nHierarchical Transformers\nViT [11], DeiT [30]\nCPVT [6]\nno (w/ PE Generator)\nTNT [14]\nnon-overlapping (patch+pixel)\nT2T [41]\noverlapping (concatenate)\npartial (tokenization)\nPVT [34]\nspatial reduction\nCvT (ours)\noverlapping (convolution)\nconvolution\nTable 1: Representative works of vision Transformers.\ntecture forces the capture of this local structure by using\nlocal receptive ﬁ"
+      },
+      {
+        "doc_id": "MobileViT",
+        "page": 2,
+        "evidence_terms": [
+          "cnns",
+          "global representations"
+        ],
+        "evidence_excerpt": "3P\nFlatten image patches\n⊕\nPositional encoding\nTransformer\nL×\nLogits\n(a) Standard visual transformer (ViT)\nMobileViT block\nLocal\nrepresentations\nTransformers as Convolutions\n(global representations)\nFusion\nX\nConv-n × n\ny\nConv-1x1\nTransformer\nL×\nConv-1x1\n2C\nConv-n × n\nY\nUnfold\nFold\nConv-3 × 3\n2×\nL = 2\nL = 4\nL = 3\nConv-1 × 1\nGlobal pool\n→Linear\nLogits\nOutput spatial →\n128 × 128\n64 × 64\n32 × 32\n16 × 16\n8 × 8\n1 × 1\n(b) MobileViT. Here, Conv-n × n in"
+      }
+    ],
+    "expected_tools": [
+      "rag_search",
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "S05",
+    "type": "归纳性",
+    "question": "归纳这些论文在目标检测系统中的用途。",
+    "reference_answer": "DETR 为检测框架，Swin 与 PVT 为可适配检测任务的多尺度骨干。",
+    "answerable": true,
+    "doc_ids": [
+      "DETR",
+      "Swin",
+      "PVT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DETR",
+        "page": 3,
+        "evidence_terms": [
+          "hungarian",
+          "bipartite matching"
+        ],
+        "evidence_excerpt": "from auxiliary decoding losses in the transformer. We thoroughly explore what\ncomponents are crucial for the demonstrated performance.\nThe design ethos of DETR easily extend to more complex tasks. In our\nexperiments, we show that a simple segmentation head trained on top of a pre-\ntrained DETR outperfoms competitive baselines on Panoptic Segmentation [19],\na challenging pixel-level recognition task that has recently gained popularity.\nRelated wor"
+      },
+      {
+        "doc_id": "Swin",
+        "page": 3,
+        "evidence_terms": [
+          "patch merging",
+          "hierarchical"
+        ],
+        "evidence_excerpt": "HRNet [65], and EfﬁcientNet [58].\nIn addition to these\narchitectural advances, there has also been much work on\nimproving individual convolution layers, such as depth-\nwise convolution [70] and deformable convolution [18, 84].\nWhile the CNN and its variants are still the primary back-\nbone architectures for computer vision applications, we\nhighlight the strong potential of Transformer-like architec-\ntures for uniﬁed modeling between vision and la"
+      },
+      {
+        "doc_id": "PVT",
+        "page": 2,
+        "evidence_terms": [
+          "object detection",
+          "semantic",
+          "instance segmentation"
+        ],
+        "evidence_excerpt": "28\n32\n34\n36\n38\n42\n44\n60\n70\n80\n90\n100\n110\n120\n130\n#Parameter (M)\nX101-32x4d\nX101-64x4d\nViT-S/32\nPVT-T\nPVT-S\nPVT-M\nPVT-L\nR50\nR101\nR18\n#Param (M) AP\nR18 [22]\n21.3\n31.8\nPVT-T (ours)\n23.0\nR50 [22]\n37.7\nPVT-S (ours)\nR101 [22]\nX101-32x4d [73]\n56.4\n39.9\nViT-S/32 [13]\n60.8\n31.7\nPVT-M (ours)\nX101-64x4d [73]\n95.5\nPVT-L (ours)\n71.1\nFigure 2: Performance comparison on COCO val2017\nof different backbones using RetinaNet for object detec-\ntion, where “T”, “S”, "
+      }
+    ],
+    "expected_tools": [
+      "rag_search",
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "S06",
+    "type": "归纳性",
+    "question": "归纳这些分类论文的实验条件为什么不能只看 top-1 数字？",
+    "reference_answer": "预训练数据、参数规模、输入分辨率和蒸馏教师等条件不同，必须在相同设置下比较。",
+    "answerable": true,
+    "doc_ids": [
+      "ViT",
+      "DeiT",
+      "MobileViT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "ViT",
+        "page": 2,
+        "evidence_terms": [
+          "jft",
+          "300m",
+          "21k"
+        ],
+        "evidence_excerpt": "inherent to CNNs, such as translation equivariance and locality, and therefore do not generalize well\nwhen trained on insufﬁcient amounts of data.\nHowever, the picture changes if the models are trained on larger datasets (14M-300M images). We\nﬁnd that large scale training trumps inductive bias. Our Vision Transformer (ViT) attains excellent\nresults when pre-trained at sufﬁcient scale and transferred to tasks with fewer datapoints. When\npre-traine"
+      },
+      {
+        "doc_id": "DeiT",
+        "page": 1,
+        "evidence_terms": [
+          "imagenet only",
+          "no external data"
+        ],
+        "evidence_excerpt": "Training data-efﬁcient image transformers\n& distillation through attention\nHugo Touvron⋆,†\nMatthieu Cord†\nMatthijs Douze⋆\nFrancisco Massa⋆\nAlexandre Sablayrolles⋆\nHerv´e J´egou⋆\n⋆Facebook AI\n†Sorbonne University\nAbstract\nRecently, neural networks purely based on attention were shown to ad-\ndress image understanding tasks such as image classiﬁcation. These high-\nperforming vision transformers are pre-trained with hundreds of millions\nof images usi"
+      },
+      {
+        "doc_id": "MobileViT",
+        "page": 3,
+        "evidence_terms": [
+          "78.4%",
+          "6 million"
+        ],
+        "evidence_excerpt": "folding. MobileViT block replaces local processing in convolutions with global processing using\ntransformers. This allows MobileViT block to have CNN- and ViT-like properties, which helps it\nlearn better representations with fewer parameters and simple training recipes (e.g., basic augmen-\ntation). To the best of our knowledge, this is the ﬁrst work that shows that light-weight ViTs can\nachieve light-weight CNN-level performance with simple train"
+      }
+    ],
+    "expected_tools": [
+      "rag_search",
+      "paper_compare"
+    ]
+  },
+  {
+    "id": "R01",
+    "type": "推理性",
+    "question": "为什么 MAE 只让 encoder 看 visible patches？",
+    "reference_answer": "减少编码器计算开销，把重建任务交给轻量解码器。",
+    "answerable": true,
+    "doc_ids": [
+      "MAE"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "MAE",
+        "page": 1,
+        "evidence_terms": [
+          "visible subset",
+          "lightweight decoder"
+        ],
+        "evidence_excerpt": "Masked Autoencoders Are Scalable Vision Learners\nKaiming He∗,†\nXinlei Chen∗\nSaining Xie\nYanghao Li\nPiotr Doll´ar\nRoss Girshick\n∗equal technical contribution\n†project lead\nFacebook AI Research (FAIR)\nAbstract\nThis paper shows that masked autoencoders (MAE) are\nscalable self-supervised learners for computer vision. Our\nMAE approach is simple: we mask random patches of the\ninput image and reconstruct the missing pixels. It is based\non two core desig"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "R02",
+    "type": "推理性",
+    "question": "为什么 Swin 需要 shifted windows 而不能只用固定独立窗口？",
+    "reference_answer": "固定窗口限制跨窗口通信，移位设计在相邻层建立跨窗口连接。",
+    "answerable": true,
+    "doc_ids": [
+      "Swin"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Swin",
+        "page": 4,
+        "evidence_terms": [
+          "shifted window",
+          "cross-window"
+        ],
+        "evidence_excerpt": "(a) Architecture\nMLP\nW-MSA\n(b) Two Successive Swin Transformer Blocks\nMLP\nSW-MSA\nImages\nLinear Embedding\nStage 1\nStage 2\nStage 3\nStage 4\n6\nPatch Partition\nFigure 3. (a) The architecture of a Swin Transformer (Swin-T); (b) two successive Swin Transformer Blocks (notation presented with\nEq. (3)). W-MSA and SW-MSA are multi-head self attention modules with regular and shifted windowing conﬁgurations, respectively.\nwith the same feature map resolutio"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "R03",
+    "type": "推理性",
+    "question": "为什么 PVT 的金字塔设计适合 dense prediction？",
+    "reference_answer": "密集预测需要较高空间分辨率和多尺度表示。",
+    "answerable": true,
+    "doc_ids": [
+      "PVT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "PVT",
+        "page": 2,
+        "evidence_terms": [
+          "pyramid structure",
+          "columnar"
+        ],
+        "evidence_excerpt": "28\n32\n34\n36\n38\n42\n44\n60\n70\n80\n90\n100\n110\n120\n130\n#Parameter (M)\nX101-32x4d\nX101-64x4d\nViT-S/32\nPVT-T\nPVT-S\nPVT-M\nPVT-L\nR50\nR101\nR18\n#Param (M) AP\nR18 [22]\n21.3\n31.8\nPVT-T (ours)\n23.0\nR50 [22]\n37.7\nPVT-S (ours)\nR101 [22]\nX101-32x4d [73]\n56.4\n39.9\nViT-S/32 [13]\n60.8\n31.7\nPVT-M (ours)\nX101-64x4d [73]\n95.5\nPVT-L (ours)\n71.1\nFigure 2: Performance comparison on COCO val2017\nof different backbones using RetinaNet for object detec-\ntion, where “T”, “S”, "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "R04",
+    "type": "推理性",
+    "question": "为什么 attention 点积需要缩放以避免 small gradients？",
+    "reference_answer": "维度增加时点积幅值增大，softmax 饱和后梯度变小。",
+    "answerable": true,
+    "doc_ids": [
+      "Transformer"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "Transformer",
+        "page": 4,
+        "evidence_terms": [
+          "dot products grow large in magnitude",
+          "small gradients",
+          "scaling factor"
+        ],
+        "evidence_excerpt": "Scaled Dot-Product Attention\nMulti-Head Attention\nFigure 2: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several\nattention layers running in parallel.\nof the values, where the weight assigned to each value is computed by a compatibility function of the\nquery with the corresponding key.\n3.2.1\nScaled Dot-Product Attention\nWe call our particular attention \"Scaled Dot-Product Attention\" (Figure 2). The input consists "
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "R05",
+    "type": "推理性",
+    "question": "为什么 convnet teacher 能帮助 data-efficient Transformer 训练？",
+    "reference_answer": "教师的卷积归纳偏置通过蒸馏传递给学生。",
+    "answerable": true,
+    "doc_ids": [
+      "DeiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "DeiT",
+        "page": 4,
+        "evidence_terms": [
+          "inductive bias"
+        ],
+        "evidence_excerpt": "Recently Vision transformers (ViT) [15] closed the gap with the state of the\nart on ImageNet, without using any convolution. This performance is remark-\nable since convnet methods for image classiﬁcation have beneﬁted from years\nof tuning and optimization [22, 55]. Nevertheless, according to this study [15],\na pre-training phase on a large volume of curated data is required for the\nlearned transformer to be effective. In our paper we achieve a st"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "R06",
+    "type": "推理性",
+    "question": "为什么 CaiT 需要 LayerScale 处理深层网络优化？",
+    "reference_answer": "控制残差分支初始贡献，有助于稳定更深网络的优化。",
+    "answerable": true,
+    "doc_ids": [
+      "CaiT"
+    ],
+    "gold_sources": [
+      {
+        "doc_id": "CaiT",
+        "page": 2,
+        "evidence_terms": [
+          "layerscale",
+          "initialization"
+        ],
+        "evidence_excerpt": "they are easier to train: shortly after their seminal work, He et al. discussed [28]\nthe importance of having a clear path both forward and backward, and advo-\ncate setting gl to the identity function.\nThe vision transformers [19] instantiate a particular form of residual ar-\nchitecture: after casting the input image into a set x0 of vectors, the network\nalternates self-attention layers (SA) with feed-forward networks (FFN), as\nl = xl + SA(η(xl))"
+      }
+    ],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "U01",
+    "type": "不可回答",
+    "question": "ViT 作者未公开的私人手机号是多少？",
+    "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+    "answerable": false,
+    "doc_ids": [],
+    "gold_sources": [],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "U02",
+    "type": "不可回答",
+    "question": "Swin 2026 年尚未上传版本的实验成绩是多少？",
+    "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+    "answerable": false,
+    "doc_ids": [],
+    "gold_sources": [],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "U03",
+    "type": "不可回答",
+    "question": "这些论文报告的水稻亩产提升率是多少？",
+    "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+    "answerable": false,
+    "doc_ids": [],
+    "gold_sources": [],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "U04",
+    "type": "不可回答",
+    "question": "MAE 在本地未提供的私有数据集上准确率是多少？",
+    "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+    "answerable": false,
+    "doc_ids": [],
+    "gold_sources": [],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "U05",
+    "type": "不可回答",
+    "question": "DETR 实验服务器的登录密码是什么？",
+    "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+    "answerable": false,
+    "doc_ids": [],
+    "gold_sources": [],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "U06",
+    "type": "不可回答",
+    "question": "CLIP 的全部 4 亿训练图片下载清单在哪里？",
+    "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+    "answerable": false,
+    "doc_ids": [],
+    "gold_sources": [],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "U07",
+    "type": "不可回答",
+    "question": "CaiT 对新冠疫苗疗效的临床结论是什么？",
+    "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+    "answerable": false,
+    "doc_ids": [],
+    "gold_sources": [],
+    "expected_tools": [
+      "rag_search"
+    ]
+  },
+  {
+    "id": "U08",
+    "type": "不可回答",
+    "question": "这些论文作者今天的个人行程是什么？",
+    "reference_answer": "当前知识库证据不足，明确拒答，不编造事实或来源。",
+    "answerable": false,
+    "doc_ids": [],
+    "gold_sources": [],
+    "expected_tools": [
+      "rag_search"
+    ]
   }
 ]

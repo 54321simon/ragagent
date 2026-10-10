@@ -1,0 +1,174 @@
+[
+  {
+    "options": {
+      "temperature": 0.0,
+      "top_p": 0.9,
+      "top_k": 40
+    },
+    "question": "MAE 的 asymmetric encoder-decoder 如何工作？",
+    "answer": "MAE 的 asymmetric encoder-decoder 架构通过以下方式工作：\n\n【MAE.pdf-第3页】\n- 编码器仅作用于可见的子集的补丁（不使用掩码标记），从而实现对部分观察信号的操作。\n- 轻量级解码器从潜在表示和掩码标记重建完整的信号。\n\n【MAE.pdf-第4页】\n- 解码器仅在预训练期间用于执行图像重建任务（仅编码器用于生成表示用于识别）。\n- 解码器架构可以灵活设计，与编码器设计无关。\n- 我们实验了非常小的解码器，比编码器窄且浅。例如，我们的默认解码器的每令牌计算量小于10%。\n\n这种不对称设计使得所有令牌仅由轻量级解码器处理，从而显著减少了预训练时间。",
+    "elapsed_ms": 76378.69159970433,
+    "prompt_tokens": 889,
+    "completion_tokens": 187,
+    "citation_validation": {
+      "cited": [
+        {
+          "doc_name": "MAE.pdf",
+          "page": 4,
+          "chunk_id": "MAE-p4-s4-c3"
+        },
+        {
+          "doc_name": "MAE.pdf",
+          "page": 3,
+          "chunk_id": "MAE-p3-s4-c0"
+        }
+      ],
+      "hallucinated": [],
+      "unused": [
+        [
+          "MAE.pdf",
+          5
+        ],
+        [
+          "MAE.pdf",
+          1
+        ],
+        [
+          "MAE.pdf",
+          2
+        ]
+      ],
+      "citation_count": 2
+    },
+    "human_quality_score": null
+  },
+  {
+    "options": {
+      "temperature": 0.5,
+      "top_p": 0.9,
+      "top_k": 40
+    },
+    "question": "MAE 的 asymmetric encoder-decoder 如何工作？",
+    "answer": "MAE 的 asymmetric encoder-decoder 架构设计使得编码器仅作用于输入图像中可见的部分（即未被掩码标记遮盖的区域），而解码器则负责从潜在表示和掩码标记中重构原始图像。【MAE.pdf-第3页】\n\n具体来说，解码器设计为轻量级，仅处理一部分的掩码标记和潜在表示，这显著减少了预训练的时间。【MAE.pdf-第4页】\n\n这种设计使得掩码标记和潜在表示可以被高效处理，从而提高了模型训练的效率和效果。【MAE.pdf-第4页】\n\n因此，通过这种不对称的设计，可以加速训练过程，并且能够训练出高容量的模型，这些模型在泛化方面表现良好。【MAE.pdf-第1页】",
+    "elapsed_ms": 139949.81769984588,
+    "prompt_tokens": 889,
+    "completion_tokens": 173,
+    "citation_validation": {
+      "cited": [
+        {
+          "doc_name": "MAE.pdf",
+          "page": 1,
+          "chunk_id": "MAE-p1-s1-c0"
+        },
+        {
+          "doc_name": "MAE.pdf",
+          "page": 4,
+          "chunk_id": "MAE-p4-s4-c3"
+        },
+        {
+          "doc_name": "MAE.pdf",
+          "page": 3,
+          "chunk_id": "MAE-p3-s4-c0"
+        }
+      ],
+      "hallucinated": [],
+      "unused": [
+        [
+          "MAE.pdf",
+          5
+        ],
+        [
+          "MAE.pdf",
+          2
+        ]
+      ],
+      "citation_count": 3
+    },
+    "human_quality_score": null
+  },
+  {
+    "options": {
+      "temperature": 0.8,
+      "top_p": 0.9,
+      "top_k": 40
+    },
+    "question": "MAE 的 asymmetric encoder-decoder 如何工作？",
+    "answer": "MAE 的 asymmetric encoder-decoder 架构利用了一个轻量级的解码器来重建完整的图像，而编码器仅处理可见的部分（即没有遮挡标记的部分）。具体而言，【MAE.pdf-第3页】提到，编码器仅作用于由遮挡标记掩盖的部分以外的部分，解码器能够利用编码器生成的潜在表示和遮挡标记来重建完整的图像。这种设计允许解码器在处理所有遮挡标记和潜在表示方面更高效。",
+    "elapsed_ms": 95920.12400040403,
+    "prompt_tokens": 889,
+    "completion_tokens": 108,
+    "citation_validation": {
+      "cited": [
+        {
+          "doc_name": "MAE.pdf",
+          "page": 3,
+          "chunk_id": "MAE-p3-s4-c0"
+        }
+      ],
+      "hallucinated": [],
+      "unused": [
+        [
+          "MAE.pdf",
+          4
+        ],
+        [
+          "MAE.pdf",
+          5
+        ],
+        [
+          "MAE.pdf",
+          1
+        ],
+        [
+          "MAE.pdf",
+          2
+        ]
+      ],
+      "citation_count": 1
+    },
+    "human_quality_score": null
+  },
+  {
+    "options": {
+      "temperature": 0.1,
+      "top_p": 0.7,
+      "top_k": 20
+    },
+    "question": "MAE 的 asymmetric encoder-decoder 如何工作？",
+    "answer": "MAE 的 asymmetric encoder-decoder 架构通过以下方式工作：\n\n【MAE.pdf-第3页】\n- 编码器仅作用于可见的子集的补丁（不使用掩码标记），从而实现对部分观察信号的处理。\n- 轻量级解码器从潜在表示和掩码标记中重建完整的信号。\n\n【MAE.pdf-第4页】\n- 解码器仅在预训练期间用于执行图像重建任务（仅编码器用于生成用于识别的图像表示）。\n- 解码器架构可以灵活设计，与编码器设计无关。\n- 我们实验了非常小的解码器，比编码器窄且浅。例如，我们的默认解码器的每令牌计算量小于10%。\n\n这种不对称设计使得所有令牌仅由轻量级解码器处理，从而显著减少了预训练时间。",
+    "elapsed_ms": 62648.70929997414,
+    "prompt_tokens": 889,
+    "completion_tokens": 191,
+    "citation_validation": {
+      "cited": [
+        {
+          "doc_name": "MAE.pdf",
+          "page": 4,
+          "chunk_id": "MAE-p4-s4-c3"
+        },
+        {
+          "doc_name": "MAE.pdf",
+          "page": 3,
+          "chunk_id": "MAE-p3-s4-c0"
+        }
+      ],
+      "hallucinated": [],
+      "unused": [
+        [
+          "MAE.pdf",
+          5
+        ],
+        [
+          "MAE.pdf",
+          1
+        ],
+        [
+          "MAE.pdf",
+          2
+        ]
+      ],
+      "citation_count": 2
+    },
+    "human_quality_score": null
+  }
+]

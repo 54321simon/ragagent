@@ -1,4 +1,5 @@
 """PDF 加载器。用 pymupdf。自动过滤页眉/页脚/版权声明/参考文献页。"""
+
 import pymupdf
 import os
 import re
@@ -27,14 +28,28 @@ def _is_copyright_line(line: str) -> bool:
 
 
 BODY_KEYWORDS = [
-    "conclusion", "discussion", "future work", "acknowledg",
-    "introduction", "method", "approach", "experiment", "result",
-    "abstract", "background",
+    "conclusion",
+    "discussion",
+    "future work",
+    "acknowledg",
+    "introduction",
+    "method",
+    "approach",
+    "experiment",
+    "result",
+    "abstract",
+    "background",
 ]
 
 REF_KEYWORDS = [
-    "arxiv:", "corr,", "in proc.", "proceedings",
-    "et al.", "conference on", "journal of", "preprint",
+    "arxiv:",
+    "corr,",
+    "in proc.",
+    "proceedings",
+    "et al.",
+    "conference on",
+    "journal of",
+    "preprint",
 ]
 
 
@@ -52,8 +67,13 @@ def _is_reference_page(text: str) -> bool:
     low_text = text.lower()
     # 只有明确含 Conclusion/Discussion/Future Work 才豁免
     # 不含 method/approach/result 等泛词，避免参考文献误豁免
-    strong_body_kw = ["conclusion", "discussion", "future work",
-                      "acknowledg", "introduction"]
+    strong_body_kw = [
+        "conclusion",
+        "discussion",
+        "future work",
+        "acknowledg",
+        "introduction",
+    ]
     if any(kw in low_text for kw in strong_body_kw):
         return False
 
@@ -80,8 +100,11 @@ def load_pdf(path: str) -> list[dict]:
     """返回 [{doc_id, doc_name, page, text}]。
     自动过滤：页眉/页脚 + 版权声明 + 参考文献页。"""
     doc = pymupdf.open(path)
+    if len(doc) > 300:
+        doc.close()
+        raise ValueError("PDF 超过 300 页，请拆分后入库。")
     doc_name = os.path.basename(path)
-    doc_id = doc_name.replace(".pdf", "")
+    doc_id = os.path.splitext(doc_name)[0]
 
     raw_pages = []
     for i, page in enumerate(doc):
@@ -117,17 +140,20 @@ def load_pdf(path: str) -> list[dict]:
             filtered.append(l)
         text = "\n".join(filtered).strip()
         if text:
-            pages.append({
-                "doc_id": doc_id,
-                "doc_name": doc_name,
-                "page": p["page"],
-                "text": text,
-            })
+            pages.append(
+                {
+                    "doc_id": doc_id,
+                    "doc_name": doc_name,
+                    "page": p["page"],
+                    "text": text,
+                }
+            )
     return pages
 
 
 def load_docx(path: str) -> list[dict]:
     import docx
+
     doc = docx.Document(path)
     doc_name = os.path.basename(path)
     doc_id = doc_name.rsplit(".", 1)[0]
