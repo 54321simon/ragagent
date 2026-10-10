@@ -46,4 +46,6 @@ PDF 页码采用物理页，不是期刊页码。DOCX/TXT/MD 当前标注为逻�
 
 ## 提交前
 
-填写报告封面的组员、学号、班级和教师信息。由独立评审人在 manual_review.csv 填写正确性、完整性、引用准确性。答辩可按 PPT 备注演示。完整历史保留在 Git 中，未替用户推送远端。
+填写报告封面的组员、学号、班级和教师信息。由独立评审人在 manual_review.csv 填写正确性、完整性、引用准确性。答辩可按 PPT 备注演示。完整历史保留在 Git 中，完成版本已推送到 codex/coursework-completion 分支。
+
+GitHub 入口：https://github.com/54321simon/ragagent/tree/codex/coursework-completion 。本机账号 ccc164184 已取得该仓库写入权限。

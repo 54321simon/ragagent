@@ -1,0 +1,11 @@
+{
+  "owner_account": "54321simon",
+  "repository": "54321simon/ragagent",
+  "target_account": "ccc164184",
+  "permission_before": "write",
+  "permission_after": "write",
+  "can_push": true,
+  "initial_pushed_commit": "116aca55cb02076052fefecb7dcac07ea97bfbe0",
+  "remote_branch": "codex/coursework-completion",
+  "remote_url": "https://github.com/54321simon/ragagent/tree/codex/coursework-completion"
+}
